@@ -6,21 +6,22 @@
 }
 
 :root {
-  --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  --success-color: #28a745;
-  --danger-color: #dc3545;
-  --warning-color: #ffc107;
-  --info-color: #17a2b8;
-  --light-color: #f8f9fa;
-  --dark-color: #343a40;
+  /* Professional color palette for Pamsforce */
+  --primary-color: #1e3a5f;    /* Deep navy blue - professional, trustworthy */
+  --secondary-color: #4a5568;   /* Slate gray - balanced */
+  --success-color: #2d6a4f;    /* Forest green - mature, professional */
+  --danger-color: #9b2c2c;     /* Deep red - serious but not harsh */
+  --warning-color: #b7791f;    /* Amber - visible but not bright */
+  --info-color: #2c5282;       /* Navy blue - professional */
+  --light-color: #e2e8f0;      /* Cool gray - softer than white */
+  --dark-color: #1a202c;       /* Near black - readable */
   --white: #ffffff;
 
   /* Dark mode variables */
-  --bg-color: #f4f6f9;
-  --text-color: #495057;
+  --bg-color: #f1f5f9;         /* Cool light gray - easier on eyes */
+  --text-color: #1e293b;        /* Slate 800 - high contrast but not harsh */
   --card-bg: #ffffff;
-  --border-color: #dee2e6;
+  --border-color: #cbd5e1;      /* Slate 300 - subtle borders */
 }
 
 [data-theme="dark"] {
@@ -431,15 +432,15 @@ body {
 }
 
 .users-card::before {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
 }
 
 .approvals-card::before {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
 }
 
 .sales-card::before {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
 }
 
 .stat-icon {
@@ -455,15 +456,15 @@ body {
 }
 
 .users-card .stat-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
 }
 
 .approvals-card .stat-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
 }
 
 .sales-card .stat-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
 }
 
 .stat-content {
@@ -519,7 +520,7 @@ body {
 }
 
 .card-header-custom {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
   color: white;
   padding: 1rem 1.5rem;
   display: flex;
@@ -560,7 +561,7 @@ body {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -619,7 +620,7 @@ body {
 }
 
 .action-btn.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
 }
 
 .action-btn.success {
@@ -1083,7 +1084,7 @@ tbody tr:hover {
 /* Login Page Styles */
 .login-page {
   position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -1216,7 +1217,7 @@ tbody tr:hover {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem;

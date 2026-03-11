@@ -44,6 +44,9 @@ api.interceptors.response.use(
   }
 );
 
+// Export axios instance for direct API calls (used by master data components)
+export { api };
+
 // -------------------------
 // Admin API Service
 // -------------------------
@@ -103,8 +106,8 @@ class AdminAPIService {
   }
 
   // ----- Doctor Management -----
-  getDoctors() {
-    return this.request("/doctors");
+  getDoctors(params = {}) {
+    return this.request(`/doctors${Object.keys(params).length ? `?${new URLSearchParams(params)}` : ''}`);
   }
 
   createDoctor(data) {
@@ -117,6 +120,19 @@ class AdminAPIService {
 
   deleteDoctor(id) {
     return this.request(`/doctors/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Doctor Master Supporting Data -----
+  getDoctorCategories(status = 'active') {
+    return this.request(`/master/doctor-categories?status=${status}`);
+  }
+
+  getDoctorSpecialties(status = 'active') {
+    return this.request(`/master/doctor-specialties?status=${status}`);
+  }
+
+  getDoctorQualifications(status = 'active') {
+    return this.request(`/master/doctor-qualifications?status=${status}`);
   }
 
   // ----- Chemist Management -----

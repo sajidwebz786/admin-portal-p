@@ -83,13 +83,29 @@ const DoctorChemistManagement = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  // filter dropdowns
+  const [filterSpecialty, setFilterSpecialty] = useState('')
+  const [filterCategory, setFilterCategory] = useState('')
+  const [filterTerritory, setFilterTerritory] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState('doctor')
   const [editingItem, setEditingItem] = useState(null)
+
+  // support masters for doctor form
+  const [doctorCategories, setDoctorCategories] = useState([])
+  const [doctorSpecialties, setDoctorSpecialties] = useState([])
+  const [doctorQualifications, setDoctorQualifications] = useState([])
+  const [territories, setTerritories] = useState([])
+  const [headquarters, setHeadquarters] = useState([])
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    specialty: '',
+    specialty_id: null,
+    category_id: null,
+    qualification_id: null,
+    territory_id: null,
+    hq_id: null,
     location: '',
     address: '',
     phone: '',
@@ -98,6 +114,7 @@ const DoctorChemistManagement = () => {
 
   useEffect(() => {
     loadData()
+    loadSupportingData()
   }, [])
 
   // ✅ Fetch doctors & chemists
@@ -125,13 +142,46 @@ const DoctorChemistManagement = () => {
     }
   }
 
+  // ✅ Fetch supporting master lists (categories, specialties, qualifications, territories, HQ)
+  const loadSupportingData = async () => {
+    try {
+      const [cats, specs, quals, terrs, hqs] = await Promise.all([
+        adminAPI.getDoctorCategories(),
+        adminAPI.getDoctorSpecialties(),
+        adminAPI.getDoctorQualifications(),
+        adminAPI.getTerritories(),
+        adminAPI.getHeadquarters()
+      ])
+      setDoctorCategories(Array.isArray(cats) ? cats : cats.categories || [])
+      setDoctorSpecialties(Array.isArray(specs) ? specs : specs.specialties || [])
+      setDoctorQualifications(Array.isArray(quals) ? quals : quals.qualifications || [])
+      setTerritories(Array.isArray(terrs) ? terrs : terrs.territories || [])
+      setHeadquarters(Array.isArray(hqs) ? hqs : hqs.headquarters || [])
+    } catch (err) {
+      console.error('failed to load supporting data', err)
+    }
+  }
+
   // ✅ Filtered lists
-  const filteredDoctors = doctors.filter(
-    (d) =>
-      d.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      d.specialty?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredDoctors = doctors.filter((d) => {
+    let ok = true
+    if (searchTerm) {
+      ok =
+        d.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        d.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (d.specialtyData?.specialty_name || '').toLowerCase().includes(searchTerm.toLowerCase())
+    }
+    if (ok && filterSpecialty) {
+      ok = d.specialty_id === parseInt(filterSpecialty)
+    }
+    if (ok && filterCategory) {
+      ok = d.category_id === parseInt(filterCategory)
+    }
+    if (ok && filterTerritory) {
+      ok = d.territory_id === parseInt(filterTerritory)
+    }
+    return ok
+  })
   const filteredChemists = chemists.filter(
     (c) =>
       c.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -148,7 +198,11 @@ const DoctorChemistManagement = () => {
         setFormData({
           firstName: item.firstName,
           lastName: item.lastName,
-          specialty: item.specialty,
+          specialty_id: item.specialty_id || item.specialtyData?.specialty_id || null,
+          category_id: item.category_id || item.categoryData?.category_id || null,
+          qualification_id: item.qualification_id || item.qualificationData?.qualification_id || null,
+          territory_id: item.territory_id,
+          hq_id: item.hq_id,
           location: item.location,
           address: item.address,
           phone: item.phone,
@@ -158,7 +212,11 @@ const DoctorChemistManagement = () => {
         setFormData({
           firstName: item.name,
           lastName: '',
-          specialty: '',
+          specialty_id: null,
+          category_id: null,
+          qualification_id: null,
+          territory_id: null,
+          hq_id: null,
           location: item.location,
           address: item.address,
           phone: item.phone,
@@ -170,7 +228,11 @@ const DoctorChemistManagement = () => {
       setFormData({
         firstName: '',
         lastName: '',
-        specialty: '',
+        specialty_id: null,
+        category_id: null,
+        qualification_id: null,
+        territory_id: null,
+        hq_id: null,
         location: '',
         address: '',
         phone: '',
@@ -252,15 +314,55 @@ const DoctorChemistManagement = () => {
       <h2>Doctor & Chemist Management</h2>
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Search */}
-      <div className="mb-3">
+      {/* Search + filters */}
+      <div className="mb-3 d-flex gap-2 flex-wrap">
         <input
           type="text"
           placeholder="Search..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="form-control"
+          style={{ minWidth: '200px' }}
         />
+        <select
+          className="form-control"
+          value={filterSpecialty}
+          onChange={(e) => setFilterSpecialty(e.target.value)}
+          style={{ minWidth: '180px' }}
+        >
+          <option value="">All Specialties</option>
+          {doctorSpecialties.map((s) => (
+            <option key={s.specialty_id} value={s.specialty_id}>
+              {s.specialty_name}
+            </option>
+          ))}
+        </select>
+        <select
+          className="form-control"
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+          style={{ minWidth: '180px' }}
+        >
+          <option value="">All Categories</option>
+          {doctorCategories.map((c) => (
+            <option key={c.category_id} value={c.category_id}>
+              {c.category_name}
+            </option>
+          ))}
+        </select>
+        <select
+          className="form-control"
+          value={filterTerritory}
+          onChange={(e) => setFilterTerritory(e.target.value)}
+          style={{ minWidth: '180px' }}
+        >
+          <option value="">All Territories</option>
+          {territories.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Actions */}
@@ -289,6 +391,10 @@ const DoctorChemistManagement = () => {
           <tr>
             <th>Name</th>
             <th>Specialty</th>
+            <th>Category</th>
+            <th>Qualification</th>
+            <th>Territory</th>
+            <th>HQ</th>
             <th>Location</th>
             <th>Status</th>
             <th>Actions</th>
@@ -305,7 +411,11 @@ const DoctorChemistManagement = () => {
             filteredDoctors.map((d) => (
               <tr key={d.id}>
                 <td>{d.firstName} {d.lastName}</td>
-                <td>{d.specialty}</td>
+                <td>{d.specialtyData?.specialty_name || '-'}</td>
+                <td>{d.categoryData?.category_name || '-'}</td>
+                <td>{d.qualificationData?.qualification_name || '-'}</td>
+                <td>{territories.find(t=>t.id===d.territory_id)?.name || '-'}</td>
+                <td>{headquarters.find(h=>h.id===d.hq_id)?.name || '-'}</td>
                 <td>{d.location}</td>
                 <td>
                   <span className={`badge ${d.isActive ? 'bg-success' : 'bg-danger'}`}>
@@ -417,16 +527,90 @@ const DoctorChemistManagement = () => {
                   className="form-control"
                 />
               </div>
+
               <div className="mb-2">
-                <label>Specialty *</label>
-                <input
-                  type="text"
-                  name="specialty"
-                  value={formData.specialty}
+                <label>Specialty</label>
+                <select
+                  name="specialty_id"
+                  value={formData.specialty_id || ''}
                   onChange={handleInputChange}
-                  required
                   className="form-control"
-                />
+                >
+                  <option value="">-- Select --</option>
+                  {doctorSpecialties.map((s) => (
+                    <option key={s.specialty_id} value={s.specialty_id}>
+                      {s.specialty_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-2">
+                <label>Category</label>
+                <select
+                  name="category_id"
+                  value={formData.category_id || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                >
+                  <option value="">-- Select --</option>
+                  {doctorCategories.map((c) => (
+                    <option key={c.category_id} value={c.category_id}>
+                      {c.category_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-2">
+                <label>Qualification</label>
+                <select
+                  name="qualification_id"
+                  value={formData.qualification_id || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                >
+                  <option value="">-- Select --</option>
+                  {doctorQualifications.map((q) => (
+                    <option key={q.qualification_id} value={q.qualification_id}>
+                      {q.qualification_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-2">
+                <label>Territory</label>
+                <select
+                  name="territory_id"
+                  value={formData.territory_id || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                >
+                  <option value="">-- Select --</option>
+                  {territories.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-2">
+                <label>Headquarter</label>
+                <select
+                  name="hq_id"
+                  value={formData.hq_id || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                >
+                  <option value="">-- Select --</option>
+                  {headquarters.map((h) => (
+                    <option key={h.id} value={h.id}>
+                      {h.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </>
           )}

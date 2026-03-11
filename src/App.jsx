@@ -12,6 +12,14 @@ import ActivityApprovals from './components/ActivityApprovals'
 import RuleConfiguration from './components/RuleConfiguration'
 import Reports from './components/Reports'
 import Sidebar from './components/Sidebar'
+
+// New Master Data Components
+import DoctorClassMaster from './components/DoctorClassMaster'
+import DoctorCategoryMaster from './components/DoctorCategoryMaster'
+import DoctorSpecialtyMaster from './components/DoctorSpecialtyMaster'
+import DoctorQualificationMaster from './components/DoctorQualificationMaster'
+import ApprovalDashboard from './components/ApprovalDashboard'
+
 import './App.css'
 
 function AppContent() {
@@ -58,6 +66,14 @@ function AppContent() {
           <Route path="/activity-approvals" element={<ActivityApprovals />} />
           <Route path="/rule-config" element={<RuleConfiguration />} />
           <Route path="/reports" element={<Reports />} />
+          
+          {/* New Master Data Routes */}
+          <Route path="/doctor-class" element={<DoctorClassMaster />} />
+          <Route path="/doctor-category" element={<DoctorCategoryMaster />} />
+          <Route path="/doctor-specialty" element={<DoctorSpecialtyMaster />} />
+          <Route path="/doctor-qualification" element={<DoctorQualificationMaster />} />
+          <Route path="/approvals" element={<ApprovalDashboard />} />
+          
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </main>
