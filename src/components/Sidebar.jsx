@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import logo from '../assets/images/logo.png'
 
 const Sidebar = ({ onLogout }) => {
   const location = useLocation()
@@ -21,7 +22,7 @@ const Sidebar = ({ onLogout }) => {
       {/* Brand Logo */}
       <Link to="/dashboard" className="brand-link custom-brand">
         <img
-          src="/src/assets/images/logo.png"
+          src={logo}
           alt="PAMSFORCE Logo"
           className="brand-image"
         />

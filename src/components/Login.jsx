@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import adminAPI from '../services/apiService'
+import logo from '../assets/images/logo.png'
 
 const Login = ({ onLogin }) => {
   const [formData, setFormData] = useState({
@@ -56,7 +57,7 @@ const Login = ({ onLogin }) => {
       >
         <div className="login-logo">
           <img
-            src="/src/assets/images/logo.png"
+            src={logo}
             alt="PAMSFORCE Logo"
             className="login-logo-img"
             style={{ width: '120px', height: 'auto', marginBottom: '10px' }}
