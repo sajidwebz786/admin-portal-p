@@ -89,7 +89,7 @@ html, body {
 .brand-text {
    color: var(--text-color) !important;
    font-weight: 600 !important;
-   font-size: 1.1rem !important;
+   font-size: 1rem !important;
    margin-left: 0.5rem !important;
 }
 
@@ -122,7 +122,7 @@ html, body {
 
 .page-title {
   margin: 0 0 5px 0;
-  font-size: 1.25rem; /* Smaller, professional title */
+  font-size: 1.1rem; /* Further reduced */
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -130,13 +130,13 @@ html, body {
 }
 
 .page-title i {
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .page-subtitle {
   margin: 0;
   opacity: 0.85;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 }
 
 /* Card Styles */
@@ -155,7 +155,7 @@ html, body {
 
 .card-header .card-title {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #1e293b;
   display: flex;
   align-items: center;
@@ -175,10 +175,10 @@ html, body {
   background: #1e3a5f;
   color: white;
   border: none;
-  padding: 10px 10px; /* Compact padding */
+  padding: 8px 10px; /* Further reduced */
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   letter-spacing: 0.3px;
 }
 
@@ -195,19 +195,19 @@ html, body {
 }
 
 .table tbody td {
-  padding: 10px 10px; /* Compact cell padding */
+  padding: 8px 10px; /* Further reduced */
   vertical-align: middle;
   border-color: #cbd5e1;
   color: #1e293b;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 /* Badge Styles */
 .badge {
-  padding: 3px 8px;
-  font-size: 0.7rem;
+  padding: 2px 6px;
+  font-size: 0.6rem;
   font-weight: 600;
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 .badge-success {
@@ -233,14 +233,14 @@ html, body {
 
 /* Button Styles */
 .btn {
-  border-radius: 6px;
-  padding: 6px 14px; /* Compact padding */
+  border-radius: 5px;
+  padding: 5px 10px; /* Further reduced */
   font-weight: 500;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .btn:hover {
@@ -249,8 +249,8 @@ html, body {
 }
 
 .btn-lg {
-  padding: 8px 18px;
-  font-size: 0.9rem;
+  padding: 6px 14px;
+  font-size: 0.8rem;
 }
 
 .btn-primary {

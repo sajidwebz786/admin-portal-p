@@ -57,7 +57,7 @@ const Sidebar = ({ onLogout }) => {
                   setMastersExpanded(!mastersExpanded)
                 }}
               >
-                <i className="nav-icon fas fa-layer-group"></i>
+                <i className="nav-icon fas fa-database"></i>
                 <p>
                   Masters
                   <i className={`right fas fa-angle-left ${mastersExpanded ? 'transform-rotate' : ''}`}></i>

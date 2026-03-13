@@ -373,7 +373,7 @@ body {
 .dashboard-header h1 {
   color: var(--text-color);
   margin: 0;
-  font-size: 1.5rem; /* Smaller, professional heading */
+  font-size: 1.3rem; /* Further reduced */
   font-weight: 600;
 }
 
@@ -427,8 +427,8 @@ body {
 }
 
 .stat-card:hover {
-  transform: translateY(-2px); /* Subtle lift */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .users-card::before {
@@ -444,13 +444,13 @@ body {
 }
 
 .stat-icon {
-  width: 44px; /* Smaller icon container */
-  height: 44px;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem; /* Smaller icon */
+  font-size: 0.9rem;
   color: white;
   flex-shrink: 0;
 }
@@ -472,16 +472,16 @@ body {
 }
 
 .stat-content h3 {
-  margin: 0 0 0.25rem 0;
-  font-size: 0.75rem; /* Smaller label */
+  margin: 0 0 0.2rem 0;
+  font-size: 0.65rem;
   color: var(--text-color);
   opacity: 0.8;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
 .stat-value {
-  font-size: 1.5rem; /* Smaller value */
+  font-size: 1.3rem;
   font-weight: 600;
   color: var(--text-color);
   margin: 0;
@@ -531,11 +531,59 @@ body {
 
 .card-header-custom h3 {
   margin: 0;
-  font-size: 0.9rem; /* Smaller heading */
+  font-size: 0.8rem;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
+}
+
+/* Approval Status Styles */
+.approval-status {
+  padding: 0.5rem;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.75rem;
+}
+
+.status-item:last-child {
+  border-bottom: none;
+}
+
+.status-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text-color);
+}
+
+.status-label i {
+  width: 14px;
+  text-align: center;
+  color: #6c757d;
+}
+
+.status-value {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.status-value.warning {
+  color: #d69e2e;
+}
+
+.status-value.success {
+  color: #38a169;
+}
+
+.status-value.danger {
+  color: #e53e3e;
 }
 
 .activity-list {

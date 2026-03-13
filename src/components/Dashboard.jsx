@@ -182,25 +182,33 @@ const Dashboard = () => {
 
         <div className="quick-actions-card">
           <div className="card-header-custom">
-            <h3><i className="fas fa-bolt"></i> Quick Actions</h3>
+            <h3><i className="fas fa-check-circle"></i> Approval Status</h3>
           </div>
-          <div className="quick-actions">
-            <button className="action-btn primary">
-              <i className="fas fa-user-plus"></i>
-              <span>Add User</span>
-            </button>
-            <button className="action-btn success">
-              <i className="fas fa-check-circle"></i>
-              <span>Approve Activities</span>
-            </button>
-            <button className="action-btn warning">
-              <i className="fas fa-file-export"></i>
-              <span>Generate Report</span>
-            </button>
-            <button className="action-btn info">
-              <i className="fas fa-cog"></i>
-              <span>Settings</span>
-            </button>
+          <div className="approval-status">
+            <div className="status-item">
+              <div className="status-label">
+                <i className="fas fa-clock"></i> Pending
+              </div>
+              <div className="status-value warning">{stats.pendingApprovals}</div>
+            </div>
+            <div className="status-item">
+              <div className="status-label">
+                <i className="fas fa-check"></i> Approved Today
+              </div>
+              <div className="status-value success">15</div>
+            </div>
+            <div className="status-item">
+              <div className="status-label">
+                <i className="fas fa-times"></i> Rejected Today
+              </div>
+              <div className="status-value danger">3</div>
+            </div>
+            <div className="status-item">
+              <div className="status-label">
+                <i className="fas fa-users"></i> Active Users
+              </div>
+              <div className="status-value">{stats.totalUsers}</div>
+            </div>
           </div>
         </div>
       </div>
