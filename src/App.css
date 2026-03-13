@@ -16,7 +16,7 @@ html, body {
 }
 
 .main-sidebar {
-   width: 280px; /* Increased width for better text accommodation */
+   width: 250px; /* Compact sidebar width */
    height: 100vh; /* Match dashboard height exactly */
    background: var(--card-bg);
    position: fixed;
@@ -122,43 +122,44 @@ html, body {
 
 .page-title {
   margin: 0 0 5px 0;
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 1.25rem; /* Smaller, professional title */
+  font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .page-title i {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
 }
 
 .page-subtitle {
   margin: 0;
-  opacity: 0.9;
-  font-size: 0.95rem;
+  opacity: 0.85;
+  font-size: 0.8rem;
 }
 
 /* Card Styles */
 .card {
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border: none;
+  border-radius: 8px; /* Smaller border radius */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); /* Subtle shadow */
+  border: 1px solid var(--border-color);
   overflow: hidden;
 }
 
 .card-header {
-  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-  border-bottom: 2px solid #94a3b8;
-  padding: 15px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 10px 15px;
 }
 
 .card-header .card-title {
   font-weight: 600;
+  font-size: 0.9rem;
   color: #1e293b;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .card-body {
@@ -174,11 +175,11 @@ html, body {
   background: #1e3a5f;
   color: white;
   border: none;
-  padding: 14px 12px;
+  padding: 10px 10px; /* Compact padding */
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 0.85rem;
-  letter-spacing: 0.5px;
+  font-size: 0.75rem;
+  letter-spacing: 0.3px;
 }
 
 .table thead th i {
@@ -190,23 +191,23 @@ html, body {
 }
 
 .table tbody tr:hover {
-  background: #e2e8f0;
-  transform: scale(1.01);
+  background: #f1f5f9;
 }
 
 .table tbody td {
-  padding: 14px 12px;
+  padding: 10px 10px; /* Compact cell padding */
   vertical-align: middle;
   border-color: #cbd5e1;
   color: #1e293b;
+  font-size: 0.85rem;
 }
 
 /* Badge Styles */
 .badge {
-  padding: 6px 12px;
-  font-size: 0.85rem;
+  padding: 3px 8px;
+  font-size: 0.7rem;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .badge-success {
@@ -232,23 +233,24 @@ html, body {
 
 /* Button Styles */
 .btn {
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  padding: 6px 14px; /* Compact padding */
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-lg {
-  padding: 12px 28px;
-  font-size: 1rem;
+  padding: 8px 18px;
+  font-size: 0.9rem;
 }
 
 .btn-primary {
@@ -336,16 +338,17 @@ html, body {
 
 /* Form Styles */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .form-group label {
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 0.85rem;
   color: #1e293b;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .form-group label i {
@@ -353,10 +356,11 @@ html, body {
 }
 
 .form-control {
-  border: 2px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 12px 15px;
-  transition: all 0.3s ease;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 12px; /* Compact padding */
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
   background-color: #f8fafc;
   color: #1e293b;
 }
@@ -368,8 +372,8 @@ html, body {
 }
 
 .form-control-lg {
-  padding: 14px 18px;
-  font-size: 1rem;
+  padding: 10px 14px;
+  font-size: 0.9rem;
 }
 
 .form-text {
@@ -489,11 +493,11 @@ html, body {
 
 .main-content {
    flex: 1;
-   margin-left: 280px; /* Updated sidebar width */
-   padding: 20px 20px; /* Reduced top padding */
+   margin-left: 250px; /* Updated sidebar width */
+   padding: 15px; /* Reduced padding */
    background-color: var(--bg-color);
-   height: 100vh; /* Match sidebar and dashboard height exactly */
-   overflow-y: auto; /* Allow scrolling if content exceeds height */
+   height: 100vh;
+   overflow-y: auto;
  }
 
 @media (max-width: 768px) {

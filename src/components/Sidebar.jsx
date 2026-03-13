@@ -4,10 +4,11 @@ import logo from '../assets/images/logo.png'
 
 const Sidebar = ({ onLogout }) => {
   const location = useLocation()
-  const [masterDataExpanded, setMasterDataExpanded] = useState(true)
+  const [mastersExpanded, setMastersExpanded] = useState(true)
+  const [doctorsExpanded, setDoctorsExpanded] = useState(true)
 
-  // Doctors Master sub-items
-  const masterDataItems = [
+  // Doctors sub-items under Masters > Doctors
+  const doctorsItems = [
     { id: 'doctor-class', label: 'Doctor Class', icon: 'fas fa-tags', path: '/doctor-class' },
     { id: 'doctor-category', label: 'Doctor Category', icon: 'fas fa-list-alt', path: '/doctor-category' },
     { id: 'doctor-specialty', label: 'Doctor Specialty', icon: 'fas fa-stethoscope', path: '/doctor-specialty' },
@@ -15,7 +16,8 @@ const Sidebar = ({ onLogout }) => {
     { id: 'approvals', label: 'Approval Dashboard', icon: 'fas fa-tasks', path: '/approvals' }
   ]
 
-  const isMasterDataActive = masterDataItems.some(item => location.pathname === item.path)
+  // Check if any doctor item is active
+  const isDoctorsActive = doctorsItems.some(item => location.pathname === item.path)
 
   return (
     <aside className="main-sidebar sidebar-dark-primary elevation-4">
@@ -45,35 +47,57 @@ const Sidebar = ({ onLogout }) => {
               </Link>
             </li>
 
-            {/* DOCTORS MASTER - SECOND */}
+            {/* MASTERS - SECOND - Parent with Doctors sub-menu */}
             <li className="nav-item has-treeview menu-open">
               <Link
                 to="#"
-                className={`nav-link ${isMasterDataActive ? 'active' : ''}`}
+                className={`nav-link ${isDoctorsActive ? 'active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault()
-                  setMasterDataExpanded(!masterDataExpanded)
+                  setMastersExpanded(!mastersExpanded)
                 }}
               >
-                <i className="nav-icon fas fa-user-md"></i>
+                <i className="nav-icon fas fa-layer-group"></i>
                 <p>
-                  Doctors Master
-                  <i className={`right fas fa-angle-left ${masterDataExpanded ? 'transform-rotate' : ''}`}></i>
+                  Masters
+                  <i className={`right fas fa-angle-left ${mastersExpanded ? 'transform-rotate' : ''}`}></i>
                 </p>
               </Link>
-              {masterDataExpanded && (
+              {mastersExpanded && (
                 <ul className="nav nav-treeview">
-                  {masterDataItems.map((item) => (
-                    <li key={item.id} className="nav-item">
-                      <Link
-                        to={item.path}
-                        className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-                      >
-                        <i className={`${item.icon} nav-icon`}></i>
-                        <p>{item.label}</p>
-                      </Link>
-                    </li>
-                  ))}
+                  {/* Doctors Sub-menu */}
+                  <li className="nav-item has-treeview menu-open">
+                    <Link
+                      to="#"
+                      className={`nav-link ${isDoctorsActive ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setDoctorsExpanded(!doctorsExpanded)
+                      }}
+                    >
+                      <i className="nav-icon fas fa-user-md"></i>
+                      <p>
+                        Doctors
+                        <i className={`right fas fa-angle-left ${doctorsExpanded ? 'transform-rotate' : ''}`}></i>
+                      </p>
+                    </Link>
+                    {doctorsExpanded && (
+                      <ul className="nav nav-treeview">
+                        {doctorsItems.map((item) => (
+                          <li key={item.id} className="nav-item">
+                            <Link
+                              to={item.path}
+                              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                            >
+                              <i className={`${item.icon} nav-icon`}></i>
+                              <p>{item.label}</p>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                  {/* Products will be added here later */}
                 </ul>
               )}
             </li>

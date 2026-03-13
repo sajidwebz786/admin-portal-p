@@ -373,7 +373,7 @@ body {
 .dashboard-header h1 {
   color: var(--text-color);
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.5rem; /* Smaller, professional heading */
   font-weight: 600;
 }
 
@@ -398,21 +398,21 @@ body {
 /* Enhanced Stats Cards */
 .dashboard-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Smaller min-width */
+  gap: 1rem; /* Reduced gap */
+  margin-bottom: 1rem;
 }
 
 .stat-card {
   background: var(--card-bg);
-  border-radius: 15px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; /* Smaller border radius */
+  padding: 1rem; /* Compact padding */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06); /* Subtle shadow */
   border: 1px solid var(--border-color);
   display: flex;
   align-items: center;
-  gap: 1rem;
-  transition: all 0.3s ease;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
 }
@@ -427,8 +427,8 @@ body {
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px); /* Subtle lift */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .users-card::before {
@@ -444,13 +444,13 @@ body {
 }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 44px; /* Smaller icon container */
+  height: 44px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.1rem; /* Smaller icon */
   color: white;
   flex-shrink: 0;
 }
@@ -472,19 +472,19 @@ body {
 }
 
 .stat-content h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.9rem;
+  margin: 0 0 0.25rem 0;
+  font-size: 0.75rem; /* Smaller label */
   color: var(--text-color);
   opacity: 0.8;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .stat-value {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 1.5rem; /* Smaller value */
+  font-weight: 600;
   color: var(--text-color);
-  margin: 0 0 0.5rem 0;
+  margin: 0;
 }
 
 .stat-change {
@@ -507,22 +507,23 @@ body {
 .dashboard-content {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .recent-activity-card,
 .quick-actions-card {
   background: var(--card-bg);
-  border-radius: 15px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-radius: 8px; /* Smaller border radius */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   border: 1px solid var(--border-color);
   overflow: hidden;
 }
 
 .card-header-custom {
-  background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
-  color: white;
-  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  color: var(--text-color);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -530,6 +531,8 @@ body {
 
 .card-header-custom h3 {
   margin: 0;
+  font-size: 0.9rem; /* Smaller heading */
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
