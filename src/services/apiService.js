@@ -3,8 +3,11 @@ import axios from "axios";
 // -------------------------
 // Axios Base Configuration
 // -------------------------
+// Production server URL - render.com
+const PRODUCTION_API_URL = 'https://serverapp-a8wy.onrender.com/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: PRODUCTION_API_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -170,8 +173,17 @@ class AdminAPIService {
   }
 
   // ----- Product Management -----
-  getProducts() {
-    return this.request("/products");
+  getProducts(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/products${queryString}`);
+  }
+
+  getActiveProducts() {
+    return this.request("/products/active");
+  }
+
+  getProduct(id) {
+    return this.request(`/products/${id}`);
   }
 
   createProduct(data) {
@@ -184,6 +196,97 @@ class AdminAPIService {
 
   deleteProduct(id) {
     return this.request(`/products/${id}`, { method: "DELETE" });
+  }
+
+  getProductPriceHistory(id) {
+    return this.request(`/products/${id}/price-history`);
+  }
+
+  // ----- Division Master -----
+  getDivisions(status = 'active') {
+    return this.request(`/products/divisions?status=${status}`);
+  }
+
+  createDivision(data) {
+    return this.request("/products/divisions", { method: "POST", data });
+  }
+
+  updateDivision(id, data) {
+    return this.request(`/products/divisions/${id}`, { method: "PUT", data });
+  }
+
+  deleteDivision(id) {
+    return this.request(`/products/divisions/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Product Category Master -----
+  getProductCategories(status = 'active') {
+    return this.request(`/products/categories?status=${status}`);
+  }
+
+  createProductCategory(data) {
+    return this.request("/products/categories", { method: "POST", data });
+  }
+
+  updateProductCategory(id, data) {
+    return this.request(`/products/categories/${id}`, { method: "PUT", data });
+  }
+
+  deleteProductCategory(id) {
+    return this.request(`/products/categories/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Pack Size Master -----
+  getPackSizes(status = 'active') {
+    return this.request(`/products/pack-sizes?status=${status}`);
+  }
+
+  createPackSize(data) {
+    return this.request("/products/pack-sizes", { method: "POST", data });
+  }
+
+  updatePackSize(id, data) {
+    return this.request(`/products/pack-sizes/${id}`, { method: "PUT", data });
+  }
+
+  deletePackSize(id) {
+    return this.request(`/products/pack-sizes/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Brand Group Master -----
+  getBrandGroups(status = 'active', division_id = null) {
+    const params = new URLSearchParams({ status });
+    if (division_id) params.append('division_id', division_id);
+    return this.request(`/products/brand-groups?${params}`);
+  }
+
+  createBrandGroup(data) {
+    return this.request("/products/brand-groups", { method: "POST", data });
+  }
+
+  updateBrandGroup(id, data) {
+    return this.request(`/products/brand-groups/${id}`, { method: "PUT", data });
+  }
+
+  deleteBrandGroup(id) {
+    return this.request(`/products/brand-groups/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Strength Master -----
+  getStrengths(status = 'active') {
+    return this.request(`/products/strengths?status=${status}`);
+  }
+
+  createStrength(data) {
+    return this.request("/products/strengths", { method: "POST", data });
+  }
+
+  updateStrength(id, data) {
+    return this.request(`/products/strengths/${id}`, { method: "PUT", data });
+  }
+
+  deleteStrength(id) {
+    return this.request(`/products/strengths/${id}`, { method: "DELETE" });
   }
 
   // ----- Headquarter Management -----
