@@ -6,6 +6,7 @@ const Sidebar = ({ onLogout }) => {
   const location = useLocation()
   const [mastersExpanded, setMastersExpanded] = useState(true)
   const [doctorsExpanded, setDoctorsExpanded] = useState(true)
+  const [productsExpanded, setProductsExpanded] = useState(true)
 
   // Doctors sub-items under Masters > Doctors
   const doctorsItems = [
@@ -16,8 +17,21 @@ const Sidebar = ({ onLogout }) => {
     { id: 'approvals', label: 'Approval Dashboard', icon: 'fas fa-tasks', path: '/approvals' }
   ]
 
+  // Products sub-items under Masters > Products
+  const productsItems = [
+    { id: 'division', label: 'Division', icon: 'fas fa-building', path: '/division-master' },
+    { id: 'brand-group', label: 'Brand Group', icon: 'fas fa-layer-group', path: '/brand-group-master' },
+    { id: 'product-category', label: 'Category', icon: 'fas fa-tags', path: '/product-category-master' },
+    { id: 'pack-size', label: 'Pack Size', icon: 'fas fa-box', path: '/pack-size-master' },
+    { id: 'strength', label: 'Strength', icon: 'fas fa-flask', path: '/strength-master' },
+    { id: 'product', label: 'Product', icon: 'fas fa-pills', path: '/product-management' }
+  ]
+
   // Check if any doctor item is active
   const isDoctorsActive = doctorsItems.some(item => location.pathname === item.path)
+  
+  // Check if any product item is active
+  const isProductsActive = productsItems.some(item => location.pathname === item.path)
 
   return (
     <aside className="main-sidebar sidebar-dark-primary elevation-4">
@@ -47,11 +61,11 @@ const Sidebar = ({ onLogout }) => {
               </Link>
             </li>
 
-            {/* MASTERS - SECOND - Parent with Doctors sub-menu */}
+            {/* MASTERS - SECOND - Parent with Doctors and Products sub-menu */}
             <li className="nav-item has-treeview menu-open">
               <Link
                 to="#"
-                className={`nav-link ${isDoctorsActive ? 'active' : ''}`}
+                className={`nav-link ${isDoctorsActive || isProductsActive ? 'active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault()
                   setMastersExpanded(!mastersExpanded)
@@ -97,7 +111,39 @@ const Sidebar = ({ onLogout }) => {
                       </ul>
                     )}
                   </li>
-                  {/* Products will be added here later */}
+                  
+                  {/* Products Sub-menu - New */}
+                  <li className="nav-item has-treeview menu-open">
+                    <Link
+                      to="#"
+                      className={`nav-link ${isProductsActive ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setProductsExpanded(!productsExpanded)
+                      }}
+                    >
+                      <i className="nav-icon fas fa-pills"></i>
+                      <p>
+                        Products
+                        <i className={`right fas fa-angle-left ${productsExpanded ? 'transform-rotate' : ''}`}></i>
+                      </p>
+                    </Link>
+                    {productsExpanded && (
+                      <ul className="nav nav-treeview">
+                        {productsItems.map((item) => (
+                          <li key={item.id} className="nav-item">
+                            <Link
+                              to={item.path}
+                              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                            >
+                              <i className={`${item.icon} nav-icon`}></i>
+                              <p>{item.label}</p>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
                 </ul>
               )}
             </li>
@@ -125,31 +171,21 @@ const Sidebar = ({ onLogout }) => {
 
             <li className="nav-item">
               <Link
-                to="/territory-management"
-                className={`nav-link ${location.pathname === '/territory-management' ? 'active' : ''}`}
-              >
-                <i className="fas fa-map-marked-alt nav-icon"></i>
-                <p>Territory Master</p>
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link
-                to="/product-management"
-                className={`nav-link ${location.pathname === '/product-management' ? 'active' : ''}`}
-              >
-                <i className="fas fa-pills nav-icon"></i>
-                <p>Product Master</p>
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link
                 to="/headquarter-management"
                 className={`nav-link ${location.pathname === '/headquarter-management' ? 'active' : ''}`}
               >
                 <i className="fas fa-building nav-icon"></i>
                 <p>Headquarter Master</p>
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link
+                to="/territory-management"
+                className={`nav-link ${location.pathname === '/territory-management' ? 'active' : ''}`}
+              >
+                <i className="fas fa-map-marked-alt nav-icon"></i>
+                <p>Territory Master</p>
               </Link>
             </li>
 

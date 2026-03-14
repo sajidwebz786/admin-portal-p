@@ -13,12 +13,19 @@ import RuleConfiguration from './components/RuleConfiguration'
 import Reports from './components/Reports'
 import Sidebar from './components/Sidebar'
 
-// New Master Data Components
+// Doctor Master Data Components
 import DoctorClassMaster from './components/DoctorClassMaster'
 import DoctorCategoryMaster from './components/DoctorCategoryMaster'
 import DoctorSpecialtyMaster from './components/DoctorSpecialtyMaster'
 import DoctorQualificationMaster from './components/DoctorQualificationMaster'
 import ApprovalDashboard from './components/ApprovalDashboard'
+
+// Product Master Data Components
+import DivisionMaster from './components/DivisionMaster'
+import BrandGroupMaster from './components/BrandGroupMaster'
+import ProductCategoryMaster from './components/ProductCategoryMaster'
+import PackSizeMaster from './components/PackSizeMaster'
+import StrengthMaster from './components/StrengthMaster'
 
 import './App.css'
 
@@ -67,12 +74,19 @@ function AppContent() {
           <Route path="/rule-config" element={<RuleConfiguration />} />
           <Route path="/reports" element={<Reports />} />
           
-          {/* New Master Data Routes */}
+          {/* Doctor Master Data Routes */}
           <Route path="/doctor-class" element={<DoctorClassMaster />} />
           <Route path="/doctor-category" element={<DoctorCategoryMaster />} />
           <Route path="/doctor-specialty" element={<DoctorSpecialtyMaster />} />
           <Route path="/doctor-qualification" element={<DoctorQualificationMaster />} />
           <Route path="/approvals" element={<ApprovalDashboard />} />
+          
+          {/* Product Master Data Routes */}
+          <Route path="/division-master" element={<DivisionMaster />} />
+          <Route path="/brand-group-master" element={<BrandGroupMaster />} />
+          <Route path="/product-category-master" element={<ProductCategoryMaster />} />
+          <Route path="/pack-size-master" element={<PackSizeMaster />} />
+          <Route path="/strength-master" element={<StrengthMaster />} />
           
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
