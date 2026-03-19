@@ -7,6 +7,7 @@ const Sidebar = ({ onLogout }) => {
   const [mastersExpanded, setMastersExpanded] = useState(true)
   const [doctorsExpanded, setDoctorsExpanded] = useState(true)
   const [productsExpanded, setProductsExpanded] = useState(true)
+  const [territoryExpanded, setTerritoryExpanded] = useState(true)
 
   // Doctors sub-items under Masters > Doctors
   const doctorsItems = [
@@ -27,11 +28,20 @@ const Sidebar = ({ onLogout }) => {
     { id: 'product', label: 'Product', icon: 'fas fa-pills', path: '/product-management' }
   ]
 
+  // Territory sub-items under Masters > Territory
+  const territoryItems = [
+    { id: 'headquarter', label: 'HQ Master', icon: 'fas fa-building', path: '/headquarter-management' },
+    { id: 'territory', label: 'Patch/Route', icon: 'fas fa-map-marked-alt', path: '/territory-management' }
+  ]
+
   // Check if any doctor item is active
   const isDoctorsActive = doctorsItems.some(item => location.pathname === item.path)
   
   // Check if any product item is active
   const isProductsActive = productsItems.some(item => location.pathname === item.path)
+  
+  // Check if any territory item is active
+  const isTerritoryActive = territoryItems.some(item => location.pathname === item.path)
 
   return (
     <aside className="main-sidebar sidebar-dark-primary elevation-4">
@@ -61,11 +71,11 @@ const Sidebar = ({ onLogout }) => {
               </Link>
             </li>
 
-            {/* MASTERS - SECOND - Parent with Doctors and Products sub-menu */}
+            {/* MASTERS - SECOND - Parent with Doctors, Products and Territory sub-menu */}
             <li className="nav-item has-treeview menu-open">
               <Link
                 to="#"
-                className={`nav-link ${isDoctorsActive || isProductsActive ? 'active' : ''}`}
+                className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive ? 'active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault()
                   setMastersExpanded(!mastersExpanded)
@@ -79,6 +89,39 @@ const Sidebar = ({ onLogout }) => {
               </Link>
               {mastersExpanded && (
                 <ul className="nav nav-treeview">
+                  {/* Territory Sub-menu - HQ and Patch/Route */}
+                  <li className="nav-item has-treeview menu-open">
+                    <Link
+                      to="#"
+                      className={`nav-link ${isTerritoryActive ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setTerritoryExpanded(!territoryExpanded)
+                      }}
+                    >
+                      <i className="nav-icon fas fa-map-marked-alt"></i>
+                      <p>
+                        Territory
+                        <i className={`right fas fa-angle-left ${territoryExpanded ? 'transform-rotate' : ''}`}></i>
+                      </p>
+                    </Link>
+                    {territoryExpanded && (
+                      <ul className="nav nav-treeview">
+                        {territoryItems.map((item) => (
+                          <li key={item.id} className="nav-item">
+                            <Link
+                              to={item.path}
+                              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                            >
+                              <i className={`${item.icon} nav-icon`}></i>
+                              <p>{item.label}</p>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                  
                   {/* Doctors Sub-menu */}
                   <li className="nav-item has-treeview menu-open">
                     <Link
@@ -112,7 +155,7 @@ const Sidebar = ({ onLogout }) => {
                     )}
                   </li>
                   
-                  {/* Products Sub-menu - New */}
+                  {/* Products Sub-menu */}
                   <li className="nav-item has-treeview menu-open">
                     <Link
                       to="#"
@@ -166,26 +209,6 @@ const Sidebar = ({ onLogout }) => {
               >
                 <i className="fas fa-user-md nav-icon"></i>
                 <p>Doctors/Chemists</p>
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link
-                to="/headquarter-management"
-                className={`nav-link ${location.pathname === '/headquarter-management' ? 'active' : ''}`}
-              >
-                <i className="fas fa-building nav-icon"></i>
-                <p>Headquarter Master</p>
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link
-                to="/territory-management"
-                className={`nav-link ${location.pathname === '/territory-management' ? 'active' : ''}`}
-              >
-                <i className="fas fa-map-marked-alt nav-icon"></i>
-                <p>Territory Master</p>
               </Link>
             </li>
 

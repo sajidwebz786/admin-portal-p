@@ -160,6 +160,10 @@ class AdminAPIService {
     return this.request("/territories");
   }
 
+  getTerritoriesByHQ(hqId) {
+    return this.request(`/territories/by-hq/${hqId}`);
+  }
+
   createTerritory(data) {
     return this.request("/territories", { method: "POST", data });
   }

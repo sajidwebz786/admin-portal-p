@@ -16,7 +16,7 @@ html, body {
 }
 
 .main-sidebar {
-   width: 250px; /* Compact sidebar width */
+   width: 255px; /* Compact sidebar width - increased by 5px */
    height: 100vh; /* Match dashboard height exactly */
    background: var(--card-bg);
    position: fixed;
@@ -432,7 +432,7 @@ html, body {
 }
 
 .nav-sidebar .nav-item .nav-link {
-   padding: 0.75rem 1.5rem !important; /* Balanced vertical padding */
+   padding: 0.6rem 1rem !important; /* Reduced padding for smaller items */
    color: rgba(255, 255, 255, 0.8) !important;
    border-radius: 0 !important;
    transition: all 0.3s ease !important;
@@ -440,7 +440,8 @@ html, body {
    overflow: hidden !important;
    display: flex !important;
    align-items: center !important;
-   min-height: 45px !important; /* Slightly reduced minimum height */
+   min-height: 38px !important; /* Reduced minimum height */
+   font-size: 0.8rem !important; /* Reduced font size */
  }
 
 .nav-sidebar .nav-item .nav-link:hover {
@@ -457,15 +458,17 @@ html, body {
 }
 
 .nav-sidebar .nav-item .nav-link .nav-icon {
-   margin-right: 0.5rem !important;
-   width: 20px !important;
+   margin-right: 0.4rem !important;
+   width: 16px !important;
    text-align: center !important;
+   font-size: 0.75rem !important;
 }
 
 .nav-sidebar .nav-item .nav-link p {
    margin: 0 !important;
    font-weight: 500 !important;
    flex: 1 !important; /* Allow text to take remaining space */
+   font-size: 0.75rem !important;
    white-space: nowrap !important; /* Prevent text wrapping */
    overflow: hidden !important;
    text-overflow: ellipsis !important;
@@ -493,7 +496,7 @@ html, body {
 
 .main-content {
    flex: 1;
-   margin-left: 250px; /* Updated sidebar width */
+   margin-left: 255px; /* Updated sidebar width */
    padding: 15px; /* Reduced padding */
    background-color: var(--bg-color);
    height: 100vh;

@@ -3,6 +3,7 @@ import adminAPI from '../services/apiService'
 
 const TerritoryManagement = () => {
   const [territories, setTerritories] = useState([])
+  const [headquarters, setHeadquarters] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -11,14 +12,19 @@ const TerritoryManagement = () => {
   const [formData, setFormData] = useState({
     name: '',
     code: '',
+    hq_id: '',
     region: '',
     state: '',
+    stateType: 'State',
+    zone: '',
     district: '',
-    description: ''
+    description: '',
+    isActive: true
   })
 
   useEffect(() => {
     loadTerritories()
+    loadHeadquarters()
   }, [])
 
   const loadTerritories = async () => {
@@ -36,11 +42,21 @@ const TerritoryManagement = () => {
     }
   }
 
+  const loadHeadquarters = async () => {
+    try {
+      const response = await adminAPI.getHeadquarters()
+      const hqData = response.headquarters || response || []
+      setHeadquarters(hqData.filter(hq => hq.isActive))
+    } catch (error) {
+      console.error('Error loading headquarters:', error)
+    }
+  }
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }))
   }
 
@@ -48,10 +64,14 @@ const TerritoryManagement = () => {
     setFormData({
       name: '',
       code: '',
+      hq_id: '',
       region: '',
       state: '',
+      stateType: 'State',
+      zone: '',
       district: '',
-      description: ''
+      description: '',
+      isActive: true
     })
     setEditingTerritory(null)
   }
@@ -65,10 +85,14 @@ const TerritoryManagement = () => {
     setFormData({
       name: territory.name,
       code: territory.code,
+      hq_id: territory.hq_id || '',
       region: territory.region,
       state: territory.state,
+      stateType: territory.stateType || 'State',
+      zone: territory.zone || '',
       district: territory.district,
-      description: territory.description || ''
+      description: territory.description || '',
+      isActive: territory.isActive !== false
     })
     setEditingTerritory(territory)
     setShowModal(true)
@@ -90,10 +114,10 @@ const TerritoryManagement = () => {
       }
 
       closeModal()
-      loadTerritories() // Refresh the territories list
+      loadTerritories()
     } catch (error) {
       console.error('Error saving territory:', error)
-      setError('Failed to save territory')
+      setError('Failed to save territory: ' + (error.message || 'Unknown error'))
     }
   }
 
@@ -101,10 +125,10 @@ const TerritoryManagement = () => {
     if (window.confirm('Are you sure you want to delete this territory?')) {
       try {
         await adminAPI.deleteTerritory(territoryId)
-        loadTerritories() // Refresh the territories list
+        loadTerritories()
       } catch (error) {
         console.error('Error deleting territory:', error)
-        setError('Failed to delete territory')
+        setError('Failed to delete territory: ' + (error.message || 'Unknown error'))
       }
     }
   }
@@ -112,14 +136,15 @@ const TerritoryManagement = () => {
   const filteredTerritories = territories.filter(territory =>
     territory.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     territory.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    territory.region.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    territory.state.toLowerCase().includes(searchTerm.toLowerCase())
+    (territory.region && territory.region.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (territory.state && territory.state.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (territory.headquarter && territory.headquarter.name.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
   if (loading) {
     return (
       <div className="section-content">
-        <h2>Territory Management</h2>
+        <h2>Patch/Route Master</h2>
         <div className="loading-spinner">
           <i className="fas fa-spinner fa-spin"></i> Loading territories...
         </div>
@@ -129,7 +154,7 @@ const TerritoryManagement = () => {
 
   return (
     <div className="section-content">
-      <h2>Territory Management</h2>
+      <h2>Patch/Route Master</h2>
 
       {error && (
         <div className="alert alert-danger">
@@ -140,7 +165,7 @@ const TerritoryManagement = () => {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search territories..."
+          placeholder="Search territories by name, code, region, state or HQ..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -151,7 +176,7 @@ const TerritoryManagement = () => {
 
       <div className="management-actions mb-4 d-flex gap-3">
         <button className="btn btn-primary" onClick={showAddModal}>
-          <i className="fas fa-plus"></i> Add New Territory
+          <i className="fas fa-plus"></i> Add New Patch/Route
         </button>
         <button className="btn btn-info">
           <i className="fas fa-download"></i> Export List
@@ -164,8 +189,10 @@ const TerritoryManagement = () => {
             <tr>
               <th>Name</th>
               <th>Code</th>
+              <th>HQ</th>
               <th>Region</th>
-              <th>State</th>
+              <th>State/UT</th>
+              <th>Zone</th>
               <th>District</th>
               <th>Status</th>
               <th>Actions</th>
@@ -174,7 +201,7 @@ const TerritoryManagement = () => {
           <tbody>
             {filteredTerritories.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center">
+                <td colSpan="9" className="text-center">
                   {territories.length === 0 ? 'No territories found.' : 'No territories match your search.'}
                 </td>
               </tr>
@@ -183,8 +210,17 @@ const TerritoryManagement = () => {
                 <tr key={territory.id}>
                   <td>{territory.name}</td>
                   <td>{territory.code}</td>
+                  <td>{territory.headquarter?.name || '-'}</td>
                   <td>{territory.region}</td>
-                  <td>{territory.state}</td>
+                  <td>
+                    {territory.state}
+                    {territory.stateType && territory.stateType !== 'State' && (
+                      <span className="badge badge-info" style={{ marginLeft: '3px', fontSize: '0.6rem' }}>
+                        UT
+                      </span>
+                    )}
+                  </td>
+                  <td>{territory.zone || '-'}</td>
                   <td>{territory.district}</td>
                   <td>
                     <span className={`badge ${territory.isActive ? 'badge-success' : 'badge-danger'}`}>
@@ -195,16 +231,16 @@ const TerritoryManagement = () => {
                     <button
                       className="btn btn-outline-primary btn-sm"
                       onClick={() => showEditModal(territory)}
-                      style={{ fontSize: '0.8rem', padding: '0.25rem 0.5rem' }}
+                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem' }}
                     >
-                      <i className="fas fa-edit"></i> Edit
+                      <i className="fas fa-edit"></i>
                     </button>
                     <button
                       className="btn btn-outline-danger btn-sm ml-1"
                       onClick={() => handleDelete(territory.id)}
-                      style={{ fontSize: '0.8rem', padding: '0.25rem 0.5rem' }}
+                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem' }}
                     >
-                      <i className="fas fa-trash" style={{ fontSize: '0.75rem' }}></i> Delete
+                      <i className="fas fa-trash"></i>
                     </button>
                   </td>
                 </tr>
@@ -217,77 +253,172 @@ const TerritoryManagement = () => {
       {/* Territory Modal */}
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal-dialog">
+          <div className="modal-dialog" style={{ maxWidth: '700px' }}>
             <div className="modal-content">
               <div className="modal-header">
-                <h3>{editingTerritory ? 'Edit Territory' : 'Add New Territory'}</h3>
+                <h3>{editingTerritory ? 'Edit Patch/Route' : 'Add New Patch/Route'}</h3>
                 <button className="close-btn" onClick={closeModal}>
                   <i className="fas fa-times"></i>
                 </button>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
-                  <div className="form-group">
-                    <label htmlFor="name">Territory Name *</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      className="form-control"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                    />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div className="form-group">
+                      <label htmlFor="name">Patch/Route Name *</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        className="form-control"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g. Bhubaneswar East"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="code">Patch/Route Code *</label>
+                      <input
+                        type="text"
+                        id="code"
+                        name="code"
+                        className="form-control"
+                        value={formData.code}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g. BBSR-EST-01"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="hq_id">Head Quarter *</label>
+                      <select
+                        id="hq_id"
+                        name="hq_id"
+                        className="form-control"
+                        value={formData.hq_id}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="">Select HQ</option>
+                        {headquarters.map(hq => (
+                          <option key={hq.id} value={hq.id}>
+                            {hq.name} ({hq.code})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="region">Region *</label>
+                      <input
+                        type="text"
+                        id="region"
+                        name="region"
+                        className="form-control"
+                        value={formData.region}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g. East Region"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="zone">Zone</label>
+                      <select
+                        id="zone"
+                        name="zone"
+                        className="form-control"
+                        value={formData.zone}
+                        onChange={handleInputChange}
+                      >
+                        <option value="">Select Zone</option>
+                        <option value="North">North</option>
+                        <option value="South">South</option>
+                        <option value="East">East</option>
+                        <option value="West">West</option>
+                        <option value="Central">Central</option>
+                        <option value="North-East">North-East</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="state">State/Union Territory *</label>
+                      <input
+                        type="text"
+                        id="state"
+                        name="state"
+                        className="form-control"
+                        value={formData.state}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g. Odisha"
+                        list="states-list"
+                      />
+                      <datalist id="states-list">
+                        <option value="Andhra Pradesh" />
+                        <option value="Arunachal Pradesh" />
+                        <option value="Assam" />
+                        <option value="Bihar" />
+                        <option value="Chhattisgarh" />
+                        <option value="Goa" />
+                        <option value="Gujarat" />
+                        <option value="Haryana" />
+                        <option value="Himachal Pradesh" />
+                        <option value="Jharkhand" />
+                        <option value="Karnataka" />
+                        <option value="Kerala" />
+                        <option value="Madhya Pradesh" />
+                        <option value="Maharashtra" />
+                        <option value="Manipur" />
+                        <option value="Meghalaya" />
+                        <option value="Mizoram" />
+                        <option value="Nagaland" />
+                        <option value="Odisha" />
+                        <option value="Punjab" />
+                        <option value="Rajasthan" />
+                        <option value="Sikkim" />
+                        <option value="Tamil Nadu" />
+                        <option value="Telangana" />
+                        <option value="Tripura" />
+                        <option value="Uttar Pradesh" />
+                        <option value="Uttarakhand" />
+                        <option value="West Bengal" />
+                        <option value="Delhi" />
+                        <option value="Jammu & Kashmir" />
+                        <option value="Ladakh" />
+                        <option value="Chandigarh" />
+                        <option value="Puducherry" />
+                        <option value="Andaman & Nicobar Islands" />
+                        <option value="Dadra & Nagar Haveli and Daman & Diu" />
+                        <option value="Lakshadweep" />
+                      </datalist>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="stateType">State Type</label>
+                      <select
+                        id="stateType"
+                        name="stateType"
+                        className="form-control"
+                        value={formData.stateType}
+                        onChange={handleInputChange}
+                      >
+                        <option value="State">State</option>
+                        <option value="Union Territory">Union Territory</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="district">District *</label>
+                      <input
+                        type="text"
+                        id="district"
+                        name="district"
+                        className="form-control"
+                        value={formData.district}
+                        onChange={handleInputChange}
+                        required
+                        placeholder="e.g. Khordha"
+                      />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="code">Territory Code *</label>
-                    <input
-                      type="text"
-                      id="code"
-                      name="code"
-                      className="form-control"
-                      value={formData.code}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="region">Region *</label>
-                    <input
-                      type="text"
-                      id="region"
-                      name="region"
-                      className="form-control"
-                      value={formData.region}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="state">State *</label>
-                    <input
-                      type="text"
-                      id="state"
-                      name="state"
-                      className="form-control"
-                      value={formData.state}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="district">District *</label>
-                    <input
-                      type="text"
-                      id="district"
-                      name="district"
-                      className="form-control"
-                      value={formData.district}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
+                  <div className="form-group" style={{ marginTop: '12px' }}>
                     <label htmlFor="description">Description</label>
                     <textarea
                       id="description"
@@ -295,8 +426,20 @@ const TerritoryManagement = () => {
                       className="form-control"
                       value={formData.description}
                       onChange={handleInputChange}
-                      rows="3"
+                      rows="2"
                     />
+                  </div>
+                  <div className="form-group" style={{ marginTop: '8px' }}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="isActive"
+                        checked={formData.isActive}
+                        onChange={handleInputChange}
+                        style={{ marginRight: '8px' }}
+                      />
+                      Active
+                    </label>
                   </div>
                 </div>
                 <div className="modal-footer">
@@ -304,7 +447,7 @@ const TerritoryManagement = () => {
                     Cancel
                   </button>
                   <button type="submit" className="btn btn-primary">
-                    {editingTerritory ? 'Update Territory' : 'Save Territory'}
+                    {editingTerritory ? 'Update' : 'Save'}
                   </button>
                 </div>
               </form>

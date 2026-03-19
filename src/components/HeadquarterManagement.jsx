@@ -15,14 +15,17 @@ const HeadquarterManagement = () => {
     address: '',
     city: '',
     state: '',
+    stateType: 'State',
     pincode: '',
     phone: '',
     email: '',
     manager: '',
     region: '',
     zone: '',
+    reason: '',
     territoryCount: 0,
-    employeeCount: 0
+    employeeCount: 0,
+    isActive: true
   })
 
   useEffect(() => {
@@ -45,10 +48,10 @@ const HeadquarterManagement = () => {
   }
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }))
   }
 
@@ -60,14 +63,17 @@ const HeadquarterManagement = () => {
       address: '',
       city: '',
       state: '',
+      stateType: 'State',
       pincode: '',
       phone: '',
       email: '',
       manager: '',
       region: '',
       zone: '',
+      reason: '',
       territoryCount: 0,
-      employeeCount: 0
+      employeeCount: 0,
+      isActive: true
     })
     setEditingHeadquarter(null)
   }
@@ -81,18 +87,21 @@ const HeadquarterManagement = () => {
     setFormData({
       name: headquarter.name,
       code: headquarter.code,
-      type: headquarter.type,
-      address: headquarter.address,
-      city: headquarter.city,
+      type: headquarter.type || 'Branch Office',
+      address: headquarter.address || '',
+      city: headquarter.city || '',
       state: headquarter.state,
-      pincode: headquarter.pincode,
-      phone: headquarter.phone,
+      stateType: headquarter.stateType || 'State',
+      pincode: headquarter.pincode || '',
+      phone: headquarter.phone || '',
       email: headquarter.email || '',
-      manager: headquarter.manager,
+      manager: headquarter.manager || '',
       region: headquarter.region,
       zone: headquarter.zone,
+      reason: headquarter.reason || '',
       territoryCount: headquarter.territoryCount || 0,
-      employeeCount: headquarter.employeeCount || 0
+      employeeCount: headquarter.employeeCount || 0,
+      isActive: headquarter.isActive !== false
     })
     setEditingHeadquarter(headquarter)
     setShowModal(true)
@@ -114,10 +123,10 @@ const HeadquarterManagement = () => {
       }
 
       closeModal()
-      loadHeadquarters() // Refresh the headquarters list
+      loadHeadquarters()
     } catch (error) {
       console.error('Error saving headquarter:', error)
-      setError('Failed to save headquarter')
+      setError('Failed to save headquarter: ' + (error.message || 'Unknown error'))
     }
   }
 
@@ -125,10 +134,10 @@ const HeadquarterManagement = () => {
     if (window.confirm('Are you sure you want to delete this headquarter?')) {
       try {
         await adminAPI.deleteHeadquarter(headquarterId)
-        loadHeadquarters() // Refresh the headquarters list
+        loadHeadquarters()
       } catch (error) {
         console.error('Error deleting headquarter:', error)
-        setError('Failed to delete headquarter')
+        setError('Failed to delete headquarter: ' + (error.message || 'Unknown error'))
       }
     }
   }
@@ -136,14 +145,15 @@ const HeadquarterManagement = () => {
   const filteredHeadquarters = headquarters.filter(headquarter =>
     headquarter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     headquarter.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    headquarter.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    headquarter.region.toLowerCase().includes(searchTerm.toLowerCase())
+    (headquarter.state && headquarter.state.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (headquarter.zone && headquarter.zone.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (headquarter.region && headquarter.region.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
   if (loading) {
     return (
       <div className="section-content">
-        <h2>Headquarter Management</h2>
+        <h2>Headquarter Master</h2>
         <div className="loading-spinner">
           <i className="fas fa-spinner fa-spin"></i> Loading headquarters...
         </div>
@@ -153,7 +163,7 @@ const HeadquarterManagement = () => {
 
   return (
     <div className="section-content">
-      <h2>Headquarter Management</h2>
+      <h2>Headquarter Master</h2>
 
       {error && (
         <div className="alert alert-danger">
@@ -164,7 +174,7 @@ const HeadquarterManagement = () => {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search headquarters..."
+          placeholder="Search headquarters by name, code, state, zone or region..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -175,7 +185,7 @@ const HeadquarterManagement = () => {
 
       <div className="management-actions mb-4 d-flex gap-3">
         <button className="btn btn-primary" onClick={showAddModal}>
-          <i className="fas fa-plus"></i> Add New Headquarter
+          <i className="fas fa-plus"></i> Add New HQ
         </button>
         <button className="btn btn-info">
           <i className="fas fa-download"></i> Export List
@@ -186,15 +196,14 @@ const HeadquarterManagement = () => {
         <table className="table table-striped">
           <thead className="thead-dark">
             <tr>
-              <th>Name</th>
+              <th>HQ Name</th>
               <th>Code</th>
               <th>Type</th>
-              <th>City</th>
-              <th>State</th>
-              <th>Manager</th>
+              <th>State/UT</th>
+              <th>Zone</th>
               <th>Region</th>
+              <th>Reason</th>
               <th>Territories</th>
-              <th>Employees</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -202,7 +211,7 @@ const HeadquarterManagement = () => {
           <tbody>
             {filteredHeadquarters.length === 0 ? (
               <tr>
-                <td colSpan="11" className="text-center">
+                <td colSpan="10" className="text-center">
                   {headquarters.length === 0 ? 'No headquarters found.' : 'No headquarters match your search.'}
                 </td>
               </tr>
@@ -212,12 +221,18 @@ const HeadquarterManagement = () => {
                   <td>{headquarter.name}</td>
                   <td>{headquarter.code}</td>
                   <td>{headquarter.type}</td>
-                  <td>{headquarter.city}</td>
-                  <td>{headquarter.state}</td>
-                  <td>{headquarter.manager}</td>
+                  <td>
+                    {headquarter.state}
+                    {headquarter.stateType && headquarter.stateType !== 'State' && (
+                      <span className="badge badge-info" style={{ marginLeft: '5px', fontSize: '0.65rem' }}>
+                        {headquarter.stateType}
+                      </span>
+                    )}
+                  </td>
+                  <td>{headquarter.zone}</td>
                   <td>{headquarter.region}</td>
-                  <td>{headquarter.territoryCount}</td>
-                  <td>{headquarter.employeeCount}</td>
+                  <td>{headquarter.reason || '-'}</td>
+                  <td>{headquarter.territories?.length || headquarter.territoryCount || 0}</td>
                   <td>
                     <span className={`badge ${headquarter.isActive ? 'badge-success' : 'badge-danger'}`}>
                       {headquarter.isActive ? 'Active' : 'Inactive'}
@@ -227,16 +242,16 @@ const HeadquarterManagement = () => {
                     <button
                       className="btn btn-outline-primary btn-sm"
                       onClick={() => showEditModal(headquarter)}
-                      style={{ fontSize: '0.8rem', padding: '0.25rem 0.5rem' }}
+                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
                     >
                       <i className="fas fa-edit"></i> Edit
                     </button>
                     <button
                       className="btn btn-outline-danger btn-sm ml-1"
                       onClick={() => handleDelete(headquarter.id)}
-                      style={{ fontSize: '0.8rem', padding: '0.25rem 0.5rem' }}
+                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
                     >
-                      <i className="fas fa-trash"></i> Delete
+                      <i className="fas fa-trash"></i>
                     </button>
                   </td>
                 </tr>
@@ -249,7 +264,7 @@ const HeadquarterManagement = () => {
       {/* Headquarter Modal */}
       {showModal && (
         <div className="modal-overlay">
-          <div className="modal-dialog" style={{ maxWidth: '800px' }}>
+          <div className="modal-dialog" style={{ maxWidth: '850px' }}>
             <div className="modal-content">
               <div className="modal-header">
                 <h3>{editingHeadquarter ? 'Edit Headquarter' : 'Add New Headquarter'}</h3>
@@ -259,9 +274,9 @@ const HeadquarterManagement = () => {
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div className="form-group">
-                      <label htmlFor="name">Headquarter Name *</label>
+                      <label htmlFor="name">HQ Name *</label>
                       <input
                         type="text"
                         id="name"
@@ -273,7 +288,7 @@ const HeadquarterManagement = () => {
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="code">Headquarter Code *</label>
+                      <label htmlFor="code">HQ Code *</label>
                       <input
                         type="text"
                         id="code"
@@ -282,6 +297,7 @@ const HeadquarterManagement = () => {
                         value={formData.code}
                         onChange={handleInputChange}
                         required
+                        placeholder="e.g. BBSR, DEL-CEN"
                       />
                     </div>
                     <div className="form-group">
@@ -301,16 +317,35 @@ const HeadquarterManagement = () => {
                       </select>
                     </div>
                     <div className="form-group">
-                      <label htmlFor="manager">Manager *</label>
+                      <label htmlFor="reason">Reason</label>
                       <input
                         type="text"
-                        id="manager"
-                        name="manager"
+                        id="reason"
+                        name="reason"
                         className="form-control"
-                        value={formData.manager}
+                        value={formData.reason}
+                        onChange={handleInputChange}
+                        placeholder="Reason for HQ creation"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="zone">Zone *</label>
+                      <select
+                        id="zone"
+                        name="zone"
+                        className="form-control"
+                        value={formData.zone}
                         onChange={handleInputChange}
                         required
-                      />
+                      >
+                        <option value="">Select Zone</option>
+                        <option value="North">North</option>
+                        <option value="South">South</option>
+                        <option value="East">East</option>
+                        <option value="West">West</option>
+                        <option value="Central">Central</option>
+                        <option value="North-East">North-East</option>
+                      </select>
                     </div>
                     <div className="form-group">
                       <label htmlFor="region">Region *</label>
@@ -322,50 +357,11 @@ const HeadquarterManagement = () => {
                         value={formData.region}
                         onChange={handleInputChange}
                         required
+                        placeholder="e.g. East Region, West Region"
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="zone">Zone *</label>
-                      <input
-                        type="text"
-                        id="zone"
-                        name="zone"
-                        className="form-control"
-                        value={formData.zone}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-group" style={{ marginTop: '15px' }}>
-                    <label htmlFor="address">Address *</label>
-                    <textarea
-                      id="address"
-                      name="address"
-                      className="form-control"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      required
-                      rows="3"
-                    />
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px', marginTop: '15px' }}>
-                    <div className="form-group">
-                      <label htmlFor="city">City *</label>
-                      <input
-                        type="text"
-                        id="city"
-                        name="city"
-                        className="form-control"
-                        value={formData.city}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="state">State *</label>
+                      <label htmlFor="state">State/Union Territory *</label>
                       <input
                         type="text"
                         id="state"
@@ -374,10 +370,90 @@ const HeadquarterManagement = () => {
                         value={formData.state}
                         onChange={handleInputChange}
                         required
+                        placeholder="e.g. Odisha, Delhi"
+                        list="states-list"
+                      />
+                      <datalist id="states-list">
+                        <option value="Andhra Pradesh" />
+                        <option value="Arunachal Pradesh" />
+                        <option value="Assam" />
+                        <option value="Bihar" />
+                        <option value="Chhattisgarh" />
+                        <option value="Goa" />
+                        <option value="Gujarat" />
+                        <option value="Haryana" />
+                        <option value="Himachal Pradesh" />
+                        <option value="Jharkhand" />
+                        <option value="Karnataka" />
+                        <option value="Kerala" />
+                        <option value="Madhya Pradesh" />
+                        <option value="Maharashtra" />
+                        <option value="Manipur" />
+                        <option value="Meghalaya" />
+                        <option value="Mizoram" />
+                        <option value="Nagaland" />
+                        <option value="Odisha" />
+                        <option value="Punjab" />
+                        <option value="Rajasthan" />
+                        <option value="Sikkim" />
+                        <option value="Tamil Nadu" />
+                        <option value="Telangana" />
+                        <option value="Tripura" />
+                        <option value="Uttar Pradesh" />
+                        <option value="Uttarakhand" />
+                        <option value="West Bengal" />
+                        <option value="Delhi" />
+                        <option value="Jammu & Kashmir" />
+                        <option value="Ladakh" />
+                        <option value="Chandigarh" />
+                        <option value="Puducherry" />
+                        <option value="Andaman & Nicobar Islands" />
+                        <option value="Dadra & Nagar Haveli and Daman & Diu" />
+                        <option value="Lakshadweep" />
+                      </datalist>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="stateType">State Type *</label>
+                      <select
+                        id="stateType"
+                        name="stateType"
+                        className="form-control"
+                        value={formData.stateType}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="State">State</option>
+                        <option value="Union Territory">Union Territory</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="form-group" style={{ marginTop: '12px' }}>
+                    <label htmlFor="address">Address</label>
+                    <textarea
+                      id="address"
+                      name="address"
+                      className="form-control"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      rows="2"
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', marginTop: '12px' }}>
+                    <div className="form-group">
+                      <label htmlFor="city">City</label>
+                      <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        className="form-control"
+                        value={formData.city}
+                        onChange={handleInputChange}
                       />
                     </div>
                     <div className="form-group">
-                      <label htmlFor="pincode">Pincode *</label>
+                      <label htmlFor="pincode">Pincode</label>
                       <input
                         type="text"
                         id="pincode"
@@ -385,16 +461,25 @@ const HeadquarterManagement = () => {
                         className="form-control"
                         value={formData.pincode}
                         onChange={handleInputChange}
-                        required
-                        pattern="[0-9]{6}"
                         maxLength="6"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="manager">Manager</label>
+                      <input
+                        type="text"
+                        id="manager"
+                        name="manager"
+                        className="form-control"
+                        value={formData.manager}
+                        onChange={handleInputChange}
                       />
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px' }}>
                     <div className="form-group">
-                      <label htmlFor="phone">Phone *</label>
+                      <label htmlFor="phone">Phone</label>
                       <input
                         type="tel"
                         id="phone"
@@ -402,7 +487,6 @@ const HeadquarterManagement = () => {
                         className="form-control"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                     <div className="form-group">
@@ -418,7 +502,7 @@ const HeadquarterManagement = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px' }}>
                     <div className="form-group">
                       <label htmlFor="territoryCount">Territory Count</label>
                       <input
@@ -444,13 +528,26 @@ const HeadquarterManagement = () => {
                       />
                     </div>
                   </div>
+
+                  <div className="form-group" style={{ marginTop: '12px' }}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="isActive"
+                        checked={formData.isActive}
+                        onChange={handleInputChange}
+                        style={{ marginRight: '8px' }}
+                      />
+                      Active
+                    </label>
+                  </div>
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-secondary" onClick={closeModal}>
                     Cancel
                   </button>
                   <button type="submit" className="btn btn-primary">
-                    {editingHeadquarter ? 'Update Headquarter' : 'Save Headquarter'}
+                    {editingHeadquarter ? 'Update HQ' : 'Save HQ'}
                   </button>
                 </div>
               </form>
