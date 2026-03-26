@@ -8,6 +8,7 @@ const Sidebar = ({ onLogout }) => {
   const [doctorsExpanded, setDoctorsExpanded] = useState(true)
   const [productsExpanded, setProductsExpanded] = useState(true)
   const [territoryExpanded, setTerritoryExpanded] = useState(true)
+  const [inputsExpanded, setInputsExpanded] = useState(true)
 
   // Doctors sub-items under Masters > Doctors
   const doctorsItems = [
@@ -34,11 +35,22 @@ const Sidebar = ({ onLogout }) => {
     { id: 'territory', label: 'Patch/Route', icon: 'fas fa-map-marked-alt', path: '/territory-management' }
   ]
 
+  // Inputs & Samples sub-items under Masters
+  const inputsItems = [
+    { id: 'input-type', label: 'Input Type', icon: 'fas fa-tags', path: '/input-type-master' },
+    { id: 'input-class', label: 'Input Class', icon: 'fas fa-layer-group', path: '/input-class-master' },
+    { id: 'input-master', label: 'Input Master', icon: 'fas fa-file-alt', path: '/input-master' },
+    { id: 'sample-master', label: 'Sample Master', icon: 'fas fa-prescription-bottle', path: '/sample-master' }
+  ]
+
   // Check if any doctor item is active
   const isDoctorsActive = doctorsItems.some(item => location.pathname === item.path)
   
   // Check if any product item is active
   const isProductsActive = productsItems.some(item => location.pathname === item.path)
+  
+  // Check if any inputs item is active
+  const isInputsActive = inputsItems.some(item => location.pathname === item.path)
   
   // Check if any territory item is active
   const isTerritoryActive = territoryItems.some(item => location.pathname === item.path)
@@ -75,7 +87,7 @@ const Sidebar = ({ onLogout }) => {
             <li className="nav-item has-treeview menu-open">
               <Link
                 to="#"
-                className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive ? 'active' : ''}`}
+                className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive ? 'active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault()
                   setMastersExpanded(!mastersExpanded)
@@ -174,6 +186,39 @@ const Sidebar = ({ onLogout }) => {
                     {productsExpanded && (
                       <ul className="nav nav-treeview">
                         {productsItems.map((item) => (
+                          <li key={item.id} className="nav-item">
+                            <Link
+                              to={item.path}
+                              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                            >
+                              <i className={`${item.icon} nav-icon`}></i>
+                              <p>{item.label}</p>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                  
+                  {/* Inputs & Samples Sub-menu */}
+                  <li className="nav-item has-treeview menu-open">
+                    <Link
+                      to="#"
+                      className={`nav-link ${isInputsActive ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setInputsExpanded(!inputsExpanded)
+                      }}
+                    >
+                      <i className="nav-icon fas fa-file-alt"></i>
+                      <p>
+                        Inputs & Samples
+                        <i className={`right fas fa-angle-left ${inputsExpanded ? 'transform-rotate' : ''}`}></i>
+                      </p>
+                    </Link>
+                    {inputsExpanded && (
+                      <ul className="nav nav-treeview">
+                        {inputsItems.map((item) => (
                           <li key={item.id} className="nav-item">
                             <Link
                               to={item.path}

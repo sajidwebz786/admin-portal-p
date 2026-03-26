@@ -27,6 +27,12 @@ import ProductCategoryMaster from './components/ProductCategoryMaster'
 import PackSizeMaster from './components/PackSizeMaster'
 import StrengthMaster from './components/StrengthMaster'
 
+// Input & Sample Master Data Components
+import InputTypeMaster from './components/InputTypeMaster'
+import InputClassMaster from './components/InputClassMaster'
+import InputMaster from './components/InputMaster'
+import SampleMaster from './components/SampleMaster'
+
 import './App.css'
 
 function AppContent() {
@@ -87,6 +93,12 @@ function AppContent() {
           <Route path="/product-category-master" element={<ProductCategoryMaster />} />
           <Route path="/pack-size-master" element={<PackSizeMaster />} />
           <Route path="/strength-master" element={<StrengthMaster />} />
+          
+          {/* Input & Sample Master Data Routes */}
+          <Route path="/input-type-master" element={<InputTypeMaster />} />
+          <Route path="/input-class-master" element={<InputClassMaster />} />
+          <Route path="/input-master" element={<InputMaster />} />
+          <Route path="/sample-master" element={<SampleMaster />} />
           
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>

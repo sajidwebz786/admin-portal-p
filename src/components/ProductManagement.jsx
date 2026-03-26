@@ -64,11 +64,11 @@ const ProductManagement = () => {
   }
 
   const canEdit = () => {
-    return currentUser && (currentUser.role === 'ADMIN' || currentUser.role === 'MARKETING')
+    return currentUser && (currentUser.role?.toUpperCase() === 'ADMIN' || currentUser.role?.toUpperCase() === 'MARKETING')
   }
 
   const canDelete = () => {
-    return currentUser && currentUser.role === 'ADMIN'
+    return currentUser && currentUser.role?.toUpperCase() === 'ADMIN'
   }
 
   const loadMasterData = async () => {

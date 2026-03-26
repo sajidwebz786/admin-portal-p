@@ -395,6 +395,86 @@ class AdminAPIService {
     const params = new URLSearchParams({ startDate, endDate });
     return this.request(`/admin/reports/sales?${params}`);
   }
+
+  // ----- Input Type Master -----
+  getInputTypes(status = null) {
+    const params = status ? `?status=${status}` : '';
+    return this.request(`/master/input-types${params}`);
+  }
+
+  createInputType(data) {
+    return this.request("/master/input-types", { method: "POST", data });
+  }
+
+  updateInputType(id, data) {
+    return this.request(`/master/input-types/${id}`, { method: "PUT", data });
+  }
+
+  deleteInputType(id) {
+    return this.request(`/master/input-types/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Input Class Master -----
+  getInputClasses(status = null) {
+    const params = status ? `?status=${status}` : '';
+    return this.request(`/master/input-classes${params}`);
+  }
+
+  createInputClass(data) {
+    return this.request("/master/input-classes", { method: "POST", data });
+  }
+
+  updateInputClass(id, data) {
+    return this.request(`/master/input-classes/${id}`, { method: "PUT", data });
+  }
+
+  deleteInputClass(id) {
+    return this.request(`/master/input-classes/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Input Master -----
+  getInputs(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/inputs${queryString}`);
+  }
+
+  getActiveInputs() {
+    return this.request("/master/inputs/active");
+  }
+
+  createInput(data) {
+    return this.request("/master/inputs", { method: "POST", data });
+  }
+
+  updateInput(id, data) {
+    return this.request(`/master/inputs/${id}`, { method: "PUT", data });
+  }
+
+  deleteInput(id) {
+    return this.request(`/master/inputs/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Sample Master -----
+  getSamples(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/samples${queryString}`);
+  }
+
+  getActiveSamples() {
+    return this.request("/master/samples/active");
+  }
+
+  createSample(data) {
+    return this.request("/master/samples", { method: "POST", data });
+  }
+
+  updateSample(id, data) {
+    return this.request(`/master/samples/${id}`, { method: "PUT", data });
+  }
+
+  deleteSample(id) {
+    return this.request(`/master/samples/${id}`, { method: "DELETE" });
+  }
 }
 
 // -------------------------
