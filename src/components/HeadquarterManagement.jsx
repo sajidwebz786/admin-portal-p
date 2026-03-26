@@ -22,7 +22,6 @@ const HeadquarterManagement = () => {
     manager: '',
     region: '',
     zone: '',
-    reason: '',
     territoryCount: 0,
     employeeCount: 0,
     isActive: true
@@ -98,7 +97,6 @@ const HeadquarterManagement = () => {
       manager: headquarter.manager || '',
       region: headquarter.region,
       zone: headquarter.zone,
-      reason: headquarter.reason || '',
       territoryCount: headquarter.territoryCount || 0,
       employeeCount: headquarter.employeeCount || 0,
       isActive: headquarter.isActive !== false
@@ -231,7 +229,6 @@ const HeadquarterManagement = () => {
                   </td>
                   <td>{headquarter.zone}</td>
                   <td>{headquarter.region}</td>
-                  <td>{headquarter.reason || '-'}</td>
                   <td>{headquarter.territories?.length || headquarter.territoryCount || 0}</td>
                   <td>
                     <span className={`badge ${headquarter.isActive ? 'badge-success' : 'badge-danger'}`}>
@@ -319,18 +316,6 @@ const HeadquarterManagement = () => {
                         <option value="Hill Station">Hill Station</option>
                         <option value="Semi Metro">Semi Metro</option>
                       </select>
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="reason">Reason</label>
-                      <input
-                        type="text"
-                        id="reason"
-                        name="reason"
-                        className="form-control"
-                        value={formData.reason}
-                        onChange={handleInputChange}
-                        placeholder="Reason for HQ creation"
-                      />
                     </div>
                     <div className="form-group">
                       <label htmlFor="zone">Zone *</label>
