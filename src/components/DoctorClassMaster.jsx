@@ -7,7 +7,7 @@ const DoctorClassMaster = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
   const [formData, setFormData] = useState({
-    category_name: '',
+    class_name: '',
     short_name: '',
     status: 'active'
   });
@@ -60,7 +60,7 @@ const DoctorClassMaster = () => {
   const handleEdit = (doctorClass) => {
     setEditingClass(doctorClass);
     setFormData({
-      category_name: doctorClass.category_name,
+      class_name: doctorClass.class_name || doctorClass.category_name,
       short_name: doctorClass.short_name,
       status: doctorClass.status
     });
@@ -86,7 +86,7 @@ const DoctorClassMaster = () => {
     setShowModal(false);
     setEditingClass(null);
     setFormData({
-      category_name: '',
+      class_name: '',
       short_name: '',
       status: 'active'
     });
@@ -152,7 +152,7 @@ const DoctorClassMaster = () => {
                 <thead className="thead-dark">
                   <tr>
                     <th><i className="fas fa-hashtag"></i> Sr. No.</th>
-                    <th><i className="fas fa-tag"></i> Category Name</th>
+                    <th><i className="fas fa-tag"></i> Class Name</th>
                     <th><i className="fas fa-code"></i> Short Name</th>
                     <th><i className="fas fa-toggle-on"></i> Status</th>
                     <th><i className="fas fa-cogs"></i> Actions</th>
@@ -169,7 +169,7 @@ const DoctorClassMaster = () => {
                     classes.map((doctorClass, index) => (
                       <tr key={doctorClass.id}>
                         <td><span className="badge badge-secondary">{index + 1}</span></td>
-                        <td className="font-weight-medium">{doctorClass.category_name}</td>
+                        <td className="font-weight-medium">{doctorClass.class_name || doctorClass.category_name}</td>
                         <td><span className="badge badge-info">{doctorClass.short_name}</span></td>
                         <td>
                           <span className={`badge badge-${doctorClass.status === 'active' ? 'success' : 'danger'}`}>
@@ -218,16 +218,16 @@ const DoctorClassMaster = () => {
                 <div className="modal-body">
                   <div className="form-group">
                     <label className="col-form-label">
-                      <i className="fas fa-tag"></i> Category Name *
+                      <i className="fas fa-tag"></i> Class Name *
                     </label>
                     <input
                       type="text"
-                      name="category_name"
+                      name="class_name"
                       className="form-control form-control-lg"
-                      value={formData.category_name}
+                      value={formData.class_name}
                       onChange={handleInputChange}
                       required
-                      placeholder="e.g., Regular Prescriber"
+                      placeholder="e.g., A Class, B Class"
                     />
                     <small className="form-text text-muted">Full name of the doctor class</small>
                   </div>

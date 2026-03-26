@@ -202,7 +202,7 @@ const HeadquarterManagement = () => {
               <th>State/UT</th>
               <th>Zone</th>
               <th>Region</th>
-              <th>Reason</th>
+              <th>Region</th>
               <th>Territories</th>
               <th>Status</th>
               <th>Actions</th>
@@ -314,6 +314,10 @@ const HeadquarterManagement = () => {
                         <option value="Regional Office">Regional Office</option>
                         <option value="Zonal Office">Zonal Office</option>
                         <option value="Branch Office">Branch Office</option>
+                        <option value="Metro">Metro</option>
+                        <option value="Non Metro">Non Metro</option>
+                        <option value="Hill Station">Hill Station</option>
+                        <option value="Semi Metro">Semi Metro</option>
                       </select>
                     </div>
                     <div className="form-group">
