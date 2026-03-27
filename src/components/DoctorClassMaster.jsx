@@ -7,7 +7,7 @@ const DoctorClassMaster = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
   const [formData, setFormData] = useState({
-    category_name: '',
+    class_name: '',
     short_name: '',
     status: 'active'
   });
@@ -60,7 +60,7 @@ const DoctorClassMaster = () => {
   const handleEdit = (doctorClass) => {
     setEditingClass(doctorClass);
     setFormData({
-      category_name: doctorClass.category_name,
+      class_name: doctorClass.class_name,
       short_name: doctorClass.short_name,
       status: doctorClass.status
     });
@@ -169,7 +169,7 @@ const DoctorClassMaster = () => {
                     classes.map((doctorClass, index) => (
                       <tr key={doctorClass.id}>
                         <td><span className="badge badge-secondary">{index + 1}</span></td>
-                        <td className="font-weight-medium">{doctorClass.category_name}</td>
+                        <td className="font-weight-medium">{doctorClass.class_name}</td>
                         <td><span className="badge badge-info">{doctorClass.short_name}</span></td>
                         <td>
                           <span className={`badge badge-${doctorClass.status === 'active' ? 'success' : 'danger'}`}>
@@ -222,9 +222,9 @@ const DoctorClassMaster = () => {
                     </label>
                     <input
                       type="text"
-                      name="category_name"
+                      name="class_name"
                       className="form-control form-control-lg"
-                      value={formData.category_name}
+                      value={formData.class_name}
                       onChange={handleInputChange}
                       required
                       placeholder="e.g., A Class, B Class"
