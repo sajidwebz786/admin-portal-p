@@ -1,0 +1,56 @@
+# Apache configuration for SPA (Single Page Application) routing
+# This file should be placed in the root of your deployed admin portal
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # If the request is for a real file or directory, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+  
+  # If the request is for an API call, don't rewrite (let backend handle it)
+  RewriteCond %{REQUEST_URI} ^/api [NC]
+  RewriteRule ^ - [L]
+  
+  # Otherwise, rewrite all other routes to index.html for React Router
+  RewriteRule ^ /index.html [L]
+</IfModule>
+
+# Additional security headers
+<IfModule mod_headers.c>
+  # Prevent clickjacking
+  Header set X-Frame-Options "SAMEORIGIN"
+  
+  # XSS protection
+  Header set X-XSS-Protection "1; mode=block"
+  
+  # MIME sniffing protection
+  Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  
+  # Images
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType image/x-icon "access plus 1 year"
+  
+  # CSS and JavaScript
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  
+  # HTML - don't cache
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# Gzip compression for better performance
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
