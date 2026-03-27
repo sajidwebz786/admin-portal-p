@@ -328,9 +328,9 @@ body {
 }
 
 .main-content {
-  margin-top: 60px;
-  padding: 1.5rem;
-  min-height: calc(100vh - 60px);
+  margin-top: 0;
+  padding: 10px;
+  min-height: calc(100vh - 0px);
 }
 
 .section {
