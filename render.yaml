@@ -1,10 +1,10 @@
 services:
   - type: web
     name: pamsforce-admin
+    env: static
     buildCommand: npm run build
-    startCommand: node server.js
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: VITE_API_URL
-        value: https://serverapp-a8wy.onrender.com/api
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
