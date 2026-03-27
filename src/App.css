@@ -496,12 +496,49 @@ html, body {
 
 .main-content {
    flex: 1;
-   margin-left: 255px; /* Updated sidebar width */
-   padding: 15px; /* Reduced padding */
+   margin-left: 255px;
+   padding: 15px;
    background-color: var(--bg-color);
    height: 100vh;
    overflow-y: auto;
- }
+}
+
+/* Content wrapper for master pages - fix gap issue */
+.content-wrapper {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.content-wrapper .content-header {
+  padding: 10px 0;
+  margin-bottom: 10px;
+}
+
+.content-wrapper .content-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.content-wrapper .content {
+  padding: 0;
+}
+
+.content-wrapper .container-fluid {
+  padding: 0;
+  max-width: 100%;
+}
+
+.content-wrapper .card {
+  margin-bottom: 0;
+  border-radius: 8px;
+}
+
+.content-wrapper .card-body {
+  padding: 0;
+}
 
 @media (max-width: 768px) {
   .main-content {
