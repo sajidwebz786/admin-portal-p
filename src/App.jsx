@@ -37,6 +37,7 @@ import './App.css'
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -45,7 +46,15 @@ function AppContent() {
     if (token) {
       setIsAuthenticated(true)
     }
+    setIsLoading(false)
   }, [])
+
+  useEffect(() => {
+    // Redirect to dashboard if authenticated and on root path
+    if (isAuthenticated && window.location.pathname === '/') {
+      navigate('/dashboard')
+    }
+  }, [isAuthenticated, navigate])
 
   const handleLogin = () => {
     setIsAuthenticated(true)
@@ -57,6 +66,16 @@ function AppContent() {
     localStorage.removeItem('adminUser')
     setIsAuthenticated(false)
     navigate('/')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    )
   }
 
   if (!isAuthenticated) {
