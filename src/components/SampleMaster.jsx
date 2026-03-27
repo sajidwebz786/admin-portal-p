@@ -5,7 +5,7 @@ const SampleMaster = () => {
   const [samples, setSamples] = useState([]);
   const [products, setProducts] = useState([]);
   const [packSizes, setPackSizes] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -18,6 +18,8 @@ const SampleMaster = () => {
     status: 'active'
   });
   const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -36,6 +38,7 @@ const SampleMaster = () => {
       setPackSizes(packSizesData.filter(p => p.status === 'active'));
     } catch (error) {
       console.error('Error fetching data:', error);
+      setError('Failed to fetch data');
     } finally {
       setLoading(false);
     }
@@ -83,15 +86,16 @@ const SampleMaster = () => {
       
       if (editingId) {
         await apiService.updateSample(editingId, payload);
+        setSuccess('Sample updated successfully!');
       } else {
         await apiService.createSample(payload);
+        setSuccess('Sample created successfully!');
       }
-      setShowModal(false);
-      resetForm();
+      setTimeout(() => closeModal(), 1500);
       fetchData();
     } catch (error) {
       console.error('Error saving sample:', error);
-      alert(error.message || 'Failed to save sample');
+      setError(error.message || 'Failed to save sample');
     }
   };
 
@@ -107,16 +111,19 @@ const SampleMaster = () => {
       status: sample.status
     });
     setShowModal(true);
+    setError('');
+    setSuccess('');
   };
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this sample?')) {
       try {
         await apiService.deleteSample(id);
+        setSuccess('Sample deleted successfully!');
         fetchData();
       } catch (error) {
         console.error('Error deleting sample:', error);
-        alert(error.message || 'Failed to delete sample');
+        setError(error.message || 'Failed to delete sample');
       }
     }
   };
@@ -135,9 +142,11 @@ const SampleMaster = () => {
     setErrors({});
   };
 
-  const openAddModal = () => {
+  const closeModal = () => {
+    setShowModal(false);
     resetForm();
-    setShowModal(true);
+    setError('');
+    setSuccess('');
   };
 
   const getProductName = (productId) => {
@@ -152,108 +161,142 @@ const SampleMaster = () => {
   };
 
   return (
-    <div className="content-wrapper">
-      <section className="content-header">
-        <div className="container-fluid">
-          <div className="row mb-2">
-            <div className="col-sm-6">
-              <h1>Sample Master (Product Samples)</h1>
-            </div>
-            <div className="col-sm-6">
-              <button className="btn btn-primary float-right" onClick={openAddModal}>
-                <i className="fas fa-plus"></i> Add Sample
-              </button>
-            </div>
+    <div className="master-page">
+      <div className="page-header-container">
+        <div className="header-content">
+          <h1 className="page-title">
+            <i className="fas fa-vial"></i>
+            Sample Master
+          </h1>
+          <p className="page-subtitle">Manage product samples for doctor calls</p>
+        </div>
+        <button className="btn btn-primary btn-lg" onClick={() => {
+          setError('');
+          setSuccess('');
+          setShowModal(true);
+        }}>
+          <i className="fas fa-plus"></i> Add Sample
+        </button>
+      </div>
+
+      {error && (
+        <div className="alert alert-danger alert-dismissible">
+          <i className="fas fa-exclamation-circle"></i> {error}
+          <button type="button" className="close" onClick={() => setError('')}>×</button>
+        </div>
+      )}
+
+      {success && (
+        <div className="alert alert-success alert-dismissible">
+          <i className="fas fa-check-circle"></i> {success}
+          <button type="button" className="close" onClick={() => setSuccess('')}>×</button>
+        </div>
+      )}
+
+      <div className="card">
+        <div className="card-header">
+          <h3 className="card-title">
+            <i className="fas fa-list"></i> Samples List
+          </h3>
+          <div className="card-tools">
+            <button className="btn btn-tool" onClick={fetchData}>
+              <i className="fas fa-sync-alt"></i> Refresh
+            </button>
           </div>
         </div>
-      </section>
-
-      <section className="content">
-        <div className="container-fluid">
-          <div className="card">
-            <div className="card-body">
-              {loading ? (
-                <div className="text-center">
-                  <div className="spinner-border" role="status">
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                </div>
-              ) : (
-                <table className="table table-bordered table-striped">
-                  <thead>
+        
+        <div className="card-body">
+          {loading ? (
+            <div className="text-center p-4">
+              <div className="spinner-border text-primary" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-hover">
+                <thead className="thead-dark">
+                  <tr>
+                    <th><i className="fas fa-hashtag"></i> Sr. No.</th>
+                    <th><i className="fas fa-pills"></i> Product</th>
+                    <th><i className="fas fa-weight-hanging"></i> Pack Size</th>
+                    <th><i className="fas fa-vial"></i> Sample Name</th>
+                    <th><i className="fas fa-sort-numeric-up"></i> Sample Qty</th>
+                    <th><i className="fas fa-ruler"></i> Unit</th>
+                    <th><i className="fas fa-user-clock"></i> Max/Call</th>
+                    <th><i className="fas fa-toggle-on"></i> Status</th>
+                    <th><i className="fas fa-cogs"></i> Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {samples.length === 0 ? (
                     <tr>
-                      <th>Product</th>
-                      <th>Pack Size</th>
-                      <th>Sample Name</th>
-                      <th>Sample Qty</th>
-                      <th>Unit</th>
-                      <th>Max/Call</th>
-                      <th>Status</th>
-                      <th>Actions</th>
+                      <td colSpan="9" className="text-center text-muted">
+                        <i className="fas fa-inbox"></i> No records found
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {samples.length === 0 ? (
-                      <tr>
-                        <td colSpan="8" className="text-center">No samples found</td>
+                  ) : (
+                    samples.map((sample, index) => (
+                      <tr key={sample.id}>
+                        <td><span className="badge badge-secondary">{index + 1}</span></td>
+                        <td className="font-weight-medium">{sample.product?.name || getProductName(sample.product_id)}</td>
+                        <td>{sample.packSize?.pack_size || getPackSize(sample.pack_size_id)}</td>
+                        <td>{sample.sample_name}</td>
+                        <td>{sample.sample_qty}</td>
+                        <td><span className="badge badge-info">{sample.unit}</span></td>
+                        <td>{sample.max_per_call}</td>
+                        <td>
+                          <span className={`badge badge-${sample.status === 'active' ? 'success' : 'danger'}`}>
+                            <i className={`fas fa-${sample.status === 'active' ? 'check' : 'times'}`}></i>
+                            {' '}{sample.status}
+                          </span>
+                        </td>
+                        <td>
+                          <button 
+                            className="btn btn-sm btn-warning mr-1"
+                            onClick={() => handleEdit(sample)}
+                            title="Edit"
+                          >
+                            <i className="fas fa-edit"></i>
+                          </button>
+                          <button 
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleDelete(sample.id)}
+                            title="Delete"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </td>
                       </tr>
-                    ) : (
-                      samples.map((sample) => (
-                        <tr key={sample.id}>
-                          <td>{sample.product?.name || getProductName(sample.product_id)}</td>
-                          <td>{sample.packSize?.pack_size || getPackSize(sample.pack_size_id)}</td>
-                          <td>{sample.sample_name}</td>
-                          <td>{sample.sample_qty}</td>
-                          <td>{sample.unit}</td>
-                          <td>{sample.max_per_call}</td>
-                          <td>
-                            <span className={`badge badge-${sample.status === 'active' ? 'success' : 'danger'}`}>
-                              {sample.status}
-                            </span>
-                          </td>
-                          <td>
-                            <button
-                              className="btn btn-sm btn-info mr-1"
-                              onClick={() => handleEdit(sample)}
-                            >
-                              <i className="fas fa-edit"></i>
-                            </button>
-                            <button
-                              className="btn btn-sm btn-danger"
-                              onClick={() => handleDelete(sample.id)}
-                            >
-                              <i className="fas fa-trash"></i>
-                            </button>
-                          </td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              )}
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
-          </div>
+          )}
         </div>
-      </section>
+      </div>
 
-      {/* Add/Edit Modal */}
       {showModal && (
-        <div className="modal show" style={{ display: 'block' }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h4 className="modal-title">{editingId ? 'Edit Sample' : 'Add Sample'}</h4>
-                <button type="button" className="close" onClick={() => setShowModal(false)}>
-                  <span>&times;</span>
-                </button>
+        <div className="modal-overlay">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content modal-content-enhanced">
+              <div className="modal-header modal-header-gradient">
+                <h5 className="modal-title">
+                  <i className={`fas ${editingId ? 'fa-edit' : 'fa-plus-circle'}`}></i>
+                  {' '}{editingId ? 'Edit Sample' : 'Add Sample'}
+                </h5>
+                <button type="button" className="close" onClick={closeModal}>×</button>
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
                   <div className="form-group">
-                    <label>Product *</label>
+                    <label className="col-form-label">
+                      <i className="fas fa-pills"></i> Product *
+                    </label>
                     <select
                       name="product_id"
-                      className={`form-control ${errors.product_id ? 'is-invalid' : ''}`}
+                      className={`form-control form-control-lg ${errors.product_id ? 'is-invalid' : ''}`}
                       value={formData.product_id}
                       onChange={handleInputChange}
                       required
@@ -270,10 +313,12 @@ const SampleMaster = () => {
                     )}
                   </div>
                   <div className="form-group">
-                    <label>Pack Size</label>
+                    <label className="col-form-label">
+                      <i className="fas fa-weight-hanging"></i> Pack Size
+                    </label>
                     <select
                       name="pack_size_id"
-                      className="form-control"
+                      className="form-control form-control-lg"
                       value={formData.pack_size_id}
                       onChange={handleInputChange}
                     >
@@ -286,28 +331,33 @@ const SampleMaster = () => {
                     </select>
                   </div>
                   <div className="form-group">
-                    <label>Sample Name *</label>
+                    <label className="col-form-label">
+                      <i className="fas fa-vial"></i> Sample Name *
+                    </label>
                     <input
                       type="text"
                       name="sample_name"
-                      className={`form-control ${errors.sample_name ? 'is-invalid' : ''}`}
+                      className={`form-control form-control-lg ${errors.sample_name ? 'is-invalid' : ''}`}
                       value={formData.sample_name}
                       onChange={handleInputChange}
-                      placeholder="e.g., PCM500 Sample, OrthoGel Sample"
                       required
+                      placeholder="e.g., PCM500 Sample, OrthoGel Sample"
                     />
                     {errors.sample_name && (
                       <div className="invalid-feedback">{errors.sample_name}</div>
                     )}
+                    <small className="form-text text-muted">Name of the sample</small>
                   </div>
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-group">
-                        <label>Sample Quantity *</label>
+                        <label className="col-form-label">
+                          <i className="fas fa-sort-numeric-up"></i> Sample Quantity *
+                        </label>
                         <input
                           type="number"
                           name="sample_qty"
-                          className={`form-control ${errors.sample_qty ? 'is-invalid' : ''}`}
+                          className={`form-control form-control-lg ${errors.sample_qty ? 'is-invalid' : ''}`}
                           value={formData.sample_qty}
                           onChange={handleInputChange}
                           placeholder="e.g., 2"
@@ -322,10 +372,12 @@ const SampleMaster = () => {
                     </div>
                     <div className="col-md-6">
                       <div className="form-group">
-                        <label>Unit</label>
+                        <label className="col-form-label">
+                          <i className="fas fa-ruler"></i> Unit
+                        </label>
                         <select
                           name="unit"
-                          className="form-control"
+                          className="form-control form-control-lg"
                           value={formData.unit}
                           onChange={handleInputChange}
                         >
@@ -340,22 +392,27 @@ const SampleMaster = () => {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label>Max Per Call</label>
+                    <label className="col-form-label">
+                      <i className="fas fa-user-clock"></i> Max Per Call
+                    </label>
                     <input
                       type="number"
                       name="max_per_call"
-                      className="form-control"
+                      className="form-control form-control-lg"
                       value={formData.max_per_call}
                       onChange={handleInputChange}
                       placeholder="Maximum samples per doctor call"
                       min="1"
                     />
+                    <small className="form-text text-muted">Maximum samples allowed per call</small>
                   </div>
                   <div className="form-group">
-                    <label>Status</label>
+                    <label className="col-form-label">
+                      <i className="fas fa-toggle-on"></i> Status
+                    </label>
                     <select
                       name="status"
-                      className="form-control"
+                      className="form-control form-control-lg"
                       value={formData.status}
                       onChange={handleInputChange}
                     >
@@ -365,11 +422,12 @@ const SampleMaster = () => {
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="button" className="btn btn-default" onClick={() => setShowModal(false)}>
-                    Cancel
+                  <button type="button" className="btn btn-secondary btn-lg" onClick={closeModal}>
+                    <i className="fas fa-times"></i> Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary">
-                    {editingId ? 'Update' : 'Save'}
+                  <button type="submit" className="btn btn-primary btn-lg">
+                    <i className={`fas ${editingId ? 'fa-save' : 'fa-plus'}`}></i>
+                    {' '}{editingId ? 'Update' : 'Save'}
                   </button>
                 </div>
               </form>
