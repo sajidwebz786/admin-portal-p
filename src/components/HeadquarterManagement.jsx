@@ -200,7 +200,6 @@ const HeadquarterManagement = () => {
               <th>State/UT</th>
               <th>Zone</th>
               <th>Region</th>
-              <th>Region</th>
               <th>Territories</th>
               <th>Status</th>
               <th>Actions</th>

@@ -3,11 +3,11 @@ import axios from "axios";
 // -------------------------
 // Axios Base Configuration
 // -------------------------
-// Production server URL - render.com
-const PRODUCTION_API_URL = 'https://serverapp-a8wy.onrender.com/api';
+// Use environment variable or fallback to localhost for development
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
-  baseURL: PRODUCTION_API_URL,
+  baseURL: API_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
