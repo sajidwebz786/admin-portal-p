@@ -7,6 +7,7 @@ const ActivityApprovals = () => {
   const [error, setError] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [filterStatus, setFilterStatus] = useState('pending')
+  const [expandedId, setExpandedId] = useState(null)
 
   useEffect(() => {
     loadApprovals()
@@ -26,12 +27,16 @@ const ActivityApprovals = () => {
       // Transform activities data for display
       const transformedApprovals = activities.map(activity => ({
         id: activity.id,
-        title: `${activity.title} - Exception Request`,
-        user: `User ${activity.userId}`, // Since we don't have user details in activities
+        title: activity.title,
+        user: `User ${activity.userId}`,
         reason: activity.description || 'No description provided',
         date: activity.date,
-        type: 'activity',
-        status: activity.status
+        type: activity.type || 'activity',
+        status: activity.status,
+        notes: activity.notes,
+        doctor: activity.doctor,
+        doctorClass: activity.doctorClass,
+        callProducts: activity.callProducts || []
       }))
 
       setApprovals(transformedApprovals)
@@ -92,6 +97,9 @@ const ActivityApprovals = () => {
           onChange={(e) => setFilterType(e.target.value)}
         >
           <option value="all">All Types</option>
+          <option value="doctor_call">Doctor Call</option>
+          <option value="chemist_call">Chemist Call</option>
+          <option value="general">General Activity</option>
           <option value="activity">Activity Exception</option>
           <option value="daycall">Day Call Exception</option>
           <option value="sales">Sales Entry</option>
@@ -110,10 +118,75 @@ const ActivityApprovals = () => {
         {filteredApprovals.map((approval) => (
           <div key={approval.id} className="approval-item">
             <div className="approval-details">
-              <h3>{approval.title}</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3>{approval.title}</h3>
+                <span className={`status-badge status-${approval.status}`}>
+                  {approval.status}
+                </span>
+              </div>
               <p><strong>User:</strong> {approval.user}</p>
-              <p><strong>Reason:</strong> {approval.reason}</p>
               <p><strong>Date:</strong> {approval.date}</p>
+              <p><strong>Type:</strong> {approval.type === 'doctor_call' ? 'Doctor Call' : approval.type === 'chemist_call' ? 'Chemist Call' : 'General Activity'}</p>
+              {approval.reason && <p><strong>Description:</strong> {approval.reason}</p>}
+              
+              {approval.type === 'doctor_call' && (
+                <>
+                  {approval.doctor && (
+                    <p><strong>Doctor:</strong> Dr. {approval.doctor.firstName} {approval.doctor.lastName}
+                      {approval.doctor.specialty && ` (${approval.doctor.specialty})`}
+                    </p>
+                  )}
+                  {approval.doctorClass && (
+                    <p><strong>Doctor Class:</strong> {approval.doctorClass.category_name} ({approval.doctorClass.short_name})</p>
+                  )}
+                </>
+              )}
+              
+              {approval.notes && <p><strong>Notes:</strong> {approval.notes}</p>}
+
+              {/* Expandable product entries for doctor calls */}
+              {approval.callProducts.length > 0 && (
+                <div style={{ marginTop: '10px' }}>
+                  <button
+                    className="btn btn-sm"
+                    style={{ background: 'none', border: '1px solid #ccc', cursor: 'pointer', padding: '4px 12px' }}
+                    onClick={() => setExpandedId(expandedId === approval.id ? null : approval.id)}
+                  >
+                    {expandedId === approval.id ? '▼ Hide' : '▶ Show'} Products ({approval.callProducts.length})
+                  </button>
+                  
+                  {expandedId === approval.id && (
+                    <table style={{ width: '100%', marginTop: '8px', borderCollapse: 'collapse', fontSize: '14px' }}>
+                      <thead>
+                        <tr style={{ background: '#f5f5f5' }}>
+                          <th style={{ padding: '6px', border: '1px solid #ddd', textAlign: 'left' }}>Product</th>
+                          <th style={{ padding: '6px', border: '1px solid #ddd', textAlign: 'left' }}>Sample</th>
+                          <th style={{ padding: '6px', border: '1px solid #ddd', textAlign: 'left' }}>Input</th>
+                          <th style={{ padding: '6px', border: '1px solid #ddd', textAlign: 'center' }}>Rx/Week</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {approval.callProducts.map((cp, idx) => (
+                          <tr key={idx}>
+                            <td style={{ padding: '6px', border: '1px solid #ddd' }}>
+                              {cp.product?.name || 'N/A'}
+                            </td>
+                            <td style={{ padding: '6px', border: '1px solid #ddd' }}>
+                              {cp.sample ? `${cp.sample.sample_name} (${cp.sample.sample_qty} ${cp.sample.unit})` : '-'}
+                            </td>
+                            <td style={{ padding: '6px', border: '1px solid #ddd' }}>
+                              {cp.input ? `${cp.input.input_name} (${cp.input.short_name})` : '-'}
+                            </td>
+                            <td style={{ padding: '6px', border: '1px solid #ddd', textAlign: 'center' }}>
+                              {cp.rxPerWeek || '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              )}
             </div>
             <div className="approval-actions">
               <button
