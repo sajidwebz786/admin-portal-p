@@ -9,6 +9,14 @@ const Sidebar = ({ onLogout }) => {
   const [productsExpanded, setProductsExpanded] = useState(true)
   const [territoryExpanded, setTerritoryExpanded] = useState(true)
   const [inputsExpanded, setInputsExpanded] = useState(true)
+  const [expenseExpanded, setExpenseExpanded] = useState(true)
+
+  // Expense sub-items under Masters > Expense
+  const expenseItems = [
+    { id: 'expense-type', label: 'Expense Type', icon: 'fas fa-tags', path: '/expense-type-master' },
+    { id: 'travel-mode', label: 'Travel Mode', icon: 'fas fa-car', path: '/travel-mode-master' },
+    { id: 'fare-chart', label: 'Standard Fare Chart', icon: 'fas fa-table', path: '/fare-chart-master' }
+  ]
 
   // Doctors sub-items under Masters > Doctors
   const doctorsItems = [
@@ -55,6 +63,9 @@ const Sidebar = ({ onLogout }) => {
   // Check if any territory item is active
   const isTerritoryActive = territoryItems.some(item => location.pathname === item.path)
 
+  // Check if any expense item is active
+  const isExpenseActive = expenseItems.some(item => location.pathname === item.path) || location.pathname === '/expense-management'
+
   return (
     <aside className="main-sidebar sidebar-dark-primary elevation-4">
       {/* Brand Logo */}
@@ -87,7 +98,7 @@ const Sidebar = ({ onLogout }) => {
             <li className="nav-item has-treeview menu-open">
               <Link
                 to="#"
-                className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive ? 'active' : ''}`}
+                className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive || isExpenseActive ? 'active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault()
                   setMastersExpanded(!mastersExpanded)
@@ -232,6 +243,39 @@ const Sidebar = ({ onLogout }) => {
                       </ul>
                     )}
                   </li>
+
+                  {/* Expense Sub-menu */}
+                  <li className="nav-item has-treeview menu-open">
+                    <Link
+                      to="#"
+                      className={`nav-link ${isExpenseActive ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setExpenseExpanded(!expenseExpanded)
+                      }}
+                    >
+                      <i className="nav-icon fas fa-receipt"></i>
+                      <p>
+                        Expense
+                        <i className={`right fas fa-angle-left ${expenseExpanded ? 'transform-rotate' : ''}`}></i>
+                      </p>
+                    </Link>
+                    {expenseExpanded && (
+                      <ul className="nav nav-treeview">
+                        {expenseItems.map((item) => (
+                          <li key={item.id} className="nav-item">
+                            <Link
+                              to={item.path}
+                              className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                            >
+                              <i className={`${item.icon} nav-icon`}></i>
+                              <p>{item.label}</p>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
                 </ul>
               )}
             </li>
@@ -243,7 +287,17 @@ const Sidebar = ({ onLogout }) => {
                 className={`nav-link ${location.pathname === '/user-management' ? 'active' : ''}`}
               >
                 <i className="fas fa-users nav-icon"></i>
-                <p>User Management</p>
+                <p>User Master</p>
+              </Link>
+            </li>
+
+            <li className="nav-item">
+              <Link
+                to="/expense-management"
+                className={`nav-link ${location.pathname === '/expense-management' ? 'active' : ''}`}
+              >
+                <i className="fas fa-receipt nav-icon"></i>
+                <p>Expense Management</p>
               </Link>
             </li>
 

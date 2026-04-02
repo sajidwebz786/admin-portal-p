@@ -475,6 +475,149 @@ class AdminAPIService {
   deleteSample(id) {
     return this.request(`/master/samples/${id}`, { method: "DELETE" });
   }
+
+  // ----- Role Management (User Master RBAC) -----
+  getRoles(status = null) {
+    const params = status ? `?status=${status}` : '';
+    return this.request(`/roles${params}`);
+  }
+
+  createRole(data) {
+    return this.request("/roles", { method: "POST", data });
+  }
+
+  updateRole(id, data) {
+    return this.request(`/roles/${id}`, { method: "PUT", data });
+  }
+
+  deleteRole(id) {
+    return this.request(`/roles/${id}`, { method: "DELETE" });
+  }
+
+  getRolePermissions(roleId) {
+    return this.request(`/roles/${roleId}/permissions`);
+  }
+
+  assignRolePermissions(roleId, permissionIds) {
+    return this.request(`/roles/${roleId}/permissions`, { method: "POST", data: { permission_ids: permissionIds } });
+  }
+
+  getAllPermissions() {
+    return this.request("/roles/permissions/all");
+  }
+
+  createPermission(data) {
+    return this.request("/roles/permissions", { method: "POST", data });
+  }
+
+  // ----- Expense Type Master -----
+  getExpenseTypes(status = null) {
+    const params = status ? `?status=${status}` : '';
+    return this.request(`/expenses/expense-types${params}`);
+  }
+
+  createExpenseType(data) {
+    return this.request("/expenses/expense-types", { method: "POST", data });
+  }
+
+  updateExpenseType(id, data) {
+    return this.request(`/expenses/expense-types/${id}`, { method: "PUT", data });
+  }
+
+  deleteExpenseType(id) {
+    return this.request(`/expenses/expense-types/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Travel Mode Master -----
+  getTravelModes(status = null) {
+    const params = status ? `?status=${status}` : '';
+    return this.request(`/expenses/travel-modes${params}`);
+  }
+
+  createTravelMode(data) {
+    return this.request("/expenses/travel-modes", { method: "POST", data });
+  }
+
+  updateTravelMode(id, data) {
+    return this.request(`/expenses/travel-modes/${id}`, { method: "PUT", data });
+  }
+
+  deleteTravelMode(id) {
+    return this.request(`/expenses/travel-modes/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Standard Fare Chart -----
+  getFareCharts(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/expenses/fare-charts${queryString}`);
+  }
+
+  getFareChart(id) {
+    return this.request(`/expenses/fare-charts/${id}`);
+  }
+
+  createFareChart(data) {
+    return this.request("/expenses/fare-charts", { method: "POST", data });
+  }
+
+  updateFareChart(id, data) {
+    return this.request(`/expenses/fare-charts/${id}`, { method: "PUT", data });
+  }
+
+  deleteFareChart(id) {
+    return this.request(`/expenses/fare-charts/${id}`, { method: "DELETE" });
+  }
+
+  // ----- Expense Management -----
+  getExpenses(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/expenses${queryString}`);
+  }
+
+  getExpense(id) {
+    return this.request(`/expenses/${id}`);
+  }
+
+  getExpenseReport(params) {
+    const queryString = new URLSearchParams(params).toString();
+    return this.request(`/expenses/report?${queryString}`);
+  }
+
+  createExpense(data) {
+    return this.request("/expenses", { method: "POST", data });
+  }
+
+  updateExpense(id, data) {
+    return this.request(`/expenses/${id}`, { method: "PUT", data });
+  }
+
+  deleteExpense(id) {
+    return this.request(`/expenses/${id}`, { method: "DELETE" });
+  }
+
+  submitExpense(id) {
+    return this.request(`/expenses/${id}/submit`, { method: "POST" });
+  }
+
+  approveExpense(id) {
+    return this.request(`/expenses/${id}/approve`, { method: "POST" });
+  }
+
+  rejectExpense(id, reason) {
+    return this.request(`/expenses/${id}/reject`, { method: "POST", data: { rejection_reason: reason } });
+  }
+
+  addExpenseAddition(expenseId, data) {
+    return this.request(`/expenses/${expenseId}/additions`, { method: "POST", data });
+  }
+
+  getExpenseAdditions(expenseId) {
+    return this.request(`/expenses/${expenseId}/additions`);
+  }
+
+  deleteExpenseAddition(id) {
+    return this.request(`/expenses/additions/${id}`, { method: "DELETE" });
+  }
 }
 
 // -------------------------

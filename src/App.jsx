@@ -33,6 +33,12 @@ import InputClassMaster from './components/InputClassMaster'
 import InputMaster from './components/InputMaster'
 import SampleMaster from './components/SampleMaster'
 
+// Expense Master Data Components
+import ExpenseTypeMaster from './components/ExpenseTypeMaster'
+import TravelModeMaster from './components/TravelModeMaster'
+import StandardFareChartMaster from './components/StandardFareChartMaster'
+import ExpenseManagement from './components/ExpenseManagement'
+
 import './App.css'
 
 function AppContent() {
@@ -118,7 +124,13 @@ function AppContent() {
           <Route path="/input-class-master" element={<InputClassMaster />} />
           <Route path="/input-master" element={<InputMaster />} />
           <Route path="/sample-master" element={<SampleMaster />} />
-          
+
+          {/* Expense Master Data Routes */}
+          <Route path="/expense-type-master" element={<ExpenseTypeMaster />} />
+          <Route path="/travel-mode-master" element={<TravelModeMaster />} />
+          <Route path="/fare-chart-master" element={<StandardFareChartMaster />} />
+          <Route path="/expense-management" element={<ExpenseManagement />} />
+
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </main>
