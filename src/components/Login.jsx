@@ -62,8 +62,8 @@ const Login = ({ onLogin }) => {
             className="login-logo-img"
             style={{ width: '120px', height: 'auto', marginBottom: '10px' }}
           />
-          <h2>PAMSFORCE</h2>
-          <p>Admin Portal</p>
+          
+          <p style={{color:"#312f2f", fontWeight:"600"}}>Admin Portal</p>
         </div>
 
         <div className="card" style={{ borderRadius: '12px' }}>

@@ -237,7 +237,7 @@
 [data-theme="dark"] .section h2,
 [data-theme="dark"] .page-title,
 [data-theme="dark"] h1, h2, h3, h4, h5, h6 {
-  color: #e9ecef !important;
+  color: #e9ecef ;
 }
 
 /* Text elements */
