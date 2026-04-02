@@ -16,12 +16,22 @@ const SalesProjections = () => {
       setLoading(true)
       setError('')
 
-      const salesResponse = await adminAPI.getSales()
-      const projectionsResponse = await adminAPI.getProjections()
+      let salesData = []
+      let projectionsData = []
 
-      // Handle different response formats
-      const salesData = salesResponse.sales || salesResponse || []
-      const projectionsData = projectionsResponse.projections || projectionsResponse || []
+      try {
+        const salesResponse = await adminAPI.getSales()
+        salesData = salesResponse?.sales || salesResponse || []
+      } catch (e) {
+        console.error('Sales API error:', e)
+      }
+
+      try {
+        const projectionsResponse = await adminAPI.getProjections()
+        projectionsData = projectionsResponse?.projections || projectionsResponse || []
+      } catch (e) {
+        console.error('Projections API error:', e)
+      }
 
       setSales(salesData)
       setProjections(projectionsData)
@@ -40,50 +50,50 @@ const SalesProjections = () => {
     }).format(amount)
   }
 
-  // Group sales by month for display
   const getMonthlySalesData = () => {
     const monthlyData = {}
 
     sales.forEach(sale => {
-      const monthKey = `${sale.date.substring(0, 7)}` // YYYY-MM format
+      if (!sale?.date) return
+      const monthKey = sale.date.substring(0, 7)
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = {
           month: monthKey,
           actual: 0,
-          projection: 0 // We'll use actual sales as projection for demo
+          projection: 0
         }
       }
-      monthlyData[monthKey].actual += parseFloat(sale.totalAmount)
+      monthlyData[monthKey].actual += parseFloat(sale.totalAmount || 0)
     })
 
-    return Object.values(monthlyData).slice(0, 6) // Last 6 months
+    return Object.values(monthlyData).sort((a, b) => b.month.localeCompare(a.month)).slice(0, 6)
   }
 
-  // Group projections by month for display
   const getMonthlyProjectionsData = () => {
     const monthlyData = {}
 
     projections.forEach(proj => {
+      if (!proj?.year || !proj?.month) return
       const monthKey = `${proj.year}-${proj.month.toString().padStart(2, '0')}`
       if (!monthlyData[monthKey]) {
         monthlyData[monthKey] = {
           month: monthKey,
           actual: parseFloat(proj.actualAmount || 0),
-          projection: parseFloat(proj.projectedAmount)
+          projection: parseFloat(proj.projectedAmount || 0)
         }
       } else {
         monthlyData[monthKey].actual += parseFloat(proj.actualAmount || 0)
-        monthlyData[monthKey].projection += parseFloat(proj.projectedAmount)
+        monthlyData[monthKey].projection += parseFloat(proj.projectedAmount || 0)
       }
     })
 
-    return Object.values(monthlyData).slice(0, 6) // Last 6 months
+    return Object.values(monthlyData).sort((a, b) => b.month.localeCompare(a.month)).slice(0, 6)
   }
 
   if (loading) {
     return (
-      <div className="section-content" style={{ paddingTop: '10px' }}>
-        <h2 style={{ marginBottom: '10px' }}>Sales & Projections</h2>
+      <div className="section-content">
+        <h2>Sales & Projections</h2>
         <div className="loading-spinner">
           <i className="fas fa-spinner fa-spin"></i> Loading sales data...
         </div>
@@ -91,9 +101,19 @@ const SalesProjections = () => {
     )
   }
 
+  const totalSales = sales.reduce((sum, sale) => sum + parseFloat(sale?.totalAmount || 0), 0)
+  const totalProjections = projections.reduce((sum, proj) => sum + parseFloat(proj?.projectedAmount || 0), 0)
+  const uniqueProducts = new Set([
+    ...sales.map(s => s?.productName).filter(Boolean),
+    ...projections.map(p => p?.productName).filter(Boolean)
+  ]).size
+
+  const monthlySales = getMonthlySalesData()
+  const monthlyProjections = getMonthlyProjectionsData()
+
   return (
     <div className="section-content">
-      <h2 style={{ marginBottom: '-140px' }}>Sales & Projections</h2>
+      <h2>Sales & Projections</h2>
       
       {error && (
         <div className="alert alert-warning">
@@ -101,64 +121,58 @@ const SalesProjections = () => {
         </div>
       )}
 
-      <div className="chart-container" style={{ marginTop: '0px' }}>
-        <canvas id="salesChart"></canvas>
-      </div>
-      
-      <div className="sales-summary" style={{ marginTop: '5px' }}>
+      <div className="sales-summary">
         <div className="summary-card">
           <h3>Total Sales</h3>
-          <p className="summary-value">
-            {formatCurrency(sales.reduce((sum, sale) => sum + parseFloat(sale.totalAmount || 0), 0))}
-          </p>
+          <p className="summary-value">{formatCurrency(totalSales)}</p>
           <p className="summary-change positive">All time sales</p>
         </div>
         <div className="summary-card">
           <h3>Total Projections</h3>
-          <p className="summary-value">
-            {formatCurrency(projections.reduce((sum, proj) => sum + parseFloat(proj.projectedAmount || 0), 0))}
-          </p>
+          <p className="summary-value">{formatCurrency(totalProjections)}</p>
           <p className="summary-change positive">Target amount</p>
         </div>
         <div className="summary-card">
           <h3>Active Products</h3>
-          <p className="summary-value">
-            {new Set([...sales.map(s => s.productName), ...projections.map(p => p.productName)]).size}
-          </p>
+          <p className="summary-value">{uniqueProducts}</p>
           <p className="summary-change positive">Unique products</p>
         </div>
       </div>
       
-      <div className="projections-table" style={{ marginTop: '10px' }}>
+      <div className="projections-table">
         <h3>Recent Sales & Projections</h3>
-        <table className="table table-striped">
-          <thead className="thead-dark">
-            <tr>
-              <th>Date</th>
-              <th>Product</th>
-              <th>Sales Amount</th>
-              <th>Type</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getMonthlySalesData().map((sale, index) => (
-              <tr key={index}>
-                <td>{sale.month}</td>
-                <td>Sales</td>
-                <td>{formatCurrency(sale.actual)}</td>
-                <td><span className="badge badge-success">Actual</span></td>
+        {monthlySales.length === 0 && monthlyProjections.length === 0 ? (
+          <div className="alert alert-info">No sales or projection data available.</div>
+        ) : (
+          <table className="table table-striped">
+            <thead className="thead-dark">
+              <tr>
+                <th>Month</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
               </tr>
-            ))}
-            {getMonthlyProjectionsData().map((proj, index) => (
-              <tr key={`proj-${index}`}>
-                <td>{proj.month}</td>
-                <td>Projection</td>
-                <td>{formatCurrency(proj.projection)}</td>
-                <td><span className="badge badge-warning">Target</span></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {monthlySales.map((sale, index) => (
+                <tr key={`sale-${index}`}>
+                  <td>{sale.month}</td>
+                  <td>Sales</td>
+                  <td>{formatCurrency(sale.actual)}</td>
+                  <td><span className="badge badge-success">Actual</span></td>
+                </tr>
+              ))}
+              {monthlyProjections.map((proj, index) => (
+                <tr key={`proj-${index}`}>
+                  <td>{proj.month}</td>
+                  <td>Projection</td>
+                  <td>{formatCurrency(proj.projection)}</td>
+                  <td><span className="badge badge-warning">Target</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   )
