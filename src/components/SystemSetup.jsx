@@ -667,7 +667,6 @@ const LeavePolicyForm = ({ loading, setLoading, setMessage }) => {
     } catch (error) {
       console.log('Leave policy load error:', error.message)
     } finally {
-    } finally {
       setLoading(false)
     }
   }
