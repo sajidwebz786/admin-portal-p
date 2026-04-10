@@ -33,6 +33,7 @@ const Sidebar = ({ onLogout, userRole }) => {
     { id: 'sales-projections', label: 'Sales & Projections', icon: 'fas fa-chart-line', path: '/sales-projections' },
     { id: 'activity-approvals', label: 'Activity Approvals', icon: 'fas fa-check-circle', path: '/activity-approvals' },
     { id: 'rule-config', label: 'Rule Configuration', icon: 'fas fa-cogs', path: '/rule-config' },
+    { id: 'system-setup', label: 'System Setup', icon: 'fas fa-sliders-h', path: '/system-setup' },
     { id: 'reports', label: 'Reports', icon: 'fas fa-file-alt', path: '/reports' }
   ]
   const visibleMainNav = mainNavItems.filter(item => allowedScreens.includes(item.path))

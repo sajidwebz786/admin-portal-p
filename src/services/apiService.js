@@ -618,6 +618,104 @@ class AdminAPIService {
   deleteExpenseAddition(id) {
     return this.request(`/expenses/additions/${id}`, { method: "DELETE" });
   }
+
+  // ----- System Setup (Rule Engine) -----
+  // Call Average Setup
+  getCallAverageSetups() {
+    return this.request("/system-setup/call-average");
+  }
+
+  createCallAverageSetup(data) {
+    return this.request("/system-setup/call-average", { method: "POST", data });
+  }
+
+  updateCallAverageSetup(id, data) {
+    return this.request(`/system-setup/call-average/${id}`, { method: "PUT", data });
+  }
+
+  deleteCallAverageSetup(id) {
+    return this.request(`/system-setup/call-average/${id}`, { method: "DELETE" });
+  }
+
+  // Coverage Setup
+  getCoverageSetups() {
+    return this.request("/system-setup/coverage");
+  }
+
+  createCoverageSetup(data) {
+    return this.request("/system-setup/coverage", { method: "POST", data });
+  }
+
+  updateCoverageSetup(id, data) {
+    return this.request(`/system-setup/coverage/${id}`, { method: "PUT", data });
+  }
+
+  deleteCoverageSetup(id) {
+    return this.request(`/system-setup/coverage/${id}`, { method: "DELETE" });
+  }
+
+  // Work Type Setup
+  getWorkTypeSetups() {
+    return this.request("/system-setup/work-type");
+  }
+
+  createWorkTypeSetup(data) {
+    return this.request("/system-setup/work-type", { method: "POST", data });
+  }
+
+  updateWorkTypeSetup(id, data) {
+    return this.request(`/system-setup/work-type/${id}`, { method: "PUT", data });
+  }
+
+  deleteWorkTypeSetup(id) {
+    return this.request(`/system-setup/work-type/${id}`, { method: "DELETE" });
+  }
+
+  // Work Type Master
+  getWorkTypeMasters() {
+    return this.request("/system-setup/work-type-master");
+  }
+
+  createWorkTypeMaster(data) {
+    return this.request("/system-setup/work-type-master", { method: "POST", data });
+  }
+
+  // Leave Policy
+  getLeavePolicies() {
+    return this.request("/system-setup/leave-policy");
+  }
+
+  createLeavePolicy(data) {
+    return this.request("/system-setup/leave-policy", { method: "POST", data });
+  }
+
+  updateLeavePolicy(id, data) {
+    return this.request(`/system-setup/leave-policy/${id}`, { method: "PUT", data });
+  }
+
+  deleteLeavePolicy(id) {
+    return this.request(`/system-setup/leave-policy/${id}`, { method: "DELETE" });
+  }
+
+  // User Leave Balance
+  getUserLeaveBalance(userId, year = null) {
+    const params = year ? `?year=${year}` : '';
+    return this.request(`/system-setup/leave-balance/${userId}${params}`);
+  }
+
+  initializeLeaveBalance(userId, year, leavePolicies) {
+    return this.request("/system-setup/leave-balance/initialize", { method: "POST", data: { user_id: userId, year, leavePolicies } });
+  }
+
+  // Compliance Dashboard
+  getUserCompliance(userId) {
+    return this.request(`/system-setup/compliance/${userId}`);
+  }
+
+  getAllCompliance(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/system-setup/compliance${queryString}`);
+  }
 }
 
 // -------------------------

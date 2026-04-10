@@ -40,6 +40,9 @@ import TravelModeMaster from './components/TravelModeMaster'
 import StandardFareChartMaster from './components/StandardFareChartMaster'
 import ExpenseManagement from './components/ExpenseManagement'
 
+// System Setup Components
+import SystemSetup from './components/SystemSetup'
+
 import './App.css'
 
 // Get user role from localStorage
@@ -157,6 +160,9 @@ function AppContent() {
           <Route path="/travel-mode-master" element={<ProtectedRoute path="/travel-mode-master" element={<TravelModeMaster />} />} />
           <Route path="/fare-chart-master" element={<ProtectedRoute path="/fare-chart-master" element={<StandardFareChartMaster />} />} />
           <Route path="/expense-management" element={<ProtectedRoute path="/expense-management" element={<ExpenseManagement />} />} />
+
+          {/* System Setup */}
+          <Route path="/system-setup" element={<ProtectedRoute path="/system-setup" element={<SystemSetup />} />} />
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
