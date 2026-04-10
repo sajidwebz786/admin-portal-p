@@ -284,11 +284,12 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
 
   const loadData = async () => {
     setLoading(true)
+    setMessage('')
     try {
       const data = await adminAPI.getCoverageSetups()
       setSetups(data || [])
     } catch (error) {
-      setMessage('Error loading data')
+      console.log('Coverage load error:', error.message)
     } finally {
       setLoading(false)
     }
@@ -470,11 +471,12 @@ const WorkTypeSetupForm = ({ loading, setLoading, setMessage }) => {
 
   const loadData = async () => {
     setLoading(true)
+    setMessage('')
     try {
       const data = await adminAPI.getWorkTypeSetups()
       setSetups(data || [])
     } catch (error) {
-      setMessage('Error loading data')
+      console.log('WorkType load error:', error.message)
     } finally {
       setLoading(false)
     }
@@ -658,11 +660,13 @@ const LeavePolicyForm = ({ loading, setLoading, setMessage }) => {
 
   const loadData = async () => {
     setLoading(true)
+    setMessage('')
     try {
       const data = await adminAPI.getLeavePolicies()
       setPolicies(data || [])
     } catch (error) {
-      setMessage('Error loading data')
+      console.log('Leave policy load error:', error.message)
+    } finally {
     } finally {
       setLoading(false)
     }
