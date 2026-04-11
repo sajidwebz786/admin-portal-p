@@ -141,6 +141,7 @@ function AppContent() {
           <Route path="/doctor-specialty" element={<ProtectedRoute path="/doctor-specialty" element={<DoctorSpecialtyMaster />} />} />
           <Route path="/doctor-qualification" element={<ProtectedRoute path="/doctor-qualification" element={<DoctorQualificationMaster />} />} />
           <Route path="/approvals" element={<ProtectedRoute path="/approvals" element={<ApprovalDashboard />} />} />
+          <Route path="/chemist-master" element={<ProtectedRoute path="/chemist-master" element={<DoctorChemistManagement />} />} />
 
           {/* Product Master */}
           <Route path="/division-master" element={<ProtectedRoute path="/division-master" element={<DivisionMaster />} />} />

@@ -44,7 +44,7 @@ const DoctorCategoryMaster = () => {
       setError('');
       setSuccess('');
       if (editingCategory) {
-        await api.put(`/master/doctor-categories/${editingCategory.category_id}`, formData);
+        await api.put(`/master/doctor-categories/${editingCategory.id}`, formData);
         setSuccess('Doctor category updated successfully!');
       } else {
         await api.post('/master/doctor-categories', formData);
@@ -73,7 +73,7 @@ const DoctorCategoryMaster = () => {
     if (window.confirm('Are you sure you want to delete this doctor category?')) {
       try {
         setError('');
-        await api.delete(`/master/doctor-categories/${id}`);
+        await api.delete(`/master/doctor-categories/${category.id}`);
         setSuccess('Doctor category deleted successfully!');
         fetchCategories();
       } catch (err) {
@@ -167,7 +167,7 @@ const DoctorCategoryMaster = () => {
                     </tr>
                   ) : (
                     categories.map((category, index) => (
-                      <tr key={category.category_id}>
+                      <tr key={category.id}>
                         <td><span className="badge badge-secondary">{index + 1}</span></td>
                         <td className="font-weight-medium">{category.category_name}</td>
                         <td><span className="badge badge-info">{category.short_name}</span></td>
@@ -187,7 +187,7 @@ const DoctorCategoryMaster = () => {
                           </button>
                           <button 
                             className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(category.category_id)}
+                            onClick={() => handleDelete(category.id)}
                             title="Delete"
                           >
                             <i className="fas fa-trash"></i>

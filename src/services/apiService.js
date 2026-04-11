@@ -126,6 +126,10 @@ class AdminAPIService {
   }
 
   // ----- Doctor Master Supporting Data -----
+  getDoctorClasses(status = 'active') {
+    return this.request(`/master/doctor-classes?status=${status}`);
+  }
+
   getDoctorCategories(status = 'active') {
     return this.request(`/master/doctor-categories?status=${status}`);
   }

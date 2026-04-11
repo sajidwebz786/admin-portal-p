@@ -41,7 +41,7 @@ const DoctorQualificationMaster = () => {
     e.preventDefault();
     try {
       if (editingQualification) {
-        await api.put(`/master/doctor-qualifications/${editingQualification.qualification_id}`, formData);
+        await api.put(`/master/doctor-qualifications/${editingQualification.id}`, formData);
       } else {
         await api.post('/master/doctor-qualifications', formData);
       }
@@ -62,10 +62,10 @@ const DoctorQualificationMaster = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (qualification) => {
     if (window.confirm('Are you sure you want to delete this doctor qualification?')) {
       try {
-        await api.delete(`/master/doctor-qualifications/${id}`);
+        await api.delete(`/master/doctor-qualifications/${qualification.id}`);
         fetchQualifications();
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to delete doctor qualification');
@@ -115,7 +115,7 @@ const DoctorQualificationMaster = () => {
                 </tr>
               ) : (
                 qualifications.map((qualification) => (
-                  <tr key={qualification.qualification_id}>
+                  <tr key={qualification.id}>
                     <td>{qualification.qualification_name}</td>
                     <td>{qualification.short_name}</td>
                     <td>
@@ -132,7 +132,7 @@ const DoctorQualificationMaster = () => {
                       </button>
                       <button 
                         className="btn btn-sm btn-delete"
-                        onClick={() => handleDelete(qualification.qualification_id)}
+                        onClick={() => handleDelete(qualification)}
                       >
                         Delete
                       </button>

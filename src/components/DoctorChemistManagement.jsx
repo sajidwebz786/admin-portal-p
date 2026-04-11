@@ -92,6 +92,7 @@ const DoctorChemistManagement = () => {
   const [editingItem, setEditingItem] = useState(null)
 
   // support masters for doctor form
+  const [doctorClasses, setDoctorClasses] = useState([])
   const [doctorCategories, setDoctorCategories] = useState([])
   const [doctorSpecialties, setDoctorSpecialties] = useState([])
   const [doctorQualifications, setDoctorQualifications] = useState([])
@@ -101,6 +102,7 @@ const DoctorChemistManagement = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    class_id: null,
     specialty_id: null,
     category_id: null,
     qualification_id: null,
@@ -142,16 +144,18 @@ const DoctorChemistManagement = () => {
     }
   }
 
-  // ✅ Fetch supporting master lists (categories, specialties, qualifications, territories, HQ)
+  // ✅ Fetch supporting master lists (classes, categories, specialties, qualifications, territories, HQ)
   const loadSupportingData = async () => {
     try {
-      const [cats, specs, quals, terrs, hqs] = await Promise.all([
+      const [classes, cats, specs, quals, terrs, hqs] = await Promise.all([
+        adminAPI.getDoctorClasses(),
         adminAPI.getDoctorCategories(),
         adminAPI.getDoctorSpecialties(),
         adminAPI.getDoctorQualifications(),
         adminAPI.getTerritories(),
         adminAPI.getHeadquarters()
       ])
+      setDoctorClasses(Array.isArray(classes) ? classes : classes.classes || [])
       setDoctorCategories(Array.isArray(cats) ? cats : cats.categories || [])
       setDoctorSpecialties(Array.isArray(specs) ? specs : specs.specialties || [])
       setDoctorQualifications(Array.isArray(quals) ? quals : quals.qualifications || [])
@@ -198,6 +202,7 @@ const DoctorChemistManagement = () => {
         setFormData({
           firstName: item.firstName,
           lastName: item.lastName,
+          class_id: item.class_id || item.classData?.class_id || null,
           specialty_id: item.specialty_id || item.specialtyData?.specialty_id || null,
           category_id: item.category_id || item.categoryData?.category_id || null,
           qualification_id: item.qualification_id || item.qualificationData?.qualification_id || null,
@@ -228,6 +233,7 @@ const DoctorChemistManagement = () => {
       setFormData({
         firstName: '',
         lastName: '',
+        class_id: null,
         specialty_id: null,
         category_id: null,
         qualification_id: null,
@@ -332,7 +338,7 @@ const DoctorChemistManagement = () => {
         >
           <option value="">All Specialties</option>
           {doctorSpecialties.map((s) => (
-            <option key={s.specialty_id} value={s.specialty_id}>
+            <option key={s.id} value={s.id}>
               {s.specialty_name}
             </option>
           ))}
@@ -345,7 +351,7 @@ const DoctorChemistManagement = () => {
         >
           <option value="">All Categories</option>
           {doctorCategories.map((c) => (
-            <option key={c.category_id} value={c.category_id}>
+            <option key={c.id} value={c.id}>
               {c.category_name}
             </option>
           ))}
@@ -529,6 +535,23 @@ const DoctorChemistManagement = () => {
               </div>
 
               <div className="mb-2">
+                <label>Doctor Class</label>
+                <select
+                  name="class_id"
+                  value={formData.class_id || ''}
+                  onChange={handleInputChange}
+                  className="form-control"
+                >
+                  <option value="">-- Select --</option>
+                  {doctorClasses.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.class_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-2">
                 <label>Specialty</label>
                 <select
                   name="specialty_id"
@@ -538,7 +561,7 @@ const DoctorChemistManagement = () => {
                 >
                   <option value="">-- Select --</option>
                   {doctorSpecialties.map((s) => (
-                    <option key={s.specialty_id} value={s.specialty_id}>
+                    <option key={s.id} value={s.id}>
                       {s.specialty_name}
                     </option>
                   ))}
@@ -555,7 +578,7 @@ const DoctorChemistManagement = () => {
                 >
                   <option value="">-- Select --</option>
                   {doctorCategories.map((c) => (
-                    <option key={c.category_id} value={c.category_id}>
+                    <option key={c.id} value={c.id}>
                       {c.category_name}
                     </option>
                   ))}
@@ -572,7 +595,7 @@ const DoctorChemistManagement = () => {
                 >
                   <option value="">-- Select --</option>
                   {doctorQualifications.map((q) => (
-                    <option key={q.qualification_id} value={q.qualification_id}>
+                    <option key={q.id} value={q.id}>
                       {q.qualification_name}
                     </option>
                   ))}

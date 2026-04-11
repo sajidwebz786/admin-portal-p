@@ -24,16 +24,19 @@ const Sidebar = ({ onLogout, userRole }) => {
   const territoryItems = filterAccessible(MENU_SECTIONS.territory.items)
   const inputsItems = filterAccessible(MENU_SECTIONS.inputs.items)
   const expenseItems = filterAccessible(MENU_SECTIONS.expense.items)
+  const mastersItems = [
+    { id: 'user-management', label: 'User Master', icon: 'fas fa-users', path: '/user-management' },
+    { id: 'rule-config', label: 'Rule Configuration', icon: 'fas fa-cogs', path: '/rule-config' },
+    { id: 'system-setup', label: 'System Setup', icon: 'fas fa-sliders-h', path: '/system-setup' }
+  ]
+  const visibleMastersItems = mastersItems.filter(item => allowedScreens.includes(item.path))
 
   // Main nav items
   const mainNavItems = [
-    { id: 'user-management', label: 'User Master', icon: 'fas fa-users', path: '/user-management' },
     { id: 'expense-management', label: 'Expense Management', icon: 'fas fa-receipt', path: '/expense-management' },
     { id: 'doctors-chemists', label: 'Doctors/Chemists', icon: 'fas fa-user-md', path: '/doctors-chemists' },
     { id: 'sales-projections', label: 'Sales & Projections', icon: 'fas fa-chart-line', path: '/sales-projections' },
     { id: 'activity-approvals', label: 'Activity Approvals', icon: 'fas fa-check-circle', path: '/activity-approvals' },
-    { id: 'rule-config', label: 'Rule Configuration', icon: 'fas fa-cogs', path: '/rule-config' },
-    { id: 'system-setup', label: 'System Setup', icon: 'fas fa-sliders-h', path: '/system-setup' },
     { id: 'reports', label: 'Reports', icon: 'fas fa-file-alt', path: '/reports' }
   ]
   const visibleMainNav = mainNavItems.filter(item => allowedScreens.includes(item.path))
@@ -44,9 +47,10 @@ const Sidebar = ({ onLogout, userRole }) => {
   const isInputsActive = inputsItems.some(item => location.pathname === item.path)
   const isTerritoryActive = territoryItems.some(item => location.pathname === item.path)
   const isExpenseActive = expenseItems.some(item => location.pathname === item.path) || location.pathname === '/expense-management'
+  const isMastersActive = visibleMastersItems.some(item => location.pathname === item.path)
 
   // Should Masters parent show?
-  const showMasters = hasAnyAccess(MENU_SECTIONS.doctors.items) || hasAnyAccess(MENU_SECTIONS.products.items) || hasAnyAccess(MENU_SECTIONS.territory.items) || hasAnyAccess(MENU_SECTIONS.inputs.items) || hasAnyAccess(MENU_SECTIONS.expense.items)
+  const showMasters = hasAnyAccess(MENU_SECTIONS.doctors.items) || hasAnyAccess(MENU_SECTIONS.products.items) || hasAnyAccess(MENU_SECTIONS.territory.items) || hasAnyAccess(MENU_SECTIONS.inputs.items) || hasAnyAccess(MENU_SECTIONS.expense.items) || visibleMastersItems.length > 0
 
   const renderSubItems = (items, isActive) => (
     <ul className="nav nav-treeview">
@@ -108,12 +112,13 @@ const Sidebar = ({ onLogout, userRole }) => {
             {/* Masters - only if user has access to any sub-item */}
             {showMasters && (
               <li className="nav-item has-treeview menu-open">
-                <Link to="#" className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive || isExpenseActive ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setMastersExpanded(!mastersExpanded) }}>
+                <Link to="#" className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive || isExpenseActive || isMastersActive ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setMastersExpanded(!mastersExpanded) }}>
                   <i className="nav-icon fas fa-database"></i>
                   <p>Masters<i className={`right fas fa-angle-left ${mastersExpanded ? 'transform-rotate' : ''}`}></i></p>
                 </Link>
                 {mastersExpanded && (
                   <ul className="nav nav-treeview">
+                    {renderSection('User & System', 'fas fa-cogs', visibleMastersItems, mastersExpanded, setMastersExpanded, isMastersActive)}
                     {renderSection('Territory', 'fas fa-map-marked-alt', territoryItems, territoryExpanded, setTerritoryExpanded, isTerritoryActive)}
                     {renderSection('Doctors', 'fas fa-user-md', doctorsItems, doctorsExpanded, setDoctorsExpanded, isDoctorsActive)}
                     {renderSection('Products', 'fas fa-pills', productsItems, productsExpanded, setProductsExpanded, isProductsActive)}

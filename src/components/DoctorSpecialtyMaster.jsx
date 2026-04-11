@@ -41,7 +41,7 @@ const DoctorSpecialtyMaster = () => {
     e.preventDefault();
     try {
       if (editingSpecialty) {
-        await api.put(`/master/doctor-specialties/${editingSpecialty.specialty_id}`, formData);
+        await api.put(`/master/doctor-specialties/${editingSpecialty.id}`, formData);
       } else {
         await api.post('/master/doctor-specialties', formData);
       }
@@ -62,10 +62,10 @@ const DoctorSpecialtyMaster = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (specialty) => {
     if (window.confirm('Are you sure you want to delete this doctor specialty?')) {
       try {
-        await api.delete(`/master/doctor-specialties/${id}`);
+        await api.delete(`/master/doctor-specialties/${specialty.id}`);
         fetchSpecialties();
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to delete doctor specialty');
@@ -115,7 +115,7 @@ const DoctorSpecialtyMaster = () => {
                 </tr>
               ) : (
                 specialties.map((specialty) => (
-                  <tr key={specialty.specialty_id}>
+                  <tr key={specialty.id}>
                     <td>{specialty.specialty_name}</td>
                     <td>{specialty.short_name}</td>
                     <td>
@@ -132,7 +132,7 @@ const DoctorSpecialtyMaster = () => {
                       </button>
                       <button 
                         className="btn btn-sm btn-delete"
-                        onClick={() => handleDelete(specialty.specialty_id)}
+                        onClick={() => handleDelete(specialty)}
                       >
                         Delete
                       </button>
