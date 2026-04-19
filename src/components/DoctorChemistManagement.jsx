@@ -124,6 +124,13 @@ const DoctorChemistManagement = () => {
     try {
       setLoading(true)
       setError('')
+      
+      const counts = await adminAPI.getDataCounts()
+      
+      if (counts.doctors === 0 || counts.chemists === 0) {
+        await adminAPI.seedData()
+      }
+      
       const doctorsResponse = await adminAPI.getDoctors()
       const chemistsResponse = await adminAPI.getChemists()
 

@@ -720,6 +720,15 @@ class AdminAPIService {
     const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
     return this.request(`/system-setup/compliance${queryString}`);
   }
+
+  // ----- Seed Data -----
+  async seedData() {
+    return this.request("/master/seed-data", { method: "POST" });
+  }
+
+  async getDataCounts() {
+    return this.request("/master/data-counts");
+  }
 }
 
 // -------------------------
