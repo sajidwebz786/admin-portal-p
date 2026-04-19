@@ -52,6 +52,8 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
     designation: 'MR',
     min_field_working_days: 20,
     daily_calls: 11,
+    doctor_calls: 8,
+    chemist_calls: 3,
     monthly_calls: 220,
     quarterly_calls: 660,
     yearly_calls: 2640,
@@ -80,13 +82,13 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
     const { name, value } = e.target
     setFormData(prev => {
       const newData = { ...prev, [name]: value }
-      if (['min_field_working_days', 'daily_calls'].includes(name)) {
-        const days = parseInt(newData.min_field_working_days) || 0
-        const daily = parseInt(newData.daily_calls) || 0
-        newData.monthly_calls = days * daily
-        newData.quarterly_calls = newData.monthly_calls * 3
-        newData.yearly_calls = newData.monthly_calls * 12
-      }
+      const docCalls = parseInt(newData.doctor_calls) || 0
+      const chemCalls = parseInt(newData.chemist_calls) || 0
+      newData.daily_calls = docCalls + chemCalls
+      const days = parseInt(newData.min_field_working_days) || 0
+      newData.monthly_calls = days * newData.daily_calls
+      newData.quarterly_calls = newData.monthly_calls * 3
+      newData.yearly_calls = newData.monthly_calls * 12
       return newData
     })
   }
@@ -131,6 +133,8 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
       designation: item.designation,
       min_field_working_days: item.min_field_working_days,
       daily_calls: item.daily_calls,
+      doctor_calls: item.doctor_calls || 0,
+      chemist_calls: item.chemist_calls || 0,
       monthly_calls: item.monthly_calls,
       quarterly_calls: item.quarterly_calls,
       yearly_calls: item.yearly_calls,
@@ -146,7 +150,7 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
     <div>
       <div className="mb-3">
         <button className="btn btn-primary" onClick={() => { setEditingItem(null); setFormData({
-          designation: 'MR', min_field_working_days: 20, daily_calls: 11, monthly_calls: 220,
+          designation: 'MR', min_field_working_days: 20, daily_calls: 11, doctor_calls: 8, chemist_calls: 3, monthly_calls: 220,
           quarterly_calls: 660, yearly_calls: 2640, warning_threshold: 90, alert_threshold: 70,
           effective_from: new Date().toISOString().split('T')[0]
         }); setShowModal(true); }}>
@@ -159,8 +163,10 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
           <thead>
             <tr>
               <th>Designation</th>
-              <th>Min Working Days</th>
-              <th>Daily</th>
+              <th>Min Days</th>
+              <th>DR Calls</th>
+              <th>Chemist Calls</th>
+              <th>Total Daily</th>
               <th>Monthly</th>
               <th>Quarterly</th>
               <th>Yearly</th>
@@ -175,6 +181,8 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
               <tr key={item.id}>
                 <td><strong>{item.designation}</strong></td>
                 <td>{item.min_field_working_days}</td>
+                <td>{item.doctor_calls || item.daily_calls}</td>
+                <td>{item.chemist_calls || 0}</td>
                 <td>{item.daily_calls}</td>
                 <td>{item.monthly_calls}</td>
                 <td>{item.quarterly_calls}</td>
@@ -188,7 +196,7 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
                 </td>
               </tr>
             ))}
-            {setups.length === 0 && <tr><td colSpan="10" className="text-center">No data found</td></tr>}
+            {setups.length === 0 && <tr><td colSpan="12" className="text-center">No data found</td></tr>}
           </tbody>
         </table>
       </div>
@@ -210,19 +218,32 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
                     </select>
                   </div>
                   <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-4">
                       <div className="form-group">
                         <label>Min Field Working Days</label>
                         <input type="number" name="min_field_working_days" value={formData.min_field_working_days} onChange={handleInputChange} className="form-control" />
                       </div>
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-4">
                       <div className="form-group">
-                        <label>Daily Calls</label>
-                        <input type="number" name="daily_calls" value={formData.daily_calls} onChange={handleInputChange} className="form-control" />
+                        <label>Doctor (DR) Calls</label>
+                        <input type="number" name="doctor_calls" value={formData.doctor_calls} onChange={handleInputChange} className="form-control" />
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="form-group">
+                        <label>Chemist Calls</label>
+                        <input type="number" name="chemist_calls" value={formData.chemist_calls} onChange={handleInputChange} className="form-control" />
                       </div>
                     </div>
                   </div>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="form-group">
+                        <label>Total Daily Calls (Auto)</label>
+                        <input type="number" value={formData.daily_calls} className="form-control" readOnly />
+                      </div>
+                    </div>
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-group">
@@ -275,6 +296,10 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
     monthly_coverage: 90,
     quarterly_coverage: 100,
     yearly_coverage: 100,
+    doctor_warning: 90,
+    chemist_warning: 100,
+    doctor_alert: 70,
+    chemist_alert: 90,
     effective_from: new Date().toISOString().split('T')[0]
   })
 
@@ -342,6 +367,10 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
       monthly_coverage: item.monthly_coverage,
       quarterly_coverage: item.quarterly_coverage,
       yearly_coverage: item.yearly_coverage,
+      doctor_warning: item.doctor_warning || 90,
+      chemist_warning: item.chemist_warning || 100,
+      doctor_alert: item.doctor_alert || 70,
+      chemist_alert: item.chemist_alert || 90,
       effective_from: item.effective_from || ''
     })
     setEditingItem(item)
@@ -353,7 +382,8 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
       <div className="mb-3">
         <button className="btn btn-primary" onClick={() => { setEditingItem(null); setFormData({
           designation: 'MR', doctor_list_type: 'Core', monthly_coverage: 90, quarterly_coverage: 100,
-          yearly_coverage: 100, effective_from: new Date().toISOString().split('T')[0]
+          yearly_coverage: 100, doctor_warning: 90, chemist_warning: 100, doctor_alert: 70, chemist_alert: 90,
+          effective_from: new Date().toISOString().split('T')[0]
         }); setShowModal(true); }}>
           <i className="fas fa-plus"></i> Add Coverage Setup
         </button>
@@ -368,6 +398,10 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
               <th>Monthly %</th>
               <th>Quarterly %</th>
               <th>Yearly %</th>
+              <th>DR Warning %</th>
+              <th>Chem Warning %</th>
+              <th>DR Alert %</th>
+              <th>Chem Alert %</th>
               <th>Effective From</th>
               <th>Actions</th>
             </tr>
@@ -380,6 +414,10 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
                 <td className={item.monthly_coverage < 90 ? 'text-danger' : ''}>{item.monthly_coverage}%</td>
                 <td>{item.quarterly_coverage}%</td>
                 <td>{item.yearly_coverage}%</td>
+                <td className={item.doctor_warning ? (item.monthly_coverage < item.doctor_warning ? 'text-warning' '') : ''}>{item.doctor_warning || 90}%</td>
+                <td>{item.chemist_warning || 100}%</td>
+                <td className={item.doctor_alert ? (item.monthly_coverage < item.doctor_alert ? 'text-danger' '') : ''}>{item.doctor_alert || 70}%</td>
+                <td>{item.chemist_alert || 90}%</td>
                 <td>{item.effective_from}</td>
                 <td>
                   <button className="btn btn-sm btn-info mr-1" onClick={() => openEdit(item)}><i className="fas fa-edit"></i></button>
@@ -387,7 +425,7 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
                 </td>
               </tr>
             ))}
-            {setups.length === 0 && <tr><td colSpan="7" className="text-center">No data found</td></tr>}
+            {setups.length === 0 && <tr><td colSpan="11" className="text-center">No data found</td></tr>}
           </tbody>
         </table>
       </div>
@@ -416,28 +454,74 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
                     </select>
                   </div>
                   <div className="row">
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       <div className="form-group">
                         <label>Monthly %</label>
                         <input type="number" name="monthly_coverage" value={formData.monthly_coverage} onChange={handleInputChange} className="form-control" />
                       </div>
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       <div className="form-group">
                         <label>Quarterly %</label>
                         <input type="number" name="quarterly_coverage" value={formData.quarterly_coverage} onChange={handleInputChange} className="form-control" />
                       </div>
                     </div>
-                    <div className="col-md-4">
+                    <div className="col-md-3">
                       <div className="form-group">
                         <label>Yearly %</label>
                         <input type="number" name="yearly_coverage" value={formData.yearly_coverage} onChange={handleInputChange} className="form-control" />
                       </div>
                     </div>
+                    <div className="col-md-3">
+                      <div className="form-group">
+                        <label>Effective From</label>
+                        <input type="date" name="effective_from" value={formData.effective_from} onChange={handleInputChange} className="form-control" />
+                      </div>
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>Effective From</label>
-                    <input type="date" name="effective_from" value={formData.effective_from} onChange={handleInputChange} className="form-control" />
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="card bg-light mb-2">
+                        <div className="card-header"><h6 className="mb-0">Warning Level (Upper Performance)</h6></div>
+                        <div className="card-body">
+                          <div className="row">
+                            <div className="col-md-6">
+                              <div className="form-group mb-0">
+                                <label>Doctor (DR) %</label>
+                                <input type="number" name="doctor_warning" value={formData.doctor_warning} onChange={handleInputChange} className="form-control" />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="form-group mb-0">
+                                <label>Chemist %</label>
+                                <input type="number" name="chemist_warning" value={formData.chemist_warning} onChange={handleInputChange} className="form-control" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="card bg-light mb-2">
+                        <div className="card-header"><h6 className="mb-0">Alert Level (Critical)</h6></div>
+                        <div className="card-body">
+                          <div className="row">
+                            <div className="col-md-6">
+                              <div className="form-group mb-0">
+                                <label>Doctor (DR) %</label>
+                                <input type="number" name="doctor_alert" value={formData.doctor_alert} onChange={handleInputChange} className="form-control" />
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="form-group mb-0">
+                                <label>Chemist %</label>
+                                <input type="number" name="chemist_alert" value={formData.chemist_alert} onChange={handleInputChange} className="form-control" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="modal-footer">
