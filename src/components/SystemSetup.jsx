@@ -209,7 +209,7 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
                 <h5 className="modal-title">{editingItem ? 'Edit' : 'Add'} Call Average Setup</h5>
                 <button className="close" onClick={() => setShowModal(false)}>&times;</button>
               </div>
-              <form onSubmit={handleSubmit}>
+<form onSubmit={handleSubmit}>
                 <div className="modal-body">
                   <div className="form-group">
                     <label>Designation</label>
@@ -244,33 +244,30 @@ const CallAverageSetupForm = ({ loading, setLoading, setMessage }) => {
                         <input type="number" value={formData.daily_calls} className="form-control" readOnly />
                       </div>
                     </div>
-                  <div className="row">
                     <div className="col-md-6">
                       <div className="form-group">
                         <label>Monthly Calls (Auto)</label>
                         <input type="number" value={formData.monthly_calls} className="form-control" readOnly />
                       </div>
                     </div>
+                  </div>
+                  <div className="row">
                     <div className="col-md-6">
                       <div className="form-group">
                         <label>Warning Threshold %</label>
                         <input type="number" name="warning_threshold" value={formData.warning_threshold} onChange={handleInputChange} className="form-control" />
                       </div>
                     </div>
-                  </div>
-                  <div className="row">
                     <div className="col-md-6">
                       <div className="form-group">
                         <label>Alert Threshold %</label>
                         <input type="number" name="alert_threshold" value={formData.alert_threshold} onChange={handleInputChange} className="form-control" />
                       </div>
                     </div>
-                    <div className="col-md-6">
-                      <div className="form-group">
-                        <label>Effective From</label>
-                        <input type="date" name="effective_from" value={formData.effective_from} onChange={handleInputChange} className="form-control" />
-                      </div>
-                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Effective From</label>
+                    <input type="date" name="effective_from" value={formData.effective_from} onChange={handleInputChange} className="form-control" />
                   </div>
                 </div>
                 <div className="modal-footer">
@@ -414,9 +411,9 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
                 <td className={item.monthly_coverage < 90 ? 'text-danger' : ''}>{item.monthly_coverage}%</td>
                 <td>{item.quarterly_coverage}%</td>
                 <td>{item.yearly_coverage}%</td>
-                <td className={item.doctor_warning ? (item.monthly_coverage < item.doctor_warning ? 'text-warning' '') : ''}>{item.doctor_warning || 90}%</td>
+                <td className={item.monthly_coverage < item.doctor_warning ? 'text-warning' : ''}>{item.doctor_warning || 90}%</td>
                 <td>{item.chemist_warning || 100}%</td>
-                <td className={item.doctor_alert ? (item.monthly_coverage < item.doctor_alert ? 'text-danger' '') : ''}>{item.doctor_alert || 70}%</td>
+                <td className={item.monthly_coverage < item.doctor_alert ? 'text-danger' : ''}>{item.doctor_alert || 70}%</td>
                 <td>{item.chemist_alert || 90}%</td>
                 <td>{item.effective_from}</td>
                 <td>
@@ -698,7 +695,7 @@ const WorkTypeSetupForm = ({ loading, setLoading, setMessage }) => {
                       <label className="form-check-label" htmlFor="mandatoryField">Mandatory Field Work</label>
                     </div>
                   </div>
-                  <div className="form-group">
+<div className="form-group">
                     <label>Effective From</label>
                     <input type="date" name="effective_from" value={formData.effective_from} onChange={handleInputChange} className="form-control" />
                   </div>
