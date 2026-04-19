@@ -722,6 +722,10 @@ class AdminAPIService {
   }
 
   // ----- Seed Data -----
+  async migrate() {
+    return this.request("/master/migrate", { method: "POST" });
+  }
+
   async seedData() {
     return this.request("/master/seed-data", { method: "POST" });
   }

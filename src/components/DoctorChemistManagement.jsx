@@ -125,6 +125,13 @@ const DoctorChemistManagement = () => {
       setLoading(true)
       setError('')
       
+      // Run migration first to ensure database schema is correct
+      try {
+        await adminAPI.migrate()
+      } catch (migErr) {
+        console.log('Migration error (may already be done):', migErr.message)
+      }
+      
       const counts = await adminAPI.getDataCounts()
       
       if (counts.doctors === 0 || counts.chemists === 0) {
