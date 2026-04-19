@@ -138,8 +138,7 @@ export const MENU_SECTIONS = {
       { id: 'doctor-category', label: 'Doctor Category', icon: 'fas fa-list-alt', path: SCREENS.DOCTOR_CATEGORY },
       { id: 'doctor-specialty', label: 'Doctor Specialty', icon: 'fas fa-stethoscope', path: SCREENS.DOCTOR_SPECIALTY },
       { id: 'doctor-qualification', label: 'Doctor Qualification', icon: 'fas fa-graduation-cap', path: SCREENS.DOCTOR_QUALIFICATION },
-      { id: 'chemist-master', label: 'Chemist Master', icon: 'fas fa-store', path: SCREENS.CHEMIST_MASTER },
-      { id: 'approvals', label: 'Approval Dashboard', icon: 'fas fa-tasks', path: SCREENS.APPROVALS }
+      { id: 'chemist-master', label: 'Chemist Master', icon: 'fas fa-store', path: SCREENS.CHEMIST_MASTER }
     ]
   },
   products: {
