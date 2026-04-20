@@ -288,19 +288,28 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
   const [showModal, setShowModal] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
   const [formData, setFormData] = useState({
+    entity_type: 'Doctor',
     designation: 'MR',
     doctor_list_type: 'Core',
     monthly_coverage: 90,
     quarterly_coverage: 100,
     yearly_coverage: 100,
-    doctor_warning: 90,
-    chemist_warning: 100,
-    doctor_alert: 70,
-    chemist_alert: 90,
+    warning_level: 90,
+    alert_level: 70,
+    warning_color: 'warning',
+    alert_color: 'danger',
     effective_from: new Date().toISOString().split('T')[0]
   })
 
   const designations = ['MR', 'TBM', 'ABM', 'RBM', 'ZBM', 'NSM']
+  const entityTypes = ['Doctor', 'Chemist']
+  const colorOptions = [
+    { value: 'warning', label: 'Yellow (Warning)' },
+    { value: 'danger', label: 'Red (Alert)' },
+    { value: 'info', label: 'Blue (Info)' },
+    { value: 'dark', label: 'Black (Dark)' },
+    { value: 'success', label: 'Green (Success)' }
+  ]
 
   useEffect(() => { loadData() }, [])
 
@@ -359,15 +368,16 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
 
   const openEdit = (item) => {
     setFormData({
+      entity_type: item.entity_type || 'Doctor',
       designation: item.designation,
-      doctor_list_type: item.doctor_list_type,
+      doctor_list_type: item.doctor_list_type || 'Core',
       monthly_coverage: item.monthly_coverage,
       quarterly_coverage: item.quarterly_coverage,
       yearly_coverage: item.yearly_coverage,
-      doctor_warning: item.doctor_warning || 90,
-      chemist_warning: item.chemist_warning || 100,
-      doctor_alert: item.doctor_alert || 70,
-      chemist_alert: item.chemist_alert || 90,
+      warning_level: item.warning_level || 90,
+      alert_level: item.alert_level || 70,
+      warning_color: item.warning_color || 'warning',
+      alert_color: item.alert_color || 'danger',
       effective_from: item.effective_from || ''
     })
     setEditingItem(item)
@@ -378,8 +388,8 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
     <div>
       <div className="mb-3">
         <button className="btn btn-primary" onClick={() => { setEditingItem(null); setFormData({
-          designation: 'MR', doctor_list_type: 'Core', monthly_coverage: 90, quarterly_coverage: 100,
-          yearly_coverage: 100, doctor_warning: 90, chemist_warning: 100, doctor_alert: 70, chemist_alert: 90,
+          entity_type: 'Doctor', designation: 'MR', doctor_list_type: 'Core', monthly_coverage: 90, quarterly_coverage: 100,
+          yearly_coverage: 100, warning_level: 90, alert_level: 70, warning_color: 'warning', alert_color: 'danger',
           effective_from: new Date().toISOString().split('T')[0]
         }); setShowModal(true); }}>
           <i className="fas fa-plus"></i> Add Coverage Setup
@@ -390,15 +400,16 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
         <table className="table table-bordered table-striped">
           <thead>
             <tr>
+              <th>Type</th>
               <th>Designation</th>
-              <th>Doctor List Type</th>
+              <th>Doctor List</th>
               <th>Monthly %</th>
               <th>Quarterly %</th>
               <th>Yearly %</th>
-              <th>DR Warning %</th>
-              <th>Chem Warning %</th>
-              <th>DR Alert %</th>
-              <th>Chem Alert %</th>
+              <th>Warning %</th>
+              <th>Alert %</th>
+              <th>Warn Color</th>
+              <th>Alert Color</th>
               <th>Effective From</th>
               <th>Actions</th>
             </tr>
@@ -406,15 +417,16 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
           <tbody>
             {setups.map(item => (
               <tr key={item.id}>
+                <td><span className={`badge ${item.entity_type === 'Doctor' ? 'badge-primary' : 'badge-success'}`}>{item.entity_type}</span></td>
                 <td><strong>{item.designation}</strong></td>
-                <td>{item.doctor_list_type}</td>
-                <td className={item.monthly_coverage < 90 ? 'text-danger' : ''}>{item.monthly_coverage}%</td>
+                <td>{item.doctor_list_type || '-'}</td>
+                <td className={item.monthly_coverage < (item.warning_level || 90) ? 'text-warning' : ''}>{item.monthly_coverage}%</td>
                 <td>{item.quarterly_coverage}%</td>
                 <td>{item.yearly_coverage}%</td>
-                <td className={item.monthly_coverage < item.doctor_warning ? 'text-warning' : ''}>{item.doctor_warning || 90}%</td>
-                <td>{item.chemist_warning || 100}%</td>
-                <td className={item.monthly_coverage < item.doctor_alert ? 'text-danger' : ''}>{item.doctor_alert || 70}%</td>
-                <td>{item.chemist_alert || 90}%</td>
+                <td className="text-warning">{item.warning_level || 90}%</td>
+                <td className="text-danger">{item.alert_level || 70}%</td>
+                <td><span className={`badge badge-${item.warning_color || 'warning'}`}>{item.warning_color || 'warning'}</span></td>
+                <td><span className={`badge badge-${item.alert_color || 'danger'}`}>{item.alert_color || 'danger'}</span></td>
                 <td>{item.effective_from}</td>
                 <td>
                   <button className="btn btn-sm btn-info mr-1" onClick={() => openEdit(item)}><i className="fas fa-edit"></i></button>
@@ -422,7 +434,7 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
                 </td>
               </tr>
             ))}
-            {setups.length === 0 && <tr><td colSpan="11" className="text-center">No data found</td></tr>}
+            {setups.length === 0 && <tr><td colSpan="12" className="text-center">No data found</td></tr>}
           </tbody>
         </table>
       </div>
@@ -437,19 +449,33 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
               </div>
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
-                  <div className="form-group">
-                    <label>Designation</label>
-                    <select name="designation" value={formData.designation} onChange={handleInputChange} className="form-control" required>
-                      {designations.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="form-group">
+                        <label>Doctor / Chemist</label>
+                        <select name="entity_type" value={formData.entity_type} onChange={handleInputChange} className="form-control" required>
+                          {entityTypes.map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="form-group">
+                        <label>Designation</label>
+                        <select name="designation" value={formData.designation} onChange={handleInputChange} className="form-control" required>
+                          {designations.map(d => <option key={d} value={d}>{d}</option>)}
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label>Doctor List Type</label>
-                    <select name="doctor_list_type" value={formData.doctor_list_type} onChange={handleInputChange} className="form-control">
-                      <option value="Core">Core</option>
-                      <option value="Secondary">Secondary</option>
-                    </select>
-                  </div>
+                  {formData.entity_type === 'Doctor' && (
+                    <div className="form-group">
+                      <label>Doctor List Type</label>
+                      <select name="doctor_list_type" value={formData.doctor_list_type} onChange={handleInputChange} className="form-control">
+                        <option value="Core">Core</option>
+                        <option value="Secondary">Secondary</option>
+                      </select>
+                    </div>
+                  )}
                   <div className="row">
                     <div className="col-md-3">
                       <div className="form-group">
@@ -479,19 +505,21 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="card bg-light mb-2">
-                        <div className="card-header"><h6 className="mb-0">Warning Level (Upper Performance)</h6></div>
+                        <div className="card-header"><h6 className="mb-0">Warning Level</h6></div>
                         <div className="card-body">
                           <div className="row">
                             <div className="col-md-6">
                               <div className="form-group mb-0">
-                                <label>Doctor (DR) %</label>
-                                <input type="number" name="doctor_warning" value={formData.doctor_warning} onChange={handleInputChange} className="form-control" />
+                                <label>Warning %</label>
+                                <input type="number" name="warning_level" value={formData.warning_level} onChange={handleInputChange} className="form-control" />
                               </div>
                             </div>
                             <div className="col-md-6">
                               <div className="form-group mb-0">
-                                <label>Chemist %</label>
-                                <input type="number" name="chemist_warning" value={formData.chemist_warning} onChange={handleInputChange} className="form-control" />
+                                <label>Warning Color</label>
+                                <select name="warning_color" value={formData.warning_color} onChange={handleInputChange} className="form-control">
+                                  {colorOptions.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                                </select>
                               </div>
                             </div>
                           </div>
@@ -500,19 +528,21 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
                     </div>
                     <div className="col-md-6">
                       <div className="card bg-light mb-2">
-                        <div className="card-header"><h6 className="mb-0">Alert Level (Critical)</h6></div>
+                        <div className="card-header"><h6 className="mb-0">Alert Level</h6></div>
                         <div className="card-body">
                           <div className="row">
                             <div className="col-md-6">
                               <div className="form-group mb-0">
-                                <label>Doctor (DR) %</label>
-                                <input type="number" name="doctor_alert" value={formData.doctor_alert} onChange={handleInputChange} className="form-control" />
+                                <label>Alert %</label>
+                                <input type="number" name="alert_level" value={formData.alert_level} onChange={handleInputChange} className="form-control" />
                               </div>
                             </div>
                             <div className="col-md-6">
                               <div className="form-group mb-0">
-                                <label>Chemist %</label>
-                                <input type="number" name="chemist_alert" value={formData.chemist_alert} onChange={handleInputChange} className="form-control" />
+                                <label>Alert Color</label>
+                                <select name="alert_color" value={formData.alert_color} onChange={handleInputChange} className="form-control">
+                                  {colorOptions.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                                </select>
                               </div>
                             </div>
                           </div>
