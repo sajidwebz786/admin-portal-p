@@ -420,11 +420,11 @@ const CoverageSetupForm = ({ loading, setLoading, setMessage }) => {
                 <td><span className={`badge ${item.entity_type === 'Doctor' ? 'badge-primary' : 'badge-success'}`}>{item.entity_type}</span></td>
                 <td><strong>{item.designation}</strong></td>
                 <td>{item.doctor_list_type || '-'}</td>
-                <td className={item.monthly_coverage < (item.warning_level || 90) ? 'text-warning' : ''}>{item.monthly_coverage}%</td>
+                <td className={item.monthly_coverage < (item.warning_level || 90) ? `text-${item.warning_color || 'warning'}` : ''}>{item.monthly_coverage}%</td>
                 <td>{item.quarterly_coverage}%</td>
                 <td>{item.yearly_coverage}%</td>
-                <td className="text-warning">{item.warning_level || 90}%</td>
-                <td className="text-danger">{item.alert_level || 70}%</td>
+                <td className={`text-${item.warning_color || 'warning'}`}>{item.warning_level || 90}%</td>
+                <td className={`text-${item.alert_color || 'danger'}`}>{item.alert_level || 70}%</td>
                 <td><span className={`badge badge-${item.warning_color || 'warning'}`}>{item.warning_color || 'warning'}</span></td>
                 <td><span className={`badge badge-${item.alert_color || 'danger'}`}>{item.alert_color || 'danger'}</span></td>
                 <td>{item.effective_from}</td>
