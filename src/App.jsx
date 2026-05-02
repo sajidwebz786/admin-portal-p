@@ -42,6 +42,7 @@ import ExpenseManagement from './components/ExpenseManagement'
 
 // System Setup Components
 import SystemSetup from './components/SystemSetup'
+import MasterAdministration from './components/MasterAdministration'
 
 import './App.css'
 
@@ -164,6 +165,7 @@ function AppContent() {
 
           {/* System Setup */}
           <Route path="/system-setup" element={<ProtectedRoute path="/system-setup" element={<SystemSetup />} />} />
+          <Route path="/master-administration" element={<ProtectedRoute path="/master-administration" element={<MasterAdministration />} />} />
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>

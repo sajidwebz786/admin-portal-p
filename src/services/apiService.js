@@ -480,6 +480,152 @@ class AdminAPIService {
     return this.request(`/master/samples/${id}`, { method: "DELETE" });
   }
 
+  // ----- Addition / Deletion Control -----
+  getPatches(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/patches${queryString}`);
+  }
+
+  createPatch(data) {
+    return this.request("/master/patches", { method: "POST", data });
+  }
+
+  updatePatch(id, data) {
+    return this.request(`/master/patches/${id}`, { method: "PUT", data });
+  }
+
+  deletePatch(id) {
+    return this.request(`/master/patches/${id}`, { method: "DELETE" });
+  }
+
+  mapPatchToHeadquarter(patchId, data) {
+    return this.request(`/master/patches/${patchId}/headquarters`, { method: "POST", data });
+  }
+
+  unmapPatchFromHeadquarter(patchId, hqId) {
+    return this.request(`/master/patches/${patchId}/headquarters/${hqId}`, { method: "DELETE" });
+  }
+
+  getStockists(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/stockists${queryString}`);
+  }
+
+  createStockist(data) {
+    return this.request("/master/stockists", { method: "POST", data });
+  }
+
+  updateStockist(id, data) {
+    return this.request(`/master/stockists/${id}`, { method: "PUT", data });
+  }
+
+  deleteStockist(id) {
+    return this.request(`/master/stockists/${id}`, { method: "DELETE" });
+  }
+
+  getHospitals(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/hospitals${queryString}`);
+  }
+
+  createHospital(data) {
+    return this.request("/master/hospitals", { method: "POST", data });
+  }
+
+  updateHospital(id, data) {
+    return this.request(`/master/hospitals/${id}`, { method: "PUT", data });
+  }
+
+  deleteHospital(id) {
+    return this.request(`/master/hospitals/${id}`, { method: "DELETE" });
+  }
+
+  getSVL(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/svl${queryString}`);
+  }
+
+  createSVL(data) {
+    return this.request("/master/svl", { method: "POST", data });
+  }
+
+  deleteSVL(id) {
+    return this.request(`/master/svl/${id}`, { method: "DELETE" });
+  }
+
+  getInputAllocations(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/input-allocations${queryString}`);
+  }
+
+  createInputAllocation(data) {
+    return this.request("/master/input-allocations", { method: "POST", data });
+  }
+
+  updateInputAllocation(id, data) {
+    return this.request(`/master/input-allocations/${id}`, { method: "PUT", data });
+  }
+
+  deleteInputAllocation(id) {
+    return this.request(`/master/input-allocations/${id}`, { method: "DELETE" });
+  }
+
+  getNotices(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/notices${queryString}`);
+  }
+
+  createNotice(data) {
+    return this.request("/master/notices", { method: "POST", data });
+  }
+
+  updateNotice(id, data) {
+    return this.request(`/master/notices/${id}`, { method: "PUT", data });
+  }
+
+  deleteNotice(id) {
+    return this.request(`/master/notices/${id}`, { method: "DELETE" });
+  }
+
+  getSOPPolicies(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/sop-policies${queryString}`);
+  }
+
+  createSOPPolicy(data) {
+    return this.request("/master/sop-policies", { method: "POST", data });
+  }
+
+  updateSOPPolicy(id, data) {
+    return this.request(`/master/sop-policies/${id}`, { method: "PUT", data });
+  }
+
+  deleteSOPPolicy(id) {
+    return this.request(`/master/sop-policies/${id}`, { method: "DELETE" });
+  }
+
+  getRateFixations(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/rate-fixations${queryString}`);
+  }
+
+  createRateFixation(data) {
+    return this.request("/master/rate-fixations", { method: "POST", data });
+  }
+
+  updateRateFixation(id, data) {
+    return this.request(`/master/rate-fixations/${id}`, { method: "PUT", data });
+  }
+
+  deleteRateFixation(id) {
+    return this.request(`/master/rate-fixations/${id}`, { method: "DELETE" });
+  }
+
+  getAuditLogs(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/master/audit-logs${queryString}`);
+  }
+
   // ----- Role Management (User Master RBAC) -----
   getRoles(status = null) {
     const params = status ? `?status=${status}` : '';

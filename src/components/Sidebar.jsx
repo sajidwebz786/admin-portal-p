@@ -33,6 +33,7 @@ const Sidebar = ({ onLogout, userRole }) => {
 
   // Main nav items
   const mainNavItems = [
+    { id: 'master-administration', label: 'Addition / Deletion Control', icon: 'fas fa-shield-alt', path: '/master-administration' },
     { id: 'expense-management', label: 'Expense Management', icon: 'fas fa-receipt', path: '/expense-management' },
     { id: 'doctors-chemists', label: 'Doctors/Chemists', icon: 'fas fa-user-md', path: '/doctors-chemists' },
     { id: 'sales-projections', label: 'Sales & Projections', icon: 'fas fa-chart-line', path: '/sales-projections' },
