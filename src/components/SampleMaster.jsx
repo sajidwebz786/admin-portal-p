@@ -116,14 +116,14 @@ const SampleMaster = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this sample?')) {
+    if (window.confirm('Inactivate this sample?')) {
       try {
         await apiService.deleteSample(id);
-        setSuccess('Sample deleted successfully!');
+        setSuccess('Sample inactivated successfully!');
         fetchData();
       } catch (error) {
         console.error('Error deleting sample:', error);
-        setError(error.message || 'Failed to delete sample');
+        setError(error.message || 'Failed to inactivate sample');
       }
     }
   };
@@ -166,9 +166,9 @@ const SampleMaster = () => {
         <div className="header-content">
           <h1 className="page-title">
             <i className="fas fa-vial"></i>
-            Sample Master
+            Sample Master Addition / Deletion
           </h1>
-          <p className="page-subtitle">Manage product samples for doctor calls</p>
+          <p className="page-subtitle">Add, edit, and inactivate product samples for doctor calls</p>
         </div>
         <button className="btn btn-primary btn-lg" onClick={() => {
           setError('');
@@ -257,14 +257,14 @@ const SampleMaster = () => {
                             onClick={() => handleEdit(sample)}
                             title="Edit"
                           >
-                            <i className="fas fa-edit"></i>
+                            <i className="fas fa-edit"></i> Edit
                           </button>
                           <button 
                             className="btn btn-sm btn-danger"
                             onClick={() => handleDelete(sample.id)}
-                            title="Delete"
+                            title="Inactivate"
                           >
-                            <i className="fas fa-trash"></i>
+                            <i className="fas fa-ban"></i> Inactivate
                           </button>
                         </td>
                       </tr>

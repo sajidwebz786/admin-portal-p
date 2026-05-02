@@ -112,14 +112,14 @@ const InputMaster = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this input?')) {
+    if (window.confirm('Inactivate this input?')) {
       try {
         await apiService.deleteInput(id);
-        setSuccess('Input deleted successfully!');
+        setSuccess('Input inactivated successfully!');
         fetchData();
       } catch (error) {
         console.error('Error deleting input:', error);
-        setError(error.message || 'Failed to delete input');
+        setError(error.message || 'Failed to inactivate input');
       }
     }
   };
@@ -161,9 +161,9 @@ const InputMaster = () => {
         <div className="header-content">
           <h1 className="page-title">
             <i className="fas fa-box-open"></i>
-            Input Master
+            Input Master Addition / Deletion
           </h1>
-          <p className="page-subtitle">Manage promotional materials and inputs</p>
+          <p className="page-subtitle">Add, edit, and inactivate promotional inputs</p>
         </div>
         <button className="btn btn-primary btn-lg" onClick={() => {
           setError('');
@@ -250,14 +250,14 @@ const InputMaster = () => {
                             onClick={() => handleEdit(input)}
                             title="Edit"
                           >
-                            <i className="fas fa-edit"></i>
+                            <i className="fas fa-edit"></i> Edit
                           </button>
                           <button 
                             className="btn btn-sm btn-danger"
                             onClick={() => handleDelete(input.id)}
-                            title="Delete"
+                            title="Inactivate"
                           >
-                            <i className="fas fa-trash"></i>
+                            <i className="fas fa-ban"></i> Inactivate
                           </button>
                         </td>
                       </tr>

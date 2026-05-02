@@ -109,6 +109,8 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
   margin-bottom: 25px;
   padding: 20px 25px;
   background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
@@ -118,6 +120,8 @@ html, body {
 
 .header-content {
   color: white;
+  min-width: 0;
+  flex: 1 1 260px;
 }
 
 .page-title {
@@ -126,7 +130,10 @@ html, body {
   font-weight: 600;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .page-title i {
@@ -469,9 +476,11 @@ html, body {
    font-weight: 500 !important;
    flex: 1 !important; /* Allow text to take remaining space */
    font-size: 0.75rem !important;
-   white-space: nowrap !important; /* Prevent text wrapping */
-   overflow: hidden !important;
-   text-overflow: ellipsis !important;
+   white-space: normal !important;
+   overflow: visible !important;
+   text-overflow: clip !important;
+   line-height: 1.2 !important;
+   overflow-wrap: anywhere !important;
  }
 
 /* Enhanced Logout Button */
@@ -925,7 +934,31 @@ html, body {
 .master-admin-actions {
   grid-column: 1 / -1;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+}
+
+.addition-deletion-title {
+  max-width: 100%;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.action-btn {
+  margin: 2px 4px 2px 0;
+  white-space: normal;
+}
+
+@media (max-width: 720px) {
+  .page-header-container {
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .page-header-container .btn {
+    width: 100%;
+    white-space: normal;
+  }
 }
 
 @media (max-width: 960px) {

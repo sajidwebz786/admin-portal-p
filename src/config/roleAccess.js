@@ -122,11 +122,11 @@ export const MENU_SECTIONS = {
   },
   doctors: {
     items: [
-      { id: 'doctor-master', label: 'Doctor Master', icon: 'fas fa-user-md', path: SCREENS.DOCTOR_MASTER },
-      { id: 'chemist-master', label: 'Chemist Master', icon: 'fas fa-clinic-medical', path: SCREENS.CHEMIST_MASTER },
-      { id: 'stockist-master', label: 'Stockist Master', icon: 'fas fa-warehouse', path: SCREENS.STOCKIST_MASTER },
-      { id: 'hospital-master', label: 'Hospital Master', icon: 'fas fa-hospital', path: SCREENS.HOSPITAL_MASTER },
-      { id: 'svl-master', label: 'SVL', icon: 'fas fa-list-check', path: SCREENS.SVL_MASTER },
+      { id: 'doctor-master', label: 'Doctor Addition / Deletion', icon: 'fas fa-user-md', path: SCREENS.DOCTOR_MASTER },
+      { id: 'chemist-master', label: 'Chemist Addition / Deletion', icon: 'fas fa-clinic-medical', path: SCREENS.CHEMIST_MASTER },
+      { id: 'stockist-master', label: 'Stockist Addition / Deletion', icon: 'fas fa-warehouse', path: SCREENS.STOCKIST_MASTER },
+      { id: 'hospital-master', label: 'Hospital Addition / Deletion', icon: 'fas fa-hospital', path: SCREENS.HOSPITAL_MASTER },
+      { id: 'svl-master', label: 'SVL Addition / Deletion', icon: 'fas fa-list-check', path: SCREENS.SVL_MASTER },
       { id: 'doctor-class', label: 'Doctor Class', icon: 'fas fa-tags', path: SCREENS.DOCTOR_CLASS },
       { id: 'doctor-category', label: 'Doctor Category', icon: 'fas fa-list-alt', path: SCREENS.DOCTOR_CATEGORY },
       { id: 'doctor-specialty', label: 'Doctor Specialty', icon: 'fas fa-stethoscope', path: SCREENS.DOCTOR_SPECIALTY },
@@ -147,16 +147,16 @@ export const MENU_SECTIONS = {
     items: [
       { id: 'input-type', label: 'Input Type', icon: 'fas fa-tags', path: SCREENS.INPUT_TYPE },
       { id: 'input-class', label: 'Input Class', icon: 'fas fa-layer-group', path: SCREENS.INPUT_CLASS },
-      { id: 'input-master', label: 'Input Master', icon: 'fas fa-file-alt', path: SCREENS.INPUT_MASTER },
-      { id: 'sample-master', label: 'Sample Master', icon: 'fas fa-prescription-bottle', path: SCREENS.SAMPLE_MASTER },
-      { id: 'input-allocation', label: 'Input Allocation', icon: 'fas fa-boxes-stacked', path: SCREENS.INPUT_ALLOCATION },
-      { id: 'rate-fixation', label: 'Rate Fixation', icon: 'fas fa-rupee-sign', path: SCREENS.RATE_FIXATION }
+      { id: 'input-master', label: 'Input Addition / Deletion', icon: 'fas fa-file-alt', path: SCREENS.INPUT_MASTER },
+      { id: 'sample-master', label: 'Sample Addition / Deletion', icon: 'fas fa-prescription-bottle', path: SCREENS.SAMPLE_MASTER },
+      { id: 'input-allocation', label: 'Input Allocation Addition / Deletion', icon: 'fas fa-boxes-stacked', path: SCREENS.INPUT_ALLOCATION },
+      { id: 'rate-fixation', label: 'Rate Fixation Addition / Deletion', icon: 'fas fa-rupee-sign', path: SCREENS.RATE_FIXATION }
     ]
   },
   policy: {
     items: [
-      { id: 'notice-upload', label: 'Notice Upload', icon: 'fas fa-bullhorn', path: SCREENS.NOTICE_UPLOAD },
-      { id: 'sop-master', label: 'SOP Master', icon: 'fas fa-file-signature', path: SCREENS.SOP_MASTER }
+      { id: 'notice-upload', label: 'Notice Addition / Deletion', icon: 'fas fa-bullhorn', path: SCREENS.NOTICE_UPLOAD },
+      { id: 'sop-master', label: 'SOP Addition / Deletion', icon: 'fas fa-file-signature', path: SCREENS.SOP_MASTER }
     ]
   },
   expense: {

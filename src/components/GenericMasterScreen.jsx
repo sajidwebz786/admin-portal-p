@@ -25,7 +25,8 @@ const GenericMasterScreen = ({ masterKey }) => {
 
   const configs = useMemo(() => ({
     doctors: {
-      title: 'Doctor Master',
+      title: 'Doctor Master Addition / Deletion',
+      shortTitle: 'Doctor',
       load: () => adminAPI.getDoctors(),
       listKey: 'doctors',
       create: (data) => adminAPI.createDoctor(data),
@@ -53,7 +54,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     chemists: {
-      title: 'Chemist Master',
+      title: 'Chemist Master Addition / Deletion',
+      shortTitle: 'Chemist',
       load: () => adminAPI.getChemists(),
       listKey: 'chemists',
       create: (data) => adminAPI.createChemist(data),
@@ -76,7 +78,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     stockists: {
-      title: 'Stockist Master',
+      title: 'Stockist Master Addition / Deletion',
+      shortTitle: 'Stockist',
       load: () => adminAPI.getStockists(),
       create: (data) => adminAPI.createStockist(data),
       update: (id, data) => adminAPI.updateStockist(id, data),
@@ -93,7 +96,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     hospitals: {
-      title: 'Hospital Master',
+      title: 'Hospital Master Addition / Deletion',
+      shortTitle: 'Hospital',
       load: () => adminAPI.getHospitals(),
       create: (data) => adminAPI.createHospital(data),
       update: (id, data) => adminAPI.updateHospital(id, data),
@@ -110,7 +114,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     svl: {
-      title: 'Standard Visiting List',
+      title: 'SVL Addition / Deletion',
+      shortTitle: 'SVL Entry',
       load: () => adminAPI.getSVL(),
       create: (data) => adminAPI.createSVL(data),
       remove: (id) => adminAPI.deleteSVL(id),
@@ -125,7 +130,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     inputAllocations: {
-      title: 'Input Allocation',
+      title: 'Input Allocation Addition / Deletion',
+      shortTitle: 'Input Allocation',
       load: () => adminAPI.getInputAllocations(),
       create: (data) => adminAPI.createInputAllocation(data),
       update: (id, data) => adminAPI.updateInputAllocation(id, data),
@@ -143,7 +149,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     notices: {
-      title: 'Notice Upload',
+      title: 'Notice Upload Addition / Deletion',
+      shortTitle: 'Notice',
       load: () => adminAPI.getNotices(),
       create: (data) => adminAPI.createNotice(data),
       update: (id, data) => adminAPI.updateNotice(id, data),
@@ -159,7 +166,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     sopPolicies: {
-      title: 'SOP / Policy Master',
+      title: 'SOP / Policy Addition / Deletion',
+      shortTitle: 'SOP / Policy',
       load: () => adminAPI.getSOPPolicies(),
       create: (data) => adminAPI.createSOPPolicy(data),
       update: (id, data) => adminAPI.updateSOPPolicy(id, data),
@@ -177,7 +185,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     rateFixations: {
-      title: 'Rate Fixation',
+      title: 'Rate Fixation Addition / Deletion',
+      shortTitle: 'Rate Fixation',
       load: () => adminAPI.getRateFixations(),
       create: (data) => adminAPI.createRateFixation(data),
       update: (id, data) => adminAPI.updateRateFixation(id, data),
@@ -257,7 +266,7 @@ const GenericMasterScreen = ({ masterKey }) => {
   }
 
   const handleDelete = async (item) => {
-    if (!window.confirm(`Inactivate ${config.name(item) || config.title}?`)) return
+    if (!window.confirm(`Inactivate ${config.name(item) || config.shortTitle || config.title}?`)) return
     await config.remove(item.id)
     await loadRecords()
   }
@@ -293,14 +302,14 @@ const GenericMasterScreen = ({ masterKey }) => {
   return (
     <div className="section-content">
       <div className="page-header">
-        <h2>{config.title}</h2>
+        <h2 className="addition-deletion-title">{config.title}</h2>
         <button type="button" className="btn btn-secondary" onClick={loadRecords}>Refresh</button>
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
       <form className="master-admin-form" onSubmit={handleSubmit}>
         {config.fields.map(renderField)}
         <div className="master-admin-actions">
-          <button type="submit" className="btn btn-primary">{editing ? 'Save Changes' : `Add ${config.title}`}</button>
+          <button type="submit" className="btn btn-primary">{editing ? 'Save Changes' : `Add ${config.shortTitle || config.title}`}</button>
           {editing && <button type="button" className="btn btn-secondary" onClick={() => { setEditing(null); setForm(config.defaults || {}) }}>Cancel</button>}
         </div>
       </form>
@@ -324,8 +333,8 @@ const GenericMasterScreen = ({ masterKey }) => {
               <td>{item.isActive === false || item.status === 'inactive' ? 'Inactive' : 'Active'}</td>
               <td>{item.updatedAt || item.updated_at || '-'}</td>
               <td>
-                {config.update && <button type="button" className="btn btn-outline-primary btn-sm me-1" onClick={() => { setEditing(item); setForm({ ...(config.defaults || {}), ...item }) }}>Edit</button>}
-                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(item)}>Inactivate</button>
+                {config.update && <button type="button" className="btn btn-outline-primary btn-sm action-btn" onClick={() => { setEditing(item); setForm({ ...(config.defaults || {}), ...item }) }}>Edit</button>}
+                <button type="button" className="btn btn-outline-danger btn-sm action-btn" onClick={() => handleDelete(item)}>Inactivate</button>
               </td>
             </tr>
           ))}
