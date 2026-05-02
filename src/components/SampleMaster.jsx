@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import apiService from '../services/apiService';
 
 const SampleMaster = () => {
+  const location = useLocation();
   const [samples, setSamples] = useState([]);
   const [products, setProducts] = useState([]);
   const [packSizes, setPackSizes] = useState([]);
@@ -24,6 +26,14 @@ const SampleMaster = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('open') === 'add') {
+      setEditingId(null);
+      setShowModal(true);
+    }
+  }, [location.search]);
 
   const fetchData = async () => {
     try {

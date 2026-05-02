@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../services/apiService'
 import adminAPI from '../services/apiService'
 
@@ -22,6 +23,35 @@ const actionLabels = {
   update: 'Edit',
   delete: 'Deletion'
 }
+
+const quickActionSections = [
+  {
+    title: 'Customer Masters',
+    actions: [
+      { label: 'Doctor Addition / Deletion', path: '/doctor-master', icon: 'fas fa-user-md' },
+      { label: 'Chemist Addition / Deletion', path: '/chemist-master', icon: 'fas fa-clinic-medical' },
+      { label: 'Stockist Addition / Deletion', path: '/stockist-master', icon: 'fas fa-warehouse' },
+      { label: 'Hospital Addition / Deletion', path: '/hospital-master', icon: 'fas fa-hospital' },
+      { label: 'SVL Addition / Deletion', path: '/svl-master', icon: 'fas fa-list-check' }
+    ]
+  },
+  {
+    title: 'Product & Input',
+    actions: [
+      { label: 'Input Master Addition / Deletion', path: '/input-master?open=add', icon: 'fas fa-gift' },
+      { label: 'Sample Master Addition / Deletion', path: '/sample-master?open=add', icon: 'fas fa-vial' },
+      { label: 'Input Allocation Addition / Deletion', path: '/input-allocation', icon: 'fas fa-calendar-check' },
+      { label: 'Rate Fixation Addition / Deletion', path: '/rate-fixation', icon: 'fas fa-tags' }
+    ]
+  },
+  {
+    title: 'Policy & Control',
+    actions: [
+      { label: 'Notice Addition / Deletion', path: '/notice-upload', icon: 'fas fa-bullhorn' },
+      { label: 'SOP Addition / Deletion', path: '/sop-master', icon: 'fas fa-file-shield' }
+    ]
+  }
+]
 
 const AdditionDeletionControl = () => {
   const [pendingApprovals, setPendingApprovals] = useState([])
@@ -123,6 +153,27 @@ const AdditionDeletionControl = () => {
         <div className="summary-card">
           <h3>Deletion Requests</h3>
           <p className="count">{approvalStats.delete || 0}</p>
+        </div>
+      </div>
+
+      <div className="box quick-actions-box">
+        <div className="box-header with-border">
+          <h3 className="box-title">Addition / Deletion Quick Actions</h3>
+        </div>
+        <div className="quick-actions-grid">
+          {quickActionSections.map((section) => (
+            <div className="quick-action-section" key={section.title}>
+              <h4>{section.title}</h4>
+              <div className="quick-action-buttons">
+                {section.actions.map((action) => (
+                  <Link className="quick-action-btn" to={action.path} key={action.path}>
+                    <i className={action.icon} aria-hidden="true" />
+                    <span>{action.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

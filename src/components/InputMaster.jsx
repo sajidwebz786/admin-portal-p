@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import apiService from '../services/apiService';
 
 const InputMaster = () => {
+  const location = useLocation();
   const [inputs, setInputs] = useState([]);
   const [inputTypes, setInputTypes] = useState([]);
   const [inputClasses, setInputClasses] = useState([]);
@@ -23,6 +25,14 @@ const InputMaster = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('open') === 'add') {
+      setEditingId(null);
+      setShowModal(true);
+    }
+  }, [location.search]);
 
   const fetchData = async () => {
     try {

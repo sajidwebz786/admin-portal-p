@@ -973,6 +973,66 @@ html, body {
   gap: 16px;
 }
 
+.quick-actions-box {
+  margin-bottom: 16px;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.quick-action-section h4 {
+  color: #1f2937;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+
+.quick-action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 8px;
+}
+
+.quick-action-btn {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  color: #1f2937;
+  display: flex;
+  gap: 9px;
+  min-height: 46px;
+  padding: 10px 12px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.quick-action-btn:hover,
+.quick-action-btn:focus {
+  border-color: #25456f;
+  box-shadow: 0 6px 16px rgba(37, 69, 111, 0.12);
+  color: #25456f;
+  text-decoration: none;
+}
+
+.quick-action-btn i {
+  flex: 0 0 18px;
+  text-align: center;
+}
+
+.quick-action-btn span {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
 .audit-mini-summary,
 .governance-list {
   display: flex;
@@ -997,6 +1057,16 @@ html, body {
 
 @media (max-width: 1100px) {
   .control-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .quick-action-buttons {
     grid-template-columns: 1fr;
   }
 }
