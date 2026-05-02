@@ -387,7 +387,7 @@ const MasterAdministration = () => {
   const rows = records[activeKey] || []
 
   return (
-    <div className="content-wrapper">
+    <div className="section-content">
       <section className="content-header">
         <h1>Master Administration</h1>
       </section>
