@@ -10,6 +10,7 @@ const Sidebar = ({ onLogout, userRole }) => {
   const [productsExpanded, setProductsExpanded] = useState(true)
   const [territoryExpanded, setTerritoryExpanded] = useState(true)
   const [inputsExpanded, setInputsExpanded] = useState(true)
+  const [policyExpanded, setPolicyExpanded] = useState(true)
   const [expenseExpanded, setExpenseExpanded] = useState(true)
 
   const allowedScreens = getAllowedScreens(userRole)
@@ -23,6 +24,7 @@ const Sidebar = ({ onLogout, userRole }) => {
   const productsItems = filterAccessible(MENU_SECTIONS.products.items)
   const territoryItems = filterAccessible(MENU_SECTIONS.territory.items)
   const inputsItems = filterAccessible(MENU_SECTIONS.inputs.items)
+  const policyItems = filterAccessible(MENU_SECTIONS.policy.items)
   const expenseItems = filterAccessible(MENU_SECTIONS.expense.items)
   const mastersItems = [
     { id: 'user-management', label: 'User Master', icon: 'fas fa-users', path: '/user-management' },
@@ -33,7 +35,7 @@ const Sidebar = ({ onLogout, userRole }) => {
 
   // Main nav items
   const mainNavItems = [
-    { id: 'master-administration', label: 'Addition / Deletion Control', icon: 'fas fa-shield-alt', path: '/master-administration' },
+    { id: 'addition-deletion-control', label: 'Addition / Deletion Control', icon: 'fas fa-shield-alt', path: '/addition-deletion-control' },
     { id: 'expense-management', label: 'Expense Management', icon: 'fas fa-receipt', path: '/expense-management' },
     { id: 'doctors-chemists', label: 'Doctors/Chemists', icon: 'fas fa-user-md', path: '/doctors-chemists' },
     { id: 'sales-projections', label: 'Sales & Projections', icon: 'fas fa-chart-line', path: '/sales-projections' },
@@ -46,12 +48,13 @@ const Sidebar = ({ onLogout, userRole }) => {
   const isDoctorsActive = doctorsItems.some(item => location.pathname === item.path)
   const isProductsActive = productsItems.some(item => location.pathname === item.path)
   const isInputsActive = inputsItems.some(item => location.pathname === item.path)
+  const isPolicyActive = policyItems.some(item => location.pathname === item.path)
   const isTerritoryActive = territoryItems.some(item => location.pathname === item.path)
   const isExpenseActive = expenseItems.some(item => location.pathname === item.path) || location.pathname === '/expense-management'
   const isMastersActive = visibleMastersItems.some(item => location.pathname === item.path)
 
   // Should Masters parent show?
-  const showMasters = hasAnyAccess(MENU_SECTIONS.doctors.items) || hasAnyAccess(MENU_SECTIONS.products.items) || hasAnyAccess(MENU_SECTIONS.territory.items) || hasAnyAccess(MENU_SECTIONS.inputs.items) || hasAnyAccess(MENU_SECTIONS.expense.items) || visibleMastersItems.length > 0
+  const showMasters = hasAnyAccess(MENU_SECTIONS.doctors.items) || hasAnyAccess(MENU_SECTIONS.products.items) || hasAnyAccess(MENU_SECTIONS.territory.items) || hasAnyAccess(MENU_SECTIONS.inputs.items) || hasAnyAccess(MENU_SECTIONS.policy.items) || hasAnyAccess(MENU_SECTIONS.expense.items) || visibleMastersItems.length > 0
 
   const renderSubItems = (items, isActive) => (
     <ul className="nav nav-treeview">
@@ -113,7 +116,7 @@ const Sidebar = ({ onLogout, userRole }) => {
             {/* Masters - only if user has access to any sub-item */}
             {showMasters && (
               <li className="nav-item has-treeview menu-open">
-                <Link to="#" className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive || isExpenseActive || isMastersActive ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setMastersExpanded(!mastersExpanded) }}>
+                <Link to="#" className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive || isPolicyActive || isExpenseActive || isMastersActive ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setMastersExpanded(!mastersExpanded) }}>
                   <i className="nav-icon fas fa-database"></i>
                   <p>Masters<i className={`right fas fa-angle-left ${mastersExpanded ? 'transform-rotate' : ''}`}></i></p>
                 </Link>
@@ -124,6 +127,7 @@ const Sidebar = ({ onLogout, userRole }) => {
                     {renderSection('Doctors', 'fas fa-user-md', doctorsItems, doctorsExpanded, setDoctorsExpanded, isDoctorsActive)}
                     {renderSection('Products', 'fas fa-pills', productsItems, productsExpanded, setProductsExpanded, isProductsActive)}
                     {renderSection('Inputs & Samples', 'fas fa-file-alt', inputsItems, inputsExpanded, setInputsExpanded, isInputsActive)}
+                    {renderSection('Policy & Control', 'fas fa-shield-alt', policyItems, policyExpanded, setPolicyExpanded, isPolicyActive)}
                     {renderSection('Expense', 'fas fa-receipt', expenseItems, expenseExpanded, setExpenseExpanded, isExpenseActive)}
                   </ul>
                 )}

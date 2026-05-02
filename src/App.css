@@ -889,56 +889,6 @@ html, body {
   border-color: #4a5568 !important;
 }
 /* Master Administration */
-.master-admin-layout {
-  display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 16px;
-}
-
-.master-admin-nav {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 12px;
-  align-self: start;
-}
-
-.master-admin-group + .master-admin-group {
-  margin-top: 16px;
-}
-
-.master-admin-group h4 {
-  font-size: 13px;
-  text-transform: uppercase;
-  color: #6b7280;
-  margin: 0 0 8px;
-}
-
-.master-admin-group button {
-  display: block;
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: #1f2937;
-  text-align: left;
-  padding: 8px 10px;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.master-admin-group button.active,
-.master-admin-group button:hover {
-  background: #eaf1ff;
-  color: #1d4ed8;
-}
-
-.master-admin-main .box {
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 16px;
-}
-
 .master-admin-form {
   display: grid;
   grid-template-columns: repeat(3, minmax(180px, 1fr));
@@ -979,8 +929,41 @@ html, body {
 }
 
 @media (max-width: 960px) {
-  .master-admin-layout,
   .master-admin-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+.control-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 16px;
+}
+
+.audit-mini-summary,
+.governance-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.audit-mini-summary span,
+.governance-list span {
+  background: #eef2ff;
+  color: #1e3a8a;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.governance-note {
+  margin-top: 16px;
+}
+
+@media (max-width: 1100px) {
+  .control-grid {
     grid-template-columns: 1fr;
   }
 }

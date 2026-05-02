@@ -1,7 +1,5 @@
 // Role-Based Screen Access Configuration
-// Based on User Master document: Admin, HR, RBM, ABM, TBM, MR, Billing User
 
-// Screen groups
 export const SCREENS = {
   DASHBOARD: '/dashboard',
   USER_MANAGEMENT: '/user-management',
@@ -13,12 +11,15 @@ export const SCREENS = {
   ACTIVITY_APPROVALS: '/activity-approvals',
   RULE_CONFIG: '/rule-config',
   REPORTS: '/reports',
-  // Masters
+  DOCTOR_MASTER: '/doctor-master',
   DOCTOR_CLASS: '/doctor-class',
   DOCTOR_CATEGORY: '/doctor-category',
   DOCTOR_SPECIALTY: '/doctor-specialty',
   DOCTOR_QUALIFICATION: '/doctor-qualification',
   CHEMIST_MASTER: '/chemist-master',
+  STOCKIST_MASTER: '/stockist-master',
+  HOSPITAL_MASTER: '/hospital-master',
+  SVL_MASTER: '/svl-master',
   APPROVALS: '/approvals',
   DIVISION: '/division-master',
   BRAND_GROUP: '/brand-group-master',
@@ -29,103 +30,89 @@ export const SCREENS = {
   INPUT_CLASS: '/input-class-master',
   INPUT_MASTER: '/input-master',
   SAMPLE_MASTER: '/sample-master',
+  INPUT_ALLOCATION: '/input-allocation',
+  RATE_FIXATION: '/rate-fixation',
+  NOTICE_UPLOAD: '/notice-upload',
+  SOP_MASTER: '/sop-master',
   EXPENSE_TYPE: '/expense-type-master',
   TRAVEL_MODE: '/travel-mode-master',
   FARE_CHART: '/fare-chart-master',
   EXPENSE_MANAGEMENT: '/expense-management',
-  SYSTEM_SETUP: '/system-setup'
-  , MASTER_ADMINISTRATION: '/master-administration'
+  SYSTEM_SETUP: '/system-setup',
+  ADDITION_DELETION_CONTROL: '/addition-deletion-control'
 }
 
-// Role definitions with allowed screens
+const FULL_MASTER_ACCESS = [
+  SCREENS.DOCTOR_MASTER, SCREENS.CHEMIST_MASTER, SCREENS.STOCKIST_MASTER,
+  SCREENS.HOSPITAL_MASTER, SCREENS.SVL_MASTER, SCREENS.DOCTOR_CLASS,
+  SCREENS.DOCTOR_CATEGORY, SCREENS.DOCTOR_SPECIALTY, SCREENS.DOCTOR_QUALIFICATION,
+  SCREENS.DIVISION, SCREENS.BRAND_GROUP, SCREENS.PRODUCT_CATEGORY,
+  SCREENS.PACK_SIZE, SCREENS.STRENGTH, SCREENS.PRODUCT, SCREENS.INPUT_TYPE,
+  SCREENS.INPUT_CLASS, SCREENS.INPUT_MASTER, SCREENS.SAMPLE_MASTER,
+  SCREENS.INPUT_ALLOCATION, SCREENS.RATE_FIXATION, SCREENS.NOTICE_UPLOAD,
+  SCREENS.SOP_MASTER, SCREENS.EXPENSE_TYPE, SCREENS.TRAVEL_MODE,
+  SCREENS.FARE_CHART, SCREENS.HEADQUARTER, SCREENS.TERRITORY
+]
+
 export const ROLE_ACCESS = {
-  // Full system control
   admin: [
     SCREENS.DASHBOARD, SCREENS.USER_MANAGEMENT, SCREENS.DOCTORS_CHEMISTS,
-    SCREENS.TERRITORY, SCREENS.HEADQUARTER, SCREENS.PRODUCT,
     SCREENS.SALES_PROJECTIONS, SCREENS.ACTIVITY_APPROVALS, SCREENS.RULE_CONFIG,
-    SCREENS.REPORTS, SCREENS.DOCTOR_CLASS, SCREENS.DOCTOR_CATEGORY,
-    SCREENS.DOCTOR_SPECIALTY, SCREENS.DOCTOR_QUALIFICATION, SCREENS.CHEMIST_MASTER,
-    SCREENS.APPROVALS,
-    SCREENS.DIVISION, SCREENS.BRAND_GROUP, SCREENS.PRODUCT_CATEGORY,
-    SCREENS.PACK_SIZE, SCREENS.STRENGTH, SCREENS.INPUT_TYPE, SCREENS.INPUT_CLASS,
-    SCREENS.INPUT_MASTER, SCREENS.SAMPLE_MASTER, SCREENS.EXPENSE_TYPE,
-    SCREENS.TRAVEL_MODE, SCREENS.FARE_CHART, SCREENS.EXPENSE_MANAGEMENT,
-    SCREENS.SYSTEM_SETUP, SCREENS.MASTER_ADMINISTRATION
+    SCREENS.REPORTS, SCREENS.APPROVALS, SCREENS.EXPENSE_MANAGEMENT,
+    SCREENS.SYSTEM_SETUP, SCREENS.ADDITION_DELETION_CONTROL, ...FULL_MASTER_ACCESS
   ],
-  // HR - Employee & salary focus
   HR: [
     SCREENS.DASHBOARD, SCREENS.USER_MANAGEMENT, SCREENS.REPORTS,
     SCREENS.EXPENSE_MANAGEMENT, SCREENS.FARE_CHART
   ],
-  // NSM - National overview
   NSM: [
     SCREENS.DASHBOARD, SCREENS.USER_MANAGEMENT, SCREENS.DOCTORS_CHEMISTS,
-    SCREENS.TERRITORY, SCREENS.HEADQUARTER, SCREENS.PRODUCT,
     SCREENS.SALES_PROJECTIONS, SCREENS.ACTIVITY_APPROVALS, SCREENS.REPORTS,
-    SCREENS.DOCTOR_CLASS, SCREENS.DOCTOR_CATEGORY, SCREENS.DOCTOR_SPECIALTY,
-    SCREENS.DOCTOR_QUALIFICATION, SCREENS.CHEMIST_MASTER, SCREENS.APPROVALS, SCREENS.DIVISION,
-    SCREENS.BRAND_GROUP, SCREENS.PRODUCT_CATEGORY, SCREENS.PACK_SIZE,
-    SCREENS.STRENGTH, SCREENS.INPUT_TYPE, SCREENS.INPUT_CLASS,
-    SCREENS.INPUT_MASTER, SCREENS.SAMPLE_MASTER, SCREENS.EXPENSE_TYPE,
-    SCREENS.TRAVEL_MODE, SCREENS.FARE_CHART, SCREENS.EXPENSE_MANAGEMENT,
-    SCREENS.SYSTEM_SETUP, SCREENS.MASTER_ADMINISTRATION
+    SCREENS.APPROVALS, SCREENS.EXPENSE_MANAGEMENT, SCREENS.SYSTEM_SETUP,
+    SCREENS.ADDITION_DELETION_CONTROL, ...FULL_MASTER_ACCESS
   ],
-  // RBM - Regional management
   RBM: [
     SCREENS.DASHBOARD, SCREENS.DOCTORS_CHEMISTS, SCREENS.SALES_PROJECTIONS,
     SCREENS.ACTIVITY_APPROVALS, SCREENS.REPORTS, SCREENS.APPROVALS,
-    SCREENS.EXPENSE_MANAGEMENT, SCREENS.USER_MANAGEMENT, SCREENS.SYSTEM_SETUP
+    SCREENS.ADDITION_DELETION_CONTROL, SCREENS.EXPENSE_MANAGEMENT,
+    SCREENS.USER_MANAGEMENT, SCREENS.SYSTEM_SETUP
   ],
-  // ABM - Area management
   ABM: [
     SCREENS.DASHBOARD, SCREENS.DOCTORS_CHEMISTS, SCREENS.SALES_PROJECTIONS,
-    SCREENS.ACTIVITY_APPROVALS, SCREENS.EXPENSE_MANAGEMENT, SCREENS.SYSTEM_SETUP
+    SCREENS.ACTIVITY_APPROVALS, SCREENS.ADDITION_DELETION_CONTROL,
+    SCREENS.EXPENSE_MANAGEMENT, SCREENS.SYSTEM_SETUP
   ],
-  // TBM - Territory
   TBM: [
     SCREENS.DASHBOARD, SCREENS.DOCTORS_CHEMISTS, SCREENS.SALES_PROJECTIONS,
     SCREENS.EXPENSE_MANAGEMENT
   ],
-  // MR - Field representative (limited)
   'Field Representative': [
     SCREENS.DASHBOARD, SCREENS.DOCTORS_CHEMISTS, SCREENS.SALES_PROJECTIONS,
     SCREENS.EXPENSE_MANAGEMENT
   ],
-  // Billing User
   'Billing User': [
     SCREENS.DASHBOARD, SCREENS.PRODUCT, SCREENS.REPORTS
   ],
-  // Legacy roles
   user: [SCREENS.DASHBOARD, SCREENS.DOCTORS_CHEMISTS, SCREENS.SALES_PROJECTIONS, SCREENS.EXPENSE_MANAGEMENT],
   manager: [SCREENS.DASHBOARD, SCREENS.DOCTORS_CHEMISTS, SCREENS.SALES_PROJECTIONS, SCREENS.ACTIVITY_APPROVALS, SCREENS.REPORTS, SCREENS.EXPENSE_MANAGEMENT]
 }
 
-// Get allowed screens for a role
 export const getAllowedScreens = (role) => {
   if (!role) return [SCREENS.DASHBOARD]
-  // Normalize role
-  const normalizedRole = role.charAt(0).toUpperCase() + role.slice(1)
-  
-  // Check exact match first
   if (ROLE_ACCESS[role]) return ROLE_ACCESS[role]
-  
-  // Check normalized
+
   for (const [key, screens] of Object.entries(ROLE_ACCESS)) {
     if (key.toLowerCase() === role.toLowerCase()) return screens
   }
-  
-  // Default: only dashboard
+
   return [SCREENS.DASHBOARD]
 }
 
-// Check if a specific screen is accessible
 export const canAccessScreen = (role, screenPath) => {
   const allowed = getAllowedScreens(role)
   return allowed.includes(screenPath)
 }
 
-// Menu items grouped by section
 export const MENU_SECTIONS = {
   territory: {
     items: [
@@ -135,6 +122,11 @@ export const MENU_SECTIONS = {
   },
   doctors: {
     items: [
+      { id: 'doctor-master', label: 'Doctor Master', icon: 'fas fa-user-md', path: SCREENS.DOCTOR_MASTER },
+      { id: 'chemist-master', label: 'Chemist Master', icon: 'fas fa-clinic-medical', path: SCREENS.CHEMIST_MASTER },
+      { id: 'stockist-master', label: 'Stockist Master', icon: 'fas fa-warehouse', path: SCREENS.STOCKIST_MASTER },
+      { id: 'hospital-master', label: 'Hospital Master', icon: 'fas fa-hospital', path: SCREENS.HOSPITAL_MASTER },
+      { id: 'svl-master', label: 'SVL', icon: 'fas fa-list-check', path: SCREENS.SVL_MASTER },
       { id: 'doctor-class', label: 'Doctor Class', icon: 'fas fa-tags', path: SCREENS.DOCTOR_CLASS },
       { id: 'doctor-category', label: 'Doctor Category', icon: 'fas fa-list-alt', path: SCREENS.DOCTOR_CATEGORY },
       { id: 'doctor-specialty', label: 'Doctor Specialty', icon: 'fas fa-stethoscope', path: SCREENS.DOCTOR_SPECIALTY },
@@ -156,7 +148,15 @@ export const MENU_SECTIONS = {
       { id: 'input-type', label: 'Input Type', icon: 'fas fa-tags', path: SCREENS.INPUT_TYPE },
       { id: 'input-class', label: 'Input Class', icon: 'fas fa-layer-group', path: SCREENS.INPUT_CLASS },
       { id: 'input-master', label: 'Input Master', icon: 'fas fa-file-alt', path: SCREENS.INPUT_MASTER },
-      { id: 'sample-master', label: 'Sample Master', icon: 'fas fa-prescription-bottle', path: SCREENS.SAMPLE_MASTER }
+      { id: 'sample-master', label: 'Sample Master', icon: 'fas fa-prescription-bottle', path: SCREENS.SAMPLE_MASTER },
+      { id: 'input-allocation', label: 'Input Allocation', icon: 'fas fa-boxes-stacked', path: SCREENS.INPUT_ALLOCATION },
+      { id: 'rate-fixation', label: 'Rate Fixation', icon: 'fas fa-rupee-sign', path: SCREENS.RATE_FIXATION }
+    ]
+  },
+  policy: {
+    items: [
+      { id: 'notice-upload', label: 'Notice Upload', icon: 'fas fa-bullhorn', path: SCREENS.NOTICE_UPLOAD },
+      { id: 'sop-master', label: 'SOP Master', icon: 'fas fa-file-signature', path: SCREENS.SOP_MASTER }
     ]
   },
   expense: {
