@@ -28,27 +28,27 @@ const quickActionSections = [
   {
     title: 'Customer Masters',
     actions: [
-      { label: 'Doctor Addition / Deletion', path: '/doctor-master', icon: 'fas fa-user-md' },
-      { label: 'Chemist Addition / Deletion', path: '/chemist-master', icon: 'fas fa-clinic-medical' },
-      { label: 'Stockist Addition / Deletion', path: '/stockist-master', icon: 'fas fa-warehouse' },
-      { label: 'Hospital Addition / Deletion', path: '/hospital-master', icon: 'fas fa-hospital' },
-      { label: 'SVL Addition / Deletion', path: '/svl-master', icon: 'fas fa-list-check' }
+      { label: 'Doctor Master', detail: 'Doctor creation, transfer, edit, and inactivation', addPath: '/doctor-master', deletionPath: '/doctor-master', icon: 'fas fa-user-md' },
+      { label: 'Chemist Master', detail: 'Chemist addition, doctor linking, edit, and inactivation', addPath: '/chemist-master', deletionPath: '/chemist-master', icon: 'fas fa-clinic-medical' },
+      { label: 'Stockist Master', detail: 'Stockist master record governance', addPath: '/stockist-master', deletionPath: '/stockist-master', icon: 'fas fa-warehouse' },
+      { label: 'Hospital Master', detail: 'Hospital master record governance', addPath: '/hospital-master', deletionPath: '/hospital-master', icon: 'fas fa-hospital' },
+      { label: 'Standard Visiting List', detail: 'HQ-wise doctor SVL allocation and yearly revision', addPath: '/svl-master', deletionPath: '/svl-master', icon: 'fas fa-list-check' }
     ]
   },
   {
     title: 'Product & Input',
     actions: [
-      { label: 'Input Master Addition / Deletion', path: '/input-master?open=add', icon: 'fas fa-gift' },
-      { label: 'Sample Master Addition / Deletion', path: '/sample-master?open=add', icon: 'fas fa-vial' },
-      { label: 'Input Allocation Addition / Deletion', path: '/input-allocation', icon: 'fas fa-calendar-check' },
-      { label: 'Rate Fixation Addition / Deletion', path: '/rate-fixation', icon: 'fas fa-tags' }
+      { label: 'Input Master', detail: 'Promotional input addition, edit, and inactivation', addPath: '/input-master?open=add', deletionPath: '/input-master', icon: 'fas fa-gift' },
+      { label: 'Sample Master', detail: 'Product sample addition, edit, and inactivation', addPath: '/sample-master?open=add', deletionPath: '/sample-master', icon: 'fas fa-vial' },
+      { label: 'Input Allocation', detail: 'Monthly or quarterly allocation with effective dates', addPath: '/input-allocation', deletionPath: '/input-allocation', icon: 'fas fa-calendar-check' },
+      { label: 'Rate Fixation', detail: 'State, product, sample, input, and rate history', addPath: '/rate-fixation', deletionPath: '/rate-fixation', icon: 'fas fa-tags' }
     ]
   },
   {
     title: 'Policy & Control',
     actions: [
-      { label: 'Notice Addition / Deletion', path: '/notice-upload', icon: 'fas fa-bullhorn' },
-      { label: 'SOP Addition / Deletion', path: '/sop-master', icon: 'fas fa-file-shield' }
+      { label: 'Notice Upload', detail: 'HO notices, documents, audience, and status control', addPath: '/notice-upload', deletionPath: '/notice-upload', icon: 'fas fa-bullhorn' },
+      { label: 'SOP / Policy', detail: 'Designation-wise SOP and policy governance', addPath: '/sop-master', deletionPath: '/sop-master', icon: 'fas fa-file-shield' }
     ]
   }
 ]
@@ -129,36 +129,20 @@ const AdditionDeletionControl = () => {
 
   return (
     <div className="section-content addition-control">
-      <div className="page-header">
-        <h2>Addition / Deletion Control</h2>
+      <div className="page-header governance-header">
+        <div>
+          <h2>Addition / Deletion Governance</h2>
+          <p>Central control center for master additions, edits, inactivations, approvals, and audit history.</p>
+        </div>
         <button className="btn btn-secondary" type="button" onClick={loadControlData}>Refresh</button>
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
 
-      <div className="approval-summary">
-        <div className="summary-card">
-          <h3>Pending Requests</h3>
-          <p className="count">{pendingApprovals.length}</p>
-        </div>
-        <div className="summary-card">
-          <h3>Additions</h3>
-          <p className="count">{approvalStats.create || 0}</p>
-        </div>
-        <div className="summary-card">
-          <h3>Edits</h3>
-          <p className="count">{approvalStats.update || 0}</p>
-        </div>
-        <div className="summary-card">
-          <h3>Deletion Requests</h3>
-          <p className="count">{approvalStats.delete || 0}</p>
-        </div>
-      </div>
-
       <div className="box quick-actions-box">
         <div className="box-header with-border">
-          <h3 className="box-title">Addition / Deletion Quick Actions</h3>
+          <h3 className="box-title">Master Control Center</h3>
         </div>
         <div className="quick-actions-grid">
           {quickActionSections.map((section) => (
@@ -166,14 +150,42 @@ const AdditionDeletionControl = () => {
               <h4>{section.title}</h4>
               <div className="quick-action-buttons">
                 {section.actions.map((action) => (
-                  <Link className="quick-action-btn" to={action.path} key={action.path}>
-                    <i className={action.icon} aria-hidden="true" />
-                    <span>{action.label}</span>
-                  </Link>
+                  <div className="quick-action-item" key={`${section.title}-${action.label}`}>
+                    <div className="quick-action-copy">
+                      <i className={action.icon} aria-hidden="true" />
+                      <div>
+                        <strong>{action.label}</strong>
+                        <span>{action.detail}</span>
+                      </div>
+                    </div>
+                    <div className="quick-action-links">
+                      <Link className="quick-action-btn add" to={action.addPath}>Addition</Link>
+                      <Link className="quick-action-btn delete" to={action.deletionPath}>Deletion</Link>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="approval-summary governance-summary">
+        <div className="summary-card pending">
+          <h3>Pending Requests</h3>
+          <p className="count">{pendingApprovals.length}</p>
+        </div>
+        <div className="summary-card additions">
+          <h3>Additions</h3>
+          <p className="count">{approvalStats.create || 0}</p>
+        </div>
+        <div className="summary-card edits">
+          <h3>Edits</h3>
+          <p className="count">{approvalStats.update || 0}</p>
+        </div>
+        <div className="summary-card deletions">
+          <h3>Deletion Requests</h3>
+          <p className="count">{approvalStats.delete || 0}</p>
         </div>
       </div>
 

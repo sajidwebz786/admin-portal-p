@@ -945,8 +945,37 @@ html, body {
 }
 
 .action-btn {
+  border: 1px solid transparent;
+  display: inline-flex;
+  font-weight: 700;
   margin: 2px 4px 2px 0;
+  opacity: 1;
+  padding: 6px 10px;
   white-space: normal;
+}
+
+.btn-outline-primary.action-btn {
+  background: #e0f2fe;
+  border-color: #0284c7;
+  color: #075985;
+}
+
+.btn-outline-primary.action-btn:hover,
+.btn-outline-primary.action-btn:focus {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.btn-outline-danger.action-btn {
+  background: #fee2e2;
+  border-color: #dc2626;
+  color: #991b1b;
+}
+
+.btn-outline-danger.action-btn:hover,
+.btn-outline-danger.action-btn:focus {
+  background: #dc2626;
+  color: #ffffff;
 }
 
 @media (max-width: 720px) {
@@ -973,64 +1002,227 @@ html, body {
   gap: 16px;
 }
 
+.addition-control {
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(22, 163, 74, 0.07)),
+    #ffffff;
+}
+
+.governance-header {
+  align-items: center;
+  background: #1e3a5f;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(23, 55, 95, 0.18);
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding: 18px 20px;
+}
+
+.governance-header h2 {
+  color: #ffffff !important;
+  line-height: 1.12;
+  margin: 0 0 6px;
+  overflow-wrap: anywhere;
+}
+
+.governance-header p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 14px;
+  line-height: 1.35;
+  margin: 0;
+  max-width: 760px;
+}
+
+.governance-header .btn {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  flex: 0 0 auto;
+}
+
 .quick-actions-box {
   margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.quick-actions-box .box-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #dbeafe;
+  padding: 12px 14px;
+}
+
+.quick-actions-box .box-title {
+  color: #17375f;
+  font-size: 18px;
+  font-weight: 800;
+  margin: 0;
 }
 
 .quick-actions-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 16px;
+  padding: 14px;
 }
 
 .quick-action-section h4 {
-  color: #1f2937;
+  color: #0f172a;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
   margin: 0 0 10px;
 }
 
 .quick-action-buttons {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
-.quick-action-btn {
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  color: #1f2937;
+.quick-action-item {
+  align-items: stretch;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #2563eb;
+  border-radius: 10px;
   display: flex;
-  gap: 9px;
-  min-height: 46px;
-  padding: 10px 12px;
-  text-decoration: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 78px;
+  padding: 12px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-.quick-action-btn:hover,
-.quick-action-btn:focus {
+.quick-action-item:hover {
   border-color: #25456f;
   box-shadow: 0 6px 16px rgba(37, 69, 111, 0.12);
-  color: #25456f;
-  text-decoration: none;
+  transform: translateY(-1px);
 }
 
-.quick-action-btn i {
-  flex: 0 0 18px;
+.quick-action-copy {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+.quick-action-copy i {
+  align-items: center;
+  background: #dbeafe;
+  border-radius: 999px;
+  color: #1d4ed8;
+  display: inline-flex;
+  flex: 0 0 34px;
+  height: 34px;
+  justify-content: center;
   text-align: center;
+  width: 34px;
 }
 
-.quick-action-btn span {
-  font-size: 13px;
-  font-weight: 700;
+.quick-action-copy strong,
+.quick-action-copy span {
+  display: block;
   line-height: 1.2;
   min-width: 0;
   overflow-wrap: anywhere;
   white-space: normal;
+}
+
+.quick-action-copy strong {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.quick-action-copy span {
+  color: #475569;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.quick-action-links {
+  display: flex;
+  flex: 0 0 86px;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-start;
+  max-width: 86px;
+}
+
+.quick-action-btn {
+  border-radius: 7px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.1;
+  min-width: 86px;
+  padding: 8px 10px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.quick-action-btn.add {
+  background: #2563eb;
+}
+
+.quick-action-btn.delete {
+  background: #dc2626;
+}
+
+.quick-action-btn:hover,
+.quick-action-btn:focus {
+  color: #ffffff;
+  filter: brightness(0.94);
+  text-decoration: none;
+}
+
+.governance-summary {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+
+.governance-summary .summary-card {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.09);
+  min-height: 92px;
+  padding: 14px;
+}
+
+.governance-summary .summary-card h3 {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+
+.governance-summary .summary-card .count {
+  color: #ffffff;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  margin: 0;
+}
+
+.governance-summary .pending {
+  background: linear-gradient(135deg, #1d4ed8 0%, #38bdf8 100%);
+}
+
+.governance-summary .additions {
+  background: linear-gradient(135deg, #047857 0%, #34d399 100%);
+}
+
+.governance-summary .edits {
+  background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%);
+}
+
+.governance-summary .deletions {
+  background: linear-gradient(135deg, #b91c1c 0%, #fb7185 100%);
 }
 
 .audit-mini-summary,
@@ -1061,12 +1253,35 @@ html, body {
   }
 
   .quick-actions-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .governance-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 520px) {
+  .governance-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .quick-action-buttons {
     grid-template-columns: 1fr;
+  }
+
+  .quick-actions-grid,
+  .governance-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-action-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .quick-action-links {
+    justify-content: flex-start;
   }
 }
