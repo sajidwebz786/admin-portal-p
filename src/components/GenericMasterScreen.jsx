@@ -1,31 +1,63 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
 
 const emptyOption = { value: '', label: 'Select' }
 const today = () => new Date().toISOString().slice(0, 10)
 const asArray = (value, key) => Array.isArray(value) ? value : (Array.isArray(value?.[key]) ? value[key] : [])
+const uniqueOptions = (values) => [emptyOption, ...Array.from(new Set(values.filter(Boolean))).sort().map((value) => ({ value, label: value }))]
 
-const GenericMasterScreen = ({ masterKey }) => {
+const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
   const [records, setRecords] = useState([])
-  const [support, setSupport] = useState({ doctors: [], patches: [], headquarters: [], users: [], inputs: [], products: [], samples: [] })
+  const [support, setSupport] = useState({
+    doctors: [],
+    patches: [],
+    territories: [],
+    headquarters: [],
+    users: [],
+    inputs: [],
+    products: [],
+    samples: [],
+    doctorClasses: [],
+    doctorCategories: [],
+    doctorSpecialties: [],
+    doctorQualifications: []
+  })
   const [form, setForm] = useState({})
   const [editing, setEditing] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const options = useMemo(() => ({
-    doctors: [emptyOption, ...support.doctors.map((item) => ({ value: item.id, label: `${item.firstName || ''} ${item.lastName || ''}`.trim() || `Doctor ${item.id}` }))],
-    patches: [emptyOption, ...support.patches.map((item) => ({ value: item.id, label: item.patch_name || `Patch ${item.id}` }))],
-    headquarters: [emptyOption, ...support.headquarters.map((item) => ({ value: item.id, label: item.name || `HQ ${item.id}` }))],
-    users: [emptyOption, ...support.users.map((item) => ({ value: item.id, label: item.fullName || `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.email || `User ${item.id}` }))],
-    inputs: [emptyOption, ...support.inputs.map((item) => ({ value: item.id, label: item.input_name || `Input ${item.id}` }))],
-    products: [emptyOption, ...support.products.map((item) => ({ value: item.id, label: item.name || `Product ${item.id}` }))],
-    samples: [emptyOption, ...support.samples.map((item) => ({ value: item.id, label: item.sample_name || `Sample ${item.id}` }))]
-  }), [support])
+  const options = useMemo(() => {
+    const filteredTerritories = support.territories.filter((item) => {
+      const matchesHq = !form.hq_id || String(item.hq_id) === String(form.hq_id)
+      const matchesState = !form.state || item.state === form.state
+      return matchesHq && matchesState
+    })
+    return {
+      doctors: [emptyOption, ...support.doctors.map((item) => ({ value: item.id, label: `${item.firstName || ''} ${item.lastName || ''}`.trim() || `Doctor ${item.id}` }))],
+      patches: [emptyOption, ...support.patches.map((item) => ({ value: item.id, label: item.patch_name || `Patch ${item.id}` }))],
+      territories: [emptyOption, ...filteredTerritories.map((item) => ({ value: item.id, label: `${item.name || `Patch/Route ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))],
+      headquarters: [emptyOption, ...support.headquarters.map((item) => ({ value: item.id, label: `${item.name || `HQ ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))],
+      states: uniqueOptions([
+        ...support.headquarters.map((item) => item.state),
+        ...support.territories.map((item) => item.state),
+        ...support.patches.map((item) => item.state)
+      ]),
+      users: [emptyOption, ...support.users.map((item) => ({ value: item.id, label: item.fullName || `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.email || `User ${item.id}` }))],
+      inputs: [emptyOption, ...support.inputs.map((item) => ({ value: item.id, label: item.input_name || `Input ${item.id}` }))],
+      products: [emptyOption, ...support.products.map((item) => ({ value: item.id, label: item.name || `Product ${item.id}` }))],
+      samples: [emptyOption, ...support.samples.map((item) => ({ value: item.id, label: item.sample_name || `Sample ${item.id}` }))],
+      doctorClasses: [emptyOption, ...support.doctorClasses.map((item) => ({ value: item.id, label: `${item.class_name || `Class ${item.id}`}${item.short_name ? ` (${item.short_name})` : ''}` }))],
+      doctorCategories: [emptyOption, ...support.doctorCategories.map((item) => ({ value: item.id, label: `${item.category_name || `Category ${item.id}`}${item.short_name ? ` (${item.short_name})` : ''}` }))],
+      doctorSpecialties: [emptyOption, ...support.doctorSpecialties.map((item) => ({ value: item.id, label: `${item.specialty_name || `Specialty ${item.id}`}${item.short_name ? ` (${item.short_name})` : ''}` }))],
+      doctorQualifications: [emptyOption, ...support.doctorQualifications.map((item) => ({ value: item.id, label: `${item.qualification_name || `Qualification ${item.id}`}${item.short_name ? ` (${item.short_name})` : ''}` }))]
+    }
+  }, [support, form.hq_id, form.state])
 
   const configs = useMemo(() => ({
     doctors: {
-      title: 'Doctor Master Addition / Deletion',
+      title: 'Doctor',
       shortTitle: 'Doctor',
       load: () => adminAPI.getDoctors(),
       listKey: 'doctors',
@@ -38,23 +70,23 @@ const GenericMasterScreen = ({ masterKey }) => {
         ['lastName', 'Surname', 'text', true],
         ['registration_number', 'Registration Number'],
         ['mobile_number', 'Mobile Number', 'tel', true],
-        ['specialty', 'Specialty', 'text', true],
-        ['qualification_id', 'Qualification ID', 'number'],
+        ['specialty_id', 'Specialty', 'select', true, options.doctorSpecialties],
+        ['qualification_id', 'Qualification', 'select', false, options.doctorQualifications],
         ['hq_id', 'HQ', 'select', true, options.headquarters],
-        ['state', 'State', 'text', true],
-        ['patch_id', 'Patch', 'select', true, options.patches],
+        ['state', 'State', 'select', true, options.states],
+        ['territory_id', 'Patch / Route', 'select', true, options.territories],
         ['full_address', 'Full Address', 'textarea', true],
         ['visit_time', 'Visit Time', 'text', true],
         ['visit_day', 'Visit Day', 'text', true],
-        ['category_id', 'Category ID', 'number'],
-        ['class_id', 'Class ID', 'number'],
+        ['category_id', 'Category', 'select', false, options.doctorCategories],
+        ['class_id', 'Class', 'select', false, options.doctorClasses],
         ['patients_per_week', 'No. of Patients/Week', 'number', true],
         ['dob', 'DOB', 'date'],
         ['anniversary', 'Anniversary', 'date']
       ]
     },
     chemists: {
-      title: 'Chemist Master Addition / Deletion',
+      title: 'Chemist',
       shortTitle: 'Chemist',
       load: () => adminAPI.getChemists(),
       listKey: 'chemists',
@@ -69,16 +101,16 @@ const GenericMasterScreen = ({ masterKey }) => {
         ['contact_person', 'Contact Person'],
         ['owner_name', 'Owner Name', 'text', true],
         ['dl_number', 'DL Number'],
-        ['state', 'State', 'text', true],
+        ['state', 'State', 'select', true, options.states],
         ['hq_id', 'HQ', 'select', true, options.headquarters],
-        ['patch_id', 'Patch', 'select', true, options.patches],
+        ['territory_id', 'Patch / Route', 'select', true, options.territories],
         ['location', 'Location', 'text', true],
         ['visit_time', 'Visit Time', 'text', true],
         ['address', 'Address', 'textarea']
       ]
     },
     stockists: {
-      title: 'Stockist Master Addition / Deletion',
+      title: 'Stockist',
       shortTitle: 'Stockist',
       load: () => adminAPI.getStockists(),
       create: (data) => adminAPI.createStockist(data),
@@ -90,13 +122,13 @@ const GenericMasterScreen = ({ masterKey }) => {
         ['mobile', 'Mobile', 'tel'],
         ['contact_person', 'Contact Person'],
         ['hq_id', 'HQ', 'select', false, options.headquarters],
-        ['state', 'State'],
-        ['patch_id', 'Patch', 'select', false, options.patches],
+        ['state', 'State', 'select', false, options.states],
+        ['territory_id', 'Patch / Route', 'select', false, options.territories],
         ['address', 'Address', 'textarea']
       ]
     },
     hospitals: {
-      title: 'Hospital Master Addition / Deletion',
+      title: 'Hospital',
       shortTitle: 'Hospital',
       load: () => adminAPI.getHospitals(),
       create: (data) => adminAPI.createHospital(data),
@@ -108,13 +140,13 @@ const GenericMasterScreen = ({ masterKey }) => {
         ['mobile', 'Mobile', 'tel'],
         ['contact_person', 'Contact Person'],
         ['hq_id', 'HQ', 'select', false, options.headquarters],
-        ['state', 'State'],
-        ['patch_id', 'Patch', 'select', false, options.patches],
+        ['state', 'State', 'select', false, options.states],
+        ['territory_id', 'Patch / Route', 'select', false, options.territories],
         ['address', 'Address', 'textarea']
       ]
     },
     svl: {
-      title: 'SVL Addition / Deletion',
+      title: 'SVL',
       shortTitle: 'SVL Entry',
       load: () => adminAPI.getSVL(),
       create: (data) => adminAPI.createSVL(data),
@@ -130,7 +162,7 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     inputAllocations: {
-      title: 'Input Allocation Addition / Deletion',
+      title: 'Input Allocation',
       shortTitle: 'Input Allocation',
       load: () => adminAPI.getInputAllocations(),
       create: (data) => adminAPI.createInputAllocation(data),
@@ -149,7 +181,7 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     notices: {
-      title: 'Notice Upload Addition / Deletion',
+      title: 'Notice Upload',
       shortTitle: 'Notice',
       load: () => adminAPI.getNotices(),
       create: (data) => adminAPI.createNotice(data),
@@ -166,7 +198,7 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     sopPolicies: {
-      title: 'SOP / Policy Addition / Deletion',
+      title: 'SOP / Policy',
       shortTitle: 'SOP / Policy',
       load: () => adminAPI.getSOPPolicies(),
       create: (data) => adminAPI.createSOPPolicy(data),
@@ -185,7 +217,7 @@ const GenericMasterScreen = ({ masterKey }) => {
       ]
     },
     rateFixations: {
-      title: 'Rate Fixation Addition / Deletion',
+      title: 'Rate Fixation',
       shortTitle: 'Rate Fixation',
       load: () => adminAPI.getRateFixations(),
       create: (data) => adminAPI.createRateFixation(data),
@@ -194,7 +226,7 @@ const GenericMasterScreen = ({ masterKey }) => {
       name: (item) => `${item.state} - ${item.product?.name || item.product_id}`,
       defaults: { effective_from: today() },
       fields: [
-        ['state', 'State', 'text', true],
+        ['state', 'State', 'select', true, options.states],
         ['product_id', 'Product', 'select', true, options.products],
         ['sample_id', 'Sample', 'select', false, options.samples],
         ['input_id', 'Input', 'select', false, options.inputs],
@@ -209,6 +241,12 @@ const GenericMasterScreen = ({ masterKey }) => {
   }), [options])
 
   const config = configs[masterKey] || configs.chemists
+  const isDeletionMode = mode === 'deletion'
+  const operationLabel = isDeletionMode ? 'Deletion' : 'Addition'
+  const modeTitle = `${config.shortTitle || config.title} ${operationLabel}`
+  const modeDescription = isDeletionMode
+    ? `Search existing ${config.shortTitle || 'records'} records and submit only deletion or deactivation requests.`
+    : `Create only new ${config.shortTitle || 'record'} records from this screen.`
 
   useEffect(() => {
     loadSupport()
@@ -219,23 +257,46 @@ const GenericMasterScreen = ({ masterKey }) => {
   }, [masterKey])
 
   const loadSupport = async () => {
-    const [doctorRes, patchRes, hqRes, userRes, inputRes, productRes, sampleRes] = await Promise.all([
+    const [
+      doctorRes,
+      patchRes,
+      territoryRes,
+      hqRes,
+      userRes,
+      inputRes,
+      productRes,
+      sampleRes,
+      classRes,
+      categoryRes,
+      specialtyRes,
+      qualificationRes
+    ] = await Promise.all([
       adminAPI.getDoctors().catch(() => []),
       adminAPI.getPatches().catch(() => []),
+      adminAPI.getTerritories().catch(() => []),
       adminAPI.getHeadquarters().catch(() => []),
       adminAPI.getUsers().catch(() => []),
       adminAPI.getInputs().catch(() => []),
       adminAPI.getProducts().catch(() => []),
-      adminAPI.getSamples().catch(() => [])
+      adminAPI.getSamples().catch(() => []),
+      adminAPI.getDoctorClasses().catch(() => []),
+      adminAPI.getDoctorCategories().catch(() => []),
+      adminAPI.getDoctorSpecialties().catch(() => []),
+      adminAPI.getDoctorQualifications().catch(() => [])
     ])
     setSupport({
       doctors: asArray(doctorRes, 'doctors'),
       patches: asArray(patchRes, 'patches'),
+      territories: asArray(territoryRes, 'territories'),
       headquarters: asArray(hqRes, 'headquarters'),
       users: asArray(userRes, 'users'),
       inputs: asArray(inputRes, 'inputs'),
       products: asArray(productRes, 'products'),
-      samples: asArray(sampleRes, 'samples')
+      samples: asArray(sampleRes, 'samples'),
+      doctorClasses: asArray(classRes, 'classes'),
+      doctorCategories: asArray(categoryRes, 'categories'),
+      doctorSpecialties: asArray(specialtyRes, 'specialties'),
+      doctorQualifications: asArray(qualificationRes, 'qualifications')
     })
   }
 
@@ -245,8 +306,8 @@ const GenericMasterScreen = ({ masterKey }) => {
       setError('')
       const response = await config.load()
       setRecords(asArray(response, config.listKey))
-      setForm(config.defaults || {})
-      setEditing(null)
+    setForm(config.defaults || {})
+    setEditing(null)
     } catch (err) {
       setError(err.message || 'Failed to load records')
     } finally {
@@ -256,17 +317,29 @@ const GenericMasterScreen = ({ masterKey }) => {
 
   const sanitize = (data) => Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value === '' ? null : value]))
 
+  const handleFieldChange = (key, value) => {
+    const nextForm = { ...form, [key]: value }
+    if (key === 'hq_id') {
+      const hq = support.headquarters.find((item) => String(item.id) === String(value))
+      nextForm.state = hq?.state || nextForm.state || ''
+      nextForm.territory_id = ''
+    }
+    if (key === 'state') {
+      nextForm.territory_id = ''
+    }
+    setForm(nextForm)
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
     const payload = sanitize(form)
-    if (editing && config.update) await config.update(editing.id, payload)
-    else await config.create(payload)
+    await config.create(payload)
     await loadRecords()
     await loadSupport()
   }
 
   const handleDelete = async (item) => {
-    if (!window.confirm(`Inactivate ${config.name(item) || config.shortTitle || config.title}?`)) return
+    if (!window.confirm(`Deactivate ${config.name(item) || config.shortTitle || config.title}?`)) return
     await config.remove(item.id)
     await loadRecords()
   }
@@ -277,7 +350,7 @@ const GenericMasterScreen = ({ masterKey }) => {
       return (
         <label className="form-group" key={key}>
           <span>{label}{required ? ' *' : ''}</span>
-          <textarea value={value} required={required} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+          <textarea value={value} required={required} onChange={(e) => handleFieldChange(key, e.target.value)} />
         </label>
       )
     }
@@ -285,7 +358,7 @@ const GenericMasterScreen = ({ masterKey }) => {
       return (
         <label className="form-group" key={key}>
           <span>{label}{required ? ' *' : ''}</span>
-          <select value={value} required={required} onChange={(e) => setForm({ ...form, [key]: e.target.value })}>
+          <select value={value} required={required} onChange={(e) => handleFieldChange(key, e.target.value)}>
             {fieldOptions.map((option) => <option key={`${key}-${option.value}`} value={option.value}>{option.label}</option>)}
           </select>
         </label>
@@ -294,25 +367,32 @@ const GenericMasterScreen = ({ masterKey }) => {
     return (
       <label className="form-group" key={key}>
         <span>{label}{required ? ' *' : ''}</span>
-        <input type={type} value={value} required={required} onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+        <input type={type} value={value} required={required} onChange={(e) => handleFieldChange(key, e.target.value)} />
       </label>
     )
   }
 
   return (
     <div className="section-content">
-      <div className="page-header">
-        <h2 className="addition-deletion-title">{config.title}</h2>
-        <button type="button" className="btn btn-secondary" onClick={loadRecords}>Refresh</button>
+      <div className={`page-header operation-mode-header ${isDeletionMode ? 'deletion' : 'addition'}`}>
+        <div>
+          <h2 className="addition-deletion-title">{modeTitle}</h2>
+          <p>{modeDescription}</p>
+        </div>
+        <div className="operation-header-actions">
+          <Link to="/addition-deletion-control" className="btn btn-light">Back</Link>
+          <button type="button" className="btn btn-secondary" onClick={loadRecords}>Refresh</button>
+        </div>
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
-      <form className="master-admin-form" onSubmit={handleSubmit}>
-        {config.fields.map(renderField)}
-        <div className="master-admin-actions">
-          <button type="submit" className="btn btn-primary">{editing ? 'Save Changes' : `Add ${config.shortTitle || config.title}`}</button>
-          {editing && <button type="button" className="btn btn-secondary" onClick={() => { setEditing(null); setForm(config.defaults || {}) }}>Cancel</button>}
-        </div>
-      </form>
+      {!isDeletionMode && (
+        <form className="master-admin-form" onSubmit={handleSubmit}>
+          {config.fields.map(renderField)}
+          <div className="master-admin-actions">
+            <button type="submit" className="btn btn-primary">Add {config.shortTitle || config.title}</button>
+          </div>
+        </form>
+      )}
       <table className="table table-striped table-bordered">
         <thead className="table-dark">
           <tr>
@@ -320,22 +400,23 @@ const GenericMasterScreen = ({ masterKey }) => {
             <th>Name</th>
             <th>Status</th>
             <th>Updated</th>
-            <th>Actions</th>
+            {isDeletionMode && <th>Deletion Action</th>}
           </tr>
         </thead>
         <tbody>
-          {loading && <tr><td colSpan="5" className="text-center">Loading...</td></tr>}
-          {!loading && records.length === 0 && <tr><td colSpan="5" className="text-center">No records found.</td></tr>}
+          {loading && <tr><td colSpan={isDeletionMode ? '5' : '4'} className="text-center">Loading...</td></tr>}
+          {!loading && records.length === 0 && <tr><td colSpan={isDeletionMode ? '5' : '4'} className="text-center">No records found.</td></tr>}
           {!loading && records.map((item) => (
             <tr key={item.id}>
               <td>{item.id}</td>
               <td>{config.name(item)}</td>
               <td>{item.isActive === false || item.status === 'inactive' ? 'Inactive' : 'Active'}</td>
               <td>{item.updatedAt || item.updated_at || '-'}</td>
-              <td>
-                {config.update && <button type="button" className="btn btn-outline-primary btn-sm action-btn" onClick={() => { setEditing(item); setForm({ ...(config.defaults || {}), ...item }) }}>Edit</button>}
-                <button type="button" className="btn btn-outline-danger btn-sm action-btn" onClick={() => handleDelete(item)}>Inactivate</button>
-              </td>
+              {isDeletionMode && (
+                <td>
+                  <button type="button" className="btn btn-outline-danger btn-sm action-btn" onClick={() => handleDelete(item)}>Deactivate</button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>

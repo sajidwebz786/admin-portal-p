@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import apiService from '../services/apiService';
 
-const InputMaster = () => {
+const asArray = (value, key) => Array.isArray(value) ? value : (Array.isArray(value?.[key]) ? value[key] : []);
+
+const InputMaster = ({ mode = 'addition' }) => {
   const location = useLocation();
+  const isDeletionMode = mode === 'deletion';
   const [inputs, setInputs] = useState([]);
   const [inputTypes, setInputTypes] = useState([]);
   const [inputClasses, setInputClasses] = useState([]);
@@ -28,11 +31,11 @@ const InputMaster = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('open') === 'add') {
+    if (!isDeletionMode && params.get('open') === 'add') {
       setEditingId(null);
       setShowModal(true);
     }
-  }, [location.search]);
+  }, [location.search, isDeletionMode]);
 
   const fetchData = async () => {
     try {
@@ -42,9 +45,9 @@ const InputMaster = () => {
         apiService.getInputTypes(),
         apiService.getInputClasses()
       ]);
-      setInputs(inputsData);
-      setInputTypes(typesData.filter(t => t.status === 'active'));
-      setInputClasses(classesData.filter(c => c.status === 'active'));
+      setInputs(asArray(inputsData, 'inputs'));
+      setInputTypes(asArray(typesData, 'types').filter(t => t.status === 'active'));
+      setInputClasses(asArray(classesData, 'classes').filter(c => c.status === 'active'));
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to fetch data');
@@ -122,14 +125,14 @@ const InputMaster = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Inactivate this input?')) {
+    if (window.confirm('Deactivate this input?')) {
       try {
         await apiService.deleteInput(id);
-        setSuccess('Input inactivated successfully!');
+        setSuccess('Input deactivated successfully!');
         fetchData();
       } catch (error) {
         console.error('Error deleting input:', error);
-        setError(error.message || 'Failed to inactivate input');
+        setError(error.message || 'Failed to deactivate input');
       }
     }
   };
@@ -171,17 +174,26 @@ const InputMaster = () => {
         <div className="header-content">
           <h1 className="page-title">
             <i className="fas fa-box-open"></i>
-            Input Master Addition / Deletion
+            Input {isDeletionMode ? 'Deletion' : 'Addition'}
           </h1>
-          <p className="page-subtitle">Add, edit, and inactivate promotional inputs</p>
+          <p className="page-subtitle">
+            {isDeletionMode ? 'Search existing promotional inputs and submit only deactivation requests' : 'Create only new promotional inputs'}
+          </p>
         </div>
-        <button className="btn btn-primary btn-lg" onClick={() => {
-          setError('');
-          setSuccess('');
-          setShowModal(true);
-        }}>
-          <i className="fas fa-plus"></i> Add Input
-        </button>
+        <div className="operation-header-actions">
+          <Link to="/addition-deletion-control" className="btn btn-light btn-lg">
+            <i className="fas fa-arrow-left"></i> Back
+          </Link>
+          {!isDeletionMode && (
+            <button className="btn btn-primary btn-lg" onClick={() => {
+              setError('');
+              setSuccess('');
+              setShowModal(true);
+            }}>
+              <i className="fas fa-plus"></i> Add Input
+            </button>
+          )}
+        </div>
       </div>
 
       {error && (
@@ -229,13 +241,13 @@ const InputMaster = () => {
                     <th><i className="fas fa-tags"></i> Class</th>
                     <th><i className="fas fa-align-left"></i> Description</th>
                     <th><i className="fas fa-toggle-on"></i> Status</th>
-                    <th><i className="fas fa-cogs"></i> Actions</th>
+                    {isDeletionMode && <th><i className="fas fa-cogs"></i> Deletion Action</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {inputs.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="text-center text-muted">
+                      <td colSpan={isDeletionMode ? '8' : '7'} className="text-center text-muted">
                         <i className="fas fa-inbox"></i> No records found
                       </td>
                     </tr>
@@ -254,22 +266,17 @@ const InputMaster = () => {
                             {' '}{input.status}
                           </span>
                         </td>
-                        <td>
-                          <button 
-                            className="btn btn-sm btn-warning mr-1"
-                            onClick={() => handleEdit(input)}
-                            title="Edit"
-                          >
-                            <i className="fas fa-edit"></i> Edit
-                          </button>
-                          <button 
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(input.id)}
-                            title="Inactivate"
-                          >
-                            <i className="fas fa-ban"></i> Inactivate
-                          </button>
-                        </td>
+                        {isDeletionMode && (
+                          <td>
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() => handleDelete(input.id)}
+                              title="Deactivate"
+                            >
+                              <i className="fas fa-ban"></i> Deactivate
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     ))
                   )}

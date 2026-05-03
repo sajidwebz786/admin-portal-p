@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
 
-const TerritoryManagement = () => {
+const TerritoryManagement = ({ mode = 'management' }) => {
   const [territories, setTerritories] = useState([])
   const [headquarters, setHeadquarters] = useState([])
   const [loading, setLoading] = useState(true)
@@ -21,6 +22,14 @@ const TerritoryManagement = () => {
     description: '',
     isActive: true
   })
+  const isAdditionMode = mode === 'addition'
+  const isDeletionMode = mode === 'deletion'
+  const title = isAdditionMode ? 'Patch / Route Addition' : isDeletionMode ? 'Patch / Route Deletion' : 'Patch/Route Master'
+  const subtitle = isAdditionMode
+    ? 'Create only new patch or route records from this screen.'
+    : isDeletionMode
+      ? 'Search existing patch or route records and submit only deletion requests.'
+      : ''
 
   useEffect(() => {
     loadTerritories()
@@ -144,7 +153,7 @@ const TerritoryManagement = () => {
   if (loading) {
     return (
       <div className="section-content">
-        <h2>Patch/Route Master</h2>
+        <h2>{title}</h2>
         <div className="loading-spinner">
           <i className="fas fa-spinner fa-spin"></i> Loading territories...
         </div>
@@ -154,7 +163,16 @@ const TerritoryManagement = () => {
 
   return (
     <div className="section-content">
-      <h2>Patch/Route Master</h2>
+      <div className={`operation-mode-header ${isDeletionMode ? 'deletion' : isAdditionMode ? 'addition' : ''}`}>
+        <div>
+          <h2>{title}</h2>
+          {subtitle && <p>{subtitle}</p>}
+        </div>
+        <div className="operation-header-actions">
+          {(isAdditionMode || isDeletionMode) && <Link to="/addition-deletion-control" className="btn btn-light">Back</Link>}
+          <button className="btn btn-secondary" type="button" onClick={loadTerritories}>Refresh</button>
+        </div>
+      </div>
 
       {error && (
         <div className="alert alert-danger">
@@ -174,14 +192,13 @@ const TerritoryManagement = () => {
         </button>
       </div>
 
-      <div className="management-actions mb-4 d-flex gap-3">
-        <button className="btn btn-primary" onClick={showAddModal}>
-          <i className="fas fa-plus"></i> Add New Patch/Route
-        </button>
-        <button className="btn btn-info">
-          <i className="fas fa-download"></i> Export List
-        </button>
-      </div>
+      {isAdditionMode && (
+        <div className="management-actions mb-4 d-flex gap-3">
+          <button className="btn btn-primary" onClick={showAddModal}>
+            <i className="fas fa-plus"></i> Add New Patch/Route
+          </button>
+        </div>
+      )}
 
       <div className="management-table">
         <table className="table table-striped">
@@ -195,13 +212,13 @@ const TerritoryManagement = () => {
               <th>Zone</th>
               <th>District</th>
               <th>Status</th>
-              <th>Actions</th>
+              {!isAdditionMode && <th>{isDeletionMode ? 'Deletion Action' : 'Actions'}</th>}
             </tr>
           </thead>
           <tbody>
             {filteredTerritories.length === 0 ? (
               <tr>
-                <td colSpan="9" className="text-center">
+                <td colSpan={isAdditionMode ? '8' : '9'} className="text-center">
                   {territories.length === 0 ? 'No territories found.' : 'No territories match your search.'}
                 </td>
               </tr>
@@ -227,22 +244,26 @@ const TerritoryManagement = () => {
                       {territory.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  <td>
-                    <button
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={() => showEditModal(territory)}
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem' }}
-                    >
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    <button
-                      className="btn btn-outline-danger btn-sm ml-1"
-                      onClick={() => handleDelete(territory.id)}
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem' }}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </td>
+                  {!isAdditionMode && (
+                    <td>
+                      {!isDeletionMode && (
+                        <button
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() => showEditModal(territory)}
+                          style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem' }}
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                      )}
+                      <button
+                        className="btn btn-outline-danger btn-sm ml-1"
+                        onClick={() => handleDelete(territory.id)}
+                        style={{ fontSize: '0.75rem', padding: '0.2rem 0.4rem' }}
+                      >
+                        <i className="fas fa-trash"></i>{' '}{isDeletionMode ? 'Delete' : ''}
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))
             )}

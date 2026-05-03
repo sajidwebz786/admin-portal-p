@@ -129,11 +129,21 @@ function AppContent() {
           {/* Protected routes with role-based access */}
           <Route path="/user-management" element={<ProtectedRoute path="/user-management" element={<UserManagement />} />} />
           <Route path="/doctors-chemists" element={<ProtectedRoute path="/doctors-chemists" element={<DoctorChemistManagement />} />} />
-          <Route path="/doctor-master" element={<ProtectedRoute path="/doctor-master" element={<GenericMasterScreen masterKey="doctors" />} />} />
-          <Route path="/chemist-master" element={<ProtectedRoute path="/chemist-master" element={<GenericMasterScreen masterKey="chemists" />} />} />
-          <Route path="/territory-management" element={<ProtectedRoute path="/territory-management" element={<TerritoryManagement />} />} />
-          <Route path="/product-management" element={<ProtectedRoute path="/product-management" element={<ProductManagement />} />} />
-          <Route path="/headquarter-management" element={<ProtectedRoute path="/headquarter-management" element={<HeadquarterManagement />} />} />
+          <Route path="/doctor-master" element={<Navigate to="/addition/doctor-master" replace />} />
+          <Route path="/chemist-master" element={<Navigate to="/addition/chemist-master" replace />} />
+          <Route path="/addition/doctor-master" element={<ProtectedRoute path="/doctor-master" element={<GenericMasterScreen masterKey="doctors" mode="addition" />} />} />
+          <Route path="/deletion/doctor-master" element={<ProtectedRoute path="/doctor-master" element={<GenericMasterScreen masterKey="doctors" mode="deletion" />} />} />
+          <Route path="/addition/chemist-master" element={<ProtectedRoute path="/chemist-master" element={<GenericMasterScreen masterKey="chemists" mode="addition" />} />} />
+          <Route path="/deletion/chemist-master" element={<ProtectedRoute path="/chemist-master" element={<GenericMasterScreen masterKey="chemists" mode="deletion" />} />} />
+          <Route path="/territory-management" element={<Navigate to="/addition/territory-management" replace />} />
+          <Route path="/addition/territory-management" element={<ProtectedRoute path="/territory-management" element={<TerritoryManagement mode="addition" />} />} />
+          <Route path="/deletion/territory-management" element={<ProtectedRoute path="/territory-management" element={<TerritoryManagement mode="deletion" />} />} />
+          <Route path="/product-management" element={<Navigate to="/addition/product-management" replace />} />
+          <Route path="/addition/product-management" element={<ProtectedRoute path="/product-management" element={<ProductManagement mode="addition" />} />} />
+          <Route path="/deletion/product-management" element={<ProtectedRoute path="/product-management" element={<ProductManagement mode="deletion" />} />} />
+          <Route path="/headquarter-management" element={<Navigate to="/addition/headquarter-management" replace />} />
+          <Route path="/addition/headquarter-management" element={<ProtectedRoute path="/headquarter-management" element={<HeadquarterManagement mode="addition" />} />} />
+          <Route path="/deletion/headquarter-management" element={<ProtectedRoute path="/headquarter-management" element={<HeadquarterManagement mode="deletion" />} />} />
           <Route path="/sales-projections" element={<ProtectedRoute path="/sales-projections" element={<SalesProjections />} />} />
           <Route path="/activity-approvals" element={<ProtectedRoute path="/activity-approvals" element={<ActivityApprovals />} />} />
           <Route path="/rule-config" element={<ProtectedRoute path="/rule-config" element={<RuleConfiguration />} />} />
@@ -145,9 +155,15 @@ function AppContent() {
           <Route path="/doctor-specialty" element={<ProtectedRoute path="/doctor-specialty" element={<DoctorSpecialtyMaster />} />} />
           <Route path="/doctor-qualification" element={<ProtectedRoute path="/doctor-qualification" element={<DoctorQualificationMaster />} />} />
           <Route path="/approvals" element={<ProtectedRoute path="/approvals" element={<ApprovalDashboard />} />} />
-          <Route path="/stockist-master" element={<ProtectedRoute path="/stockist-master" element={<GenericMasterScreen masterKey="stockists" />} />} />
-          <Route path="/hospital-master" element={<ProtectedRoute path="/hospital-master" element={<GenericMasterScreen masterKey="hospitals" />} />} />
-          <Route path="/svl-master" element={<ProtectedRoute path="/svl-master" element={<GenericMasterScreen masterKey="svl" />} />} />
+          <Route path="/stockist-master" element={<Navigate to="/addition/stockist-master" replace />} />
+          <Route path="/hospital-master" element={<Navigate to="/addition/hospital-master" replace />} />
+          <Route path="/svl-master" element={<Navigate to="/addition/svl-master" replace />} />
+          <Route path="/addition/stockist-master" element={<ProtectedRoute path="/stockist-master" element={<GenericMasterScreen masterKey="stockists" mode="addition" />} />} />
+          <Route path="/deletion/stockist-master" element={<ProtectedRoute path="/stockist-master" element={<GenericMasterScreen masterKey="stockists" mode="deletion" />} />} />
+          <Route path="/addition/hospital-master" element={<ProtectedRoute path="/hospital-master" element={<GenericMasterScreen masterKey="hospitals" mode="addition" />} />} />
+          <Route path="/deletion/hospital-master" element={<ProtectedRoute path="/hospital-master" element={<GenericMasterScreen masterKey="hospitals" mode="deletion" />} />} />
+          <Route path="/addition/svl-master" element={<ProtectedRoute path="/svl-master" element={<GenericMasterScreen masterKey="svl" mode="addition" />} />} />
+          <Route path="/deletion/svl-master" element={<ProtectedRoute path="/svl-master" element={<GenericMasterScreen masterKey="svl" mode="deletion" />} />} />
 
           {/* Product Master */}
           <Route path="/division-master" element={<ProtectedRoute path="/division-master" element={<DivisionMaster />} />} />
@@ -159,14 +175,26 @@ function AppContent() {
           {/* Input & Sample */}
           <Route path="/input-type-master" element={<ProtectedRoute path="/input-type-master" element={<InputTypeMaster />} />} />
           <Route path="/input-class-master" element={<ProtectedRoute path="/input-class-master" element={<InputClassMaster />} />} />
-          <Route path="/input-master" element={<ProtectedRoute path="/input-master" element={<InputMaster />} />} />
-          <Route path="/sample-master" element={<ProtectedRoute path="/sample-master" element={<SampleMaster />} />} />
-          <Route path="/input-allocation" element={<ProtectedRoute path="/input-allocation" element={<GenericMasterScreen masterKey="inputAllocations" />} />} />
-          <Route path="/rate-fixation" element={<ProtectedRoute path="/rate-fixation" element={<GenericMasterScreen masterKey="rateFixations" />} />} />
+          <Route path="/input-master" element={<Navigate to="/addition/input-master" replace />} />
+          <Route path="/sample-master" element={<Navigate to="/addition/sample-master" replace />} />
+          <Route path="/input-allocation" element={<Navigate to="/addition/input-allocation" replace />} />
+          <Route path="/rate-fixation" element={<Navigate to="/addition/rate-fixation" replace />} />
+          <Route path="/addition/input-master" element={<ProtectedRoute path="/input-master" element={<InputMaster mode="addition" />} />} />
+          <Route path="/deletion/input-master" element={<ProtectedRoute path="/input-master" element={<InputMaster mode="deletion" />} />} />
+          <Route path="/addition/sample-master" element={<ProtectedRoute path="/sample-master" element={<SampleMaster mode="addition" />} />} />
+          <Route path="/deletion/sample-master" element={<ProtectedRoute path="/sample-master" element={<SampleMaster mode="deletion" />} />} />
+          <Route path="/addition/input-allocation" element={<ProtectedRoute path="/input-allocation" element={<GenericMasterScreen masterKey="inputAllocations" mode="addition" />} />} />
+          <Route path="/deletion/input-allocation" element={<ProtectedRoute path="/input-allocation" element={<GenericMasterScreen masterKey="inputAllocations" mode="deletion" />} />} />
+          <Route path="/addition/rate-fixation" element={<ProtectedRoute path="/rate-fixation" element={<GenericMasterScreen masterKey="rateFixations" mode="addition" />} />} />
+          <Route path="/deletion/rate-fixation" element={<ProtectedRoute path="/rate-fixation" element={<GenericMasterScreen masterKey="rateFixations" mode="deletion" />} />} />
 
           {/* Policy & Control Masters */}
-          <Route path="/notice-upload" element={<ProtectedRoute path="/notice-upload" element={<GenericMasterScreen masterKey="notices" />} />} />
-          <Route path="/sop-master" element={<ProtectedRoute path="/sop-master" element={<GenericMasterScreen masterKey="sopPolicies" />} />} />
+          <Route path="/notice-upload" element={<Navigate to="/addition/notice-upload" replace />} />
+          <Route path="/sop-master" element={<Navigate to="/addition/sop-master" replace />} />
+          <Route path="/addition/notice-upload" element={<ProtectedRoute path="/notice-upload" element={<GenericMasterScreen masterKey="notices" mode="addition" />} />} />
+          <Route path="/deletion/notice-upload" element={<ProtectedRoute path="/notice-upload" element={<GenericMasterScreen masterKey="notices" mode="deletion" />} />} />
+          <Route path="/addition/sop-master" element={<ProtectedRoute path="/sop-master" element={<GenericMasterScreen masterKey="sopPolicies" mode="addition" />} />} />
+          <Route path="/deletion/sop-master" element={<ProtectedRoute path="/sop-master" element={<GenericMasterScreen masterKey="sopPolicies" mode="deletion" />} />} />
 
           {/* Expense */}
           <Route path="/expense-type-master" element={<ProtectedRoute path="/expense-type-master" element={<ExpenseTypeMaster />} />} />

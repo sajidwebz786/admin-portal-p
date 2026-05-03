@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
 
-const ProductManagement = () => {
+const ProductManagement = ({ mode = 'management' }) => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -48,6 +49,14 @@ const ProductManagement = () => {
     schedule: 'H',
     therapeuticClass: ''
   })
+  const isAdditionMode = mode === 'addition'
+  const isDeletionMode = mode === 'deletion'
+  const title = isAdditionMode ? 'Product Addition' : isDeletionMode ? 'Product Deletion' : 'Product Master'
+  const subtitle = isAdditionMode
+    ? 'Create only new products from this screen.'
+    : isDeletionMode
+      ? 'Search existing products and submit only deletion requests.'
+      : ''
 
   useEffect(() => {
     loadProducts()
@@ -276,7 +285,7 @@ const ProductManagement = () => {
   if (loading) {
     return (
       <div className="section-content">
-        <h2>Product Master</h2>
+        <h2>{title}</h2>
         <div className="loading-spinner">
           <i className="fas fa-spinner fa-spin"></i> Loading products...
         </div>
@@ -286,7 +295,16 @@ const ProductManagement = () => {
 
   return (
     <div className="section-content">
-      <h2>Product Master</h2>
+      <div className={`operation-mode-header ${isDeletionMode ? 'deletion' : isAdditionMode ? 'addition' : ''}`}>
+        <div>
+          <h2>{title}</h2>
+          {subtitle && <p>{subtitle}</p>}
+        </div>
+        <div className="operation-header-actions">
+          {(isAdditionMode || isDeletionMode) && <Link to="/addition-deletion-control" className="btn btn-light">Back</Link>}
+          <button className="btn btn-secondary" type="button" onClick={loadProducts}>Refresh</button>
+        </div>
+      </div>
 
       {error && (
         <div className="alert alert-danger">
@@ -306,16 +324,15 @@ const ProductManagement = () => {
         </button>
       </div>
 
-      <div className="management-actions mb-4 d-flex gap-3">
-        {canEdit() && (
+      {isAdditionMode && (
+        <div className="management-actions mb-4 d-flex gap-3">
+          {canEdit() && (
           <button className="btn btn-primary" onClick={showAddModal}>
             <i className="fas fa-plus"></i> Add Product
           </button>
-        )}
-        <button className="btn btn-info" onClick={loadProducts}>
-          <i className="fas fa-sync"></i> Refresh
-        </button>
-      </div>
+          )}
+        </div>
+      )}
 
       <div className="management-table">
         <table className="table table-striped">
@@ -333,13 +350,13 @@ const ProductManagement = () => {
               <th>PTR</th>
               <th>MRP</th>
               <th>Status</th>
-              {canEdit() && <th>Actions</th>}
+              {isDeletionMode && canDelete() && <th>Deletion Action</th>}
             </tr>
           </thead>
           <tbody>
             {filteredProducts.length === 0 ? (
               <tr>
-                <td colSpan={canEdit() ? 13 : 12} className="text-center">
+                <td colSpan={isDeletionMode && canDelete() ? 13 : 12} className="text-center">
                   {products.length === 0 ? 'No products found.' : 'No products match your search.'}
                 </td>
               </tr>
@@ -362,24 +379,15 @@ const ProductManagement = () => {
                       {product.status === 'active' ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  {canEdit() && (
+                  {isDeletionMode && canDelete() && (
                     <td>
                       <button
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => showEditModal(product)}
+                        className="btn btn-outline-danger btn-sm ml-1"
+                        onClick={() => handleDelete(product.id)}
                         style={{ fontSize: '0.8rem', padding: '0.25rem 0.5rem' }}
                       >
-                        <i className="fas fa-edit"></i> Edit
+                        <i className="fas fa-trash" style={{ fontSize: '0.75rem' }}></i> Delete
                       </button>
-                      {canDelete() && (
-                        <button
-                          className="btn btn-outline-danger btn-sm ml-1"
-                          onClick={() => handleDelete(product.id)}
-                          style={{ fontSize: '0.8rem', padding: '0.25rem 0.5rem' }}
-                        >
-                          <i className="fas fa-trash" style={{ fontSize: '0.75rem' }}></i>
-                        </button>
-                      )}
                     </td>
                   )}
                 </tr>

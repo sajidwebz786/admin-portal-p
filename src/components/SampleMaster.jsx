@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import apiService from '../services/apiService';
 
-const SampleMaster = () => {
+const asArray = (value, key) => Array.isArray(value) ? value : (Array.isArray(value?.[key]) ? value[key] : []);
+
+const SampleMaster = ({ mode = 'addition' }) => {
   const location = useLocation();
+  const isDeletionMode = mode === 'deletion';
   const [samples, setSamples] = useState([]);
   const [products, setProducts] = useState([]);
   const [packSizes, setPackSizes] = useState([]);
@@ -29,11 +32,11 @@ const SampleMaster = () => {
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get('open') === 'add') {
+    if (!isDeletionMode && params.get('open') === 'add') {
       setEditingId(null);
       setShowModal(true);
     }
-  }, [location.search]);
+  }, [location.search, isDeletionMode]);
 
   const fetchData = async () => {
     try {
@@ -43,9 +46,9 @@ const SampleMaster = () => {
         apiService.getProducts(),
         apiService.getPackSizes()
       ]);
-      setSamples(samplesData);
-      setProducts(productsData.filter(p => p.isActive));
-      setPackSizes(packSizesData.filter(p => p.status === 'active'));
+      setSamples(asArray(samplesData, 'samples'));
+      setProducts(asArray(productsData, 'products').filter(p => p.status === 'active' || p.isActive));
+      setPackSizes(asArray(packSizesData, 'packSizes').filter(p => p.status === 'active'));
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Failed to fetch data');
@@ -126,14 +129,14 @@ const SampleMaster = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Inactivate this sample?')) {
+    if (window.confirm('Deactivate this sample?')) {
       try {
         await apiService.deleteSample(id);
-        setSuccess('Sample inactivated successfully!');
+        setSuccess('Sample deactivated successfully!');
         fetchData();
       } catch (error) {
         console.error('Error deleting sample:', error);
-        setError(error.message || 'Failed to inactivate sample');
+        setError(error.message || 'Failed to deactivate sample');
       }
     }
   };
@@ -176,17 +179,26 @@ const SampleMaster = () => {
         <div className="header-content">
           <h1 className="page-title">
             <i className="fas fa-vial"></i>
-            Sample Master Addition / Deletion
+            Sample {isDeletionMode ? 'Deletion' : 'Addition'}
           </h1>
-          <p className="page-subtitle">Add, edit, and inactivate product samples for doctor calls</p>
+          <p className="page-subtitle">
+            {isDeletionMode ? 'Search existing samples and submit only deactivation requests' : 'Create only new product samples for doctor calls'}
+          </p>
         </div>
-        <button className="btn btn-primary btn-lg" onClick={() => {
-          setError('');
-          setSuccess('');
-          setShowModal(true);
-        }}>
-          <i className="fas fa-plus"></i> Add Sample
-        </button>
+        <div className="operation-header-actions">
+          <Link to="/addition-deletion-control" className="btn btn-light btn-lg">
+            <i className="fas fa-arrow-left"></i> Back
+          </Link>
+          {!isDeletionMode && (
+            <button className="btn btn-primary btn-lg" onClick={() => {
+              setError('');
+              setSuccess('');
+              setShowModal(true);
+            }}>
+              <i className="fas fa-plus"></i> Add Sample
+            </button>
+          )}
+        </div>
       </div>
 
       {error && (
@@ -235,13 +247,13 @@ const SampleMaster = () => {
                     <th><i className="fas fa-ruler"></i> Unit</th>
                     <th><i className="fas fa-user-clock"></i> Max/Call</th>
                     <th><i className="fas fa-toggle-on"></i> Status</th>
-                    <th><i className="fas fa-cogs"></i> Actions</th>
+                    {isDeletionMode && <th><i className="fas fa-cogs"></i> Deletion Action</th>}
                   </tr>
                 </thead>
                 <tbody>
                   {samples.length === 0 ? (
                     <tr>
-                      <td colSpan="9" className="text-center text-muted">
+                      <td colSpan={isDeletionMode ? '9' : '8'} className="text-center text-muted">
                         <i className="fas fa-inbox"></i> No records found
                       </td>
                     </tr>
@@ -261,22 +273,17 @@ const SampleMaster = () => {
                             {' '}{sample.status}
                           </span>
                         </td>
-                        <td>
-                          <button 
-                            className="btn btn-sm btn-warning mr-1"
-                            onClick={() => handleEdit(sample)}
-                            title="Edit"
-                          >
-                            <i className="fas fa-edit"></i> Edit
-                          </button>
-                          <button 
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(sample.id)}
-                            title="Inactivate"
-                          >
-                            <i className="fas fa-ban"></i> Inactivate
-                          </button>
-                        </td>
+                        {isDeletionMode && (
+                          <td>
+                            <button
+                              className="btn btn-sm btn-danger"
+                              onClick={() => handleDelete(sample.id)}
+                              title="Deactivate"
+                            >
+                              <i className="fas fa-ban"></i> Deactivate
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     ))
                   )}

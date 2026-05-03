@@ -672,6 +672,17 @@ html, body {
   background-color: #545b62;
 }
 
+.btn-light {
+  background-color: #f8fafc;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-light:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
 /* Card styling */
 .card {
   background-color: var(--card-bg);
@@ -944,6 +955,51 @@ html, body {
   overflow-wrap: anywhere;
 }
 
+.operation-mode-header {
+  align-items: center;
+  background: #17375f;
+  border-radius: 12px;
+  color: #ffffff;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding: 16px 18px;
+}
+
+.operation-mode-header.addition {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+}
+
+.operation-mode-header.deletion {
+  background: linear-gradient(135deg, #5f1e1e 0%, #b91c1c 100%);
+}
+
+.operation-mode-header h2 {
+  color: #ffffff !important;
+  margin: 0 0 5px;
+}
+
+.operation-mode-header p {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 14px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.operation-mode-header .btn {
+  flex: 0 0 auto;
+}
+
+.operation-header-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .action-btn {
   border: 1px solid transparent;
   display: inline-flex;
@@ -987,6 +1043,17 @@ html, body {
   .page-header-container .btn {
     width: 100%;
     white-space: normal;
+  }
+
+  .operation-mode-header,
+  .operation-header-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .operation-header-actions,
+  .operation-header-actions .btn {
+    width: 100%;
   }
 }
 

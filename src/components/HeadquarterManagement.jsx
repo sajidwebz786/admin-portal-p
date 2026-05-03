@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
 
-const HeadquarterManagement = () => {
+const HeadquarterManagement = ({ mode = 'management' }) => {
   const [headquarters, setHeadquarters] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -26,6 +27,14 @@ const HeadquarterManagement = () => {
     employeeCount: 0,
     isActive: true
   })
+  const isAdditionMode = mode === 'addition'
+  const isDeletionMode = mode === 'deletion'
+  const title = isAdditionMode ? 'HQ Addition' : isDeletionMode ? 'HQ Deletion' : 'Headquarter Master'
+  const subtitle = isAdditionMode
+    ? 'Create only new headquarters from this screen.'
+    : isDeletionMode
+      ? 'Search existing headquarters and submit only deletion requests.'
+      : ''
 
   useEffect(() => {
     loadHeadquarters()
@@ -151,7 +160,7 @@ const HeadquarterManagement = () => {
   if (loading) {
     return (
       <div className="section-content">
-        <h2>Headquarter Master</h2>
+        <h2>{title}</h2>
         <div className="loading-spinner">
           <i className="fas fa-spinner fa-spin"></i> Loading headquarters...
         </div>
@@ -161,7 +170,16 @@ const HeadquarterManagement = () => {
 
   return (
     <div className="section-content">
-      <h2>Headquarter Master</h2>
+      <div className={`operation-mode-header ${isDeletionMode ? 'deletion' : isAdditionMode ? 'addition' : ''}`}>
+        <div>
+          <h2>{title}</h2>
+          {subtitle && <p>{subtitle}</p>}
+        </div>
+        <div className="operation-header-actions">
+          {(isAdditionMode || isDeletionMode) && <Link to="/addition-deletion-control" className="btn btn-light">Back</Link>}
+          <button className="btn btn-secondary" type="button" onClick={loadHeadquarters}>Refresh</button>
+        </div>
+      </div>
 
       {error && (
         <div className="alert alert-danger">
@@ -181,14 +199,13 @@ const HeadquarterManagement = () => {
         </button>
       </div>
 
-      <div className="management-actions mb-4 d-flex gap-3">
-        <button className="btn btn-primary" onClick={showAddModal}>
-          <i className="fas fa-plus"></i> Add New HQ
-        </button>
-        <button className="btn btn-info">
-          <i className="fas fa-download"></i> Export List
-        </button>
-      </div>
+      {isAdditionMode && (
+        <div className="management-actions mb-4 d-flex gap-3">
+          <button className="btn btn-primary" onClick={showAddModal}>
+            <i className="fas fa-plus"></i> Add New HQ
+          </button>
+        </div>
+      )}
 
       <div className="management-table">
         <table className="table table-striped">
@@ -202,13 +219,13 @@ const HeadquarterManagement = () => {
               <th>Region</th>
               <th>Territories</th>
               <th>Status</th>
-              <th>Actions</th>
+              {!isAdditionMode && <th>{isDeletionMode ? 'Deletion Action' : 'Actions'}</th>}
             </tr>
           </thead>
           <tbody>
             {filteredHeadquarters.length === 0 ? (
               <tr>
-                <td colSpan="10" className="text-center">
+                <td colSpan={isAdditionMode ? '8' : '9'} className="text-center">
                   {headquarters.length === 0 ? 'No headquarters found.' : 'No headquarters match your search.'}
                 </td>
               </tr>
@@ -234,22 +251,26 @@ const HeadquarterManagement = () => {
                       {headquarter.isActive ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  <td>
-                    <button
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={() => showEditModal(headquarter)}
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                    >
-                      <i className="fas fa-edit"></i> Edit
-                    </button>
-                    <button
-                      className="btn btn-outline-danger btn-sm ml-1"
-                      onClick={() => handleDelete(headquarter.id)}
-                      style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </td>
+                  {!isAdditionMode && (
+                    <td>
+                      {!isDeletionMode && (
+                        <button
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() => showEditModal(headquarter)}
+                          style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                        >
+                          <i className="fas fa-edit"></i> Edit
+                        </button>
+                      )}
+                      <button
+                        className="btn btn-outline-danger btn-sm ml-1"
+                        onClick={() => handleDelete(headquarter.id)}
+                        style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                      >
+                        <i className="fas fa-trash"></i>{' '}{isDeletionMode ? 'Delete' : ''}
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))
             )}

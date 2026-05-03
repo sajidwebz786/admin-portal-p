@@ -26,29 +26,37 @@ const actionLabels = {
 
 const quickActionSections = [
   {
-    title: 'Customer Masters',
+    title: 'Customer & Field Records',
     actions: [
-      { label: 'Doctor Master', detail: 'Doctor creation, transfer, edit, and inactivation', addPath: '/doctor-master', deletionPath: '/doctor-master', icon: 'fas fa-user-md' },
-      { label: 'Chemist Master', detail: 'Chemist addition, doctor linking, edit, and inactivation', addPath: '/chemist-master', deletionPath: '/chemist-master', icon: 'fas fa-clinic-medical' },
-      { label: 'Stockist Master', detail: 'Stockist master record governance', addPath: '/stockist-master', deletionPath: '/stockist-master', icon: 'fas fa-warehouse' },
-      { label: 'Hospital Master', detail: 'Hospital master record governance', addPath: '/hospital-master', deletionPath: '/hospital-master', icon: 'fas fa-hospital' },
-      { label: 'Standard Visiting List', detail: 'HQ-wise doctor SVL allocation and yearly revision', addPath: '/svl-master', deletionPath: '/svl-master', icon: 'fas fa-list-check' }
+      { label: 'Doctor', detail: 'Doctor record addition or deletion request', addPath: '/addition/doctor-master', deletionPath: '/deletion/doctor-master', icon: 'fas fa-user-md' },
+      { label: 'Chemist', detail: 'Chemist record addition or deletion request', addPath: '/addition/chemist-master', deletionPath: '/deletion/chemist-master', icon: 'fas fa-clinic-medical' },
+      { label: 'Stockist', detail: 'Stockist record addition or deletion request', addPath: '/addition/stockist-master', deletionPath: '/deletion/stockist-master', icon: 'fas fa-warehouse' },
+      { label: 'Hospital', detail: 'Hospital record addition or deletion request', addPath: '/addition/hospital-master', deletionPath: '/deletion/hospital-master', icon: 'fas fa-hospital' },
+      { label: 'Standard Visiting List', detail: 'HQ-wise doctor SVL addition or deletion request', addPath: '/addition/svl-master', deletionPath: '/deletion/svl-master', icon: 'fas fa-list-check' }
+    ]
+  },
+  {
+    title: 'Territory & HQ',
+    actions: [
+      { label: 'HQ', detail: 'Headquarter addition or deletion request', addPath: '/addition/headquarter-management', deletionPath: '/deletion/headquarter-management', icon: 'fas fa-building' },
+      { label: 'Patch / Route', detail: 'Patch or route addition or deletion request', addPath: '/addition/territory-management', deletionPath: '/deletion/territory-management', icon: 'fas fa-map-marked-alt' }
     ]
   },
   {
     title: 'Product & Input',
     actions: [
-      { label: 'Input Master', detail: 'Promotional input addition, edit, and inactivation', addPath: '/input-master?open=add', deletionPath: '/input-master', icon: 'fas fa-gift' },
-      { label: 'Sample Master', detail: 'Product sample addition, edit, and inactivation', addPath: '/sample-master?open=add', deletionPath: '/sample-master', icon: 'fas fa-vial' },
-      { label: 'Input Allocation', detail: 'Monthly or quarterly allocation with effective dates', addPath: '/input-allocation', deletionPath: '/input-allocation', icon: 'fas fa-calendar-check' },
-      { label: 'Rate Fixation', detail: 'State, product, sample, input, and rate history', addPath: '/rate-fixation', deletionPath: '/rate-fixation', icon: 'fas fa-tags' }
+      { label: 'Product', detail: 'Product addition or deletion request', addPath: '/addition/product-management', deletionPath: '/deletion/product-management', icon: 'fas fa-pills' },
+      { label: 'Input', detail: 'Promotional input addition or deletion request', addPath: '/addition/input-master?open=add', deletionPath: '/deletion/input-master', icon: 'fas fa-gift' },
+      { label: 'Sample', detail: 'Product sample addition or deletion request', addPath: '/addition/sample-master?open=add', deletionPath: '/deletion/sample-master', icon: 'fas fa-vial' },
+      { label: 'Input Allocation', detail: 'Allocation addition or deletion request with effective dates', addPath: '/addition/input-allocation', deletionPath: '/deletion/input-allocation', icon: 'fas fa-calendar-check' },
+      { label: 'Rate Fixation', detail: 'Rate addition or deletion request with history', addPath: '/addition/rate-fixation', deletionPath: '/deletion/rate-fixation', icon: 'fas fa-tags' }
     ]
   },
   {
     title: 'Policy & Control',
     actions: [
-      { label: 'Notice Upload', detail: 'HO notices, documents, audience, and status control', addPath: '/notice-upload', deletionPath: '/notice-upload', icon: 'fas fa-bullhorn' },
-      { label: 'SOP / Policy', detail: 'Designation-wise SOP and policy governance', addPath: '/sop-master', deletionPath: '/sop-master', icon: 'fas fa-file-shield' }
+      { label: 'Notice Upload', detail: 'Notice addition or deletion request', addPath: '/addition/notice-upload', deletionPath: '/deletion/notice-upload', icon: 'fas fa-bullhorn' },
+      { label: 'SOP / Policy', detail: 'SOP or policy addition or deletion request', addPath: '/addition/sop-master', deletionPath: '/deletion/sop-master', icon: 'fas fa-file-shield' }
     ]
   }
 ]
@@ -131,8 +139,8 @@ const AdditionDeletionControl = () => {
     <div className="section-content addition-control">
       <div className="page-header governance-header">
         <div>
-          <h2>Addition / Deletion Governance</h2>
-          <p>Central control center for master additions, edits, inactivations, approvals, and audit history.</p>
+          <h2>Addition / Deletion Control</h2>
+          <p>Choose Addition for add-only forms or Deletion for delete-only request screens. Master setup remains separate.</p>
         </div>
         <button className="btn btn-secondary" type="button" onClick={loadControlData}>Refresh</button>
       </div>
@@ -142,7 +150,7 @@ const AdditionDeletionControl = () => {
 
       <div className="box quick-actions-box">
         <div className="box-header with-border">
-          <h3 className="box-title">Master Control Center</h3>
+          <h3 className="box-title">Operation Control Center</h3>
         </div>
         <div className="quick-actions-grid">
           {quickActionSections.map((section) => (
@@ -232,7 +240,7 @@ const AdditionDeletionControl = () => {
           </div>
           <div className="audit-mini-summary">
             <span>Recent edits: {recentUpdates}</span>
-            <span>Recent inactivations: {recentDeletes}</span>
+            <span>Recent deactivations: {recentDeletes}</span>
           </div>
           <table className="table table-striped table-bordered">
             <thead className="table-dark">
@@ -263,8 +271,8 @@ const AdditionDeletionControl = () => {
       <div className="box governance-note">
         <h3>Control Coverage</h3>
         <div className="governance-list">
-          <span>Doctor transfer and inactivation</span>
-          <span>Chemist additions and inactivation</span>
+          <span>Doctor transfer and deactivation</span>
+          <span>Chemist additions and deactivation</span>
           <span>Patch to multiple HQ mapping</span>
           <span>SVL yearly revision</span>
           <span>Input allocation effective dating</span>
