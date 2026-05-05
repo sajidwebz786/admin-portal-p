@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
+import BulkUploadPanel from './BulkUploadPanel'
 
 const ProductManagement = ({ mode = 'management' }) => {
   const [products, setProducts] = useState([])
@@ -282,6 +283,42 @@ const ProductManagement = ({ mode = 'management' }) => {
     return group ? group.brand_group_name : '-'
   }
 
+  const productBulkFields = [
+    { key: 'unique_id', label: 'Unique ID', type: 'text' },
+    { key: 'name', label: 'Product Name', type: 'text', required: true },
+    { key: 'short_name', label: 'Short Name', type: 'text' },
+    { key: 'code', label: 'Product Code', type: 'text' },
+    { key: 'division_id', label: 'Division', type: 'select', options: divisions.filter(d => d.status === 'active').map(div => ({ value: div.id, label: `${div.division_name} (${div.short_name})` })) },
+    { key: 'brand_group_id', label: 'Brand Group', type: 'select', options: brandGroups.filter(bg => bg.status === 'active').map(bg => ({ value: bg.id, label: `${bg.brand_group_name} (${bg.short_name})` })) },
+    { key: 'category_id', label: 'Category', type: 'select', options: categories.filter(c => c.status === 'active').map(cat => ({ value: cat.id, label: `${cat.category_name} (${cat.short_name})` })) },
+    { key: 'pack_size_id', label: 'Pack Size', type: 'select', options: packSizes.filter(ps => ps.status === 'active').map(ps => ({ value: ps.id, label: ps.pack_size })) },
+    { key: 'strength_id', label: 'Strength', type: 'select', options: strengths.filter(s => s.status === 'active').map(str => ({ value: str.id, label: `${str.strength_value} ${str.unit || 'mg'}` })) },
+    { key: 'pts', label: 'PTS', type: 'number' },
+    { key: 'ptr', label: 'PTR', type: 'number' },
+    { key: 'mrp', label: 'MRP', type: 'number' },
+    { key: 'nrv', label: 'NRV', type: 'number' },
+    { key: 'launch_date', label: 'Launch Date', type: 'date' },
+    { key: 'status', label: 'Status', type: 'select', options: [{ value: 'active', label: 'Active' }, { value: 'inactive', label: 'Inactive' }] },
+    { key: 'description', label: 'Description', type: 'text' },
+    { key: 'composition', label: 'Composition', type: 'text' },
+    { key: 'gstRate', label: 'GST Rate', type: 'number' },
+    { key: 'schedule', label: 'Schedule', type: 'select', options: [{ value: 'H', label: 'H' }, { value: 'OTC', label: 'OTC' }] },
+    { key: 'therapeuticClass', label: 'Therapeutic Class', type: 'text' }
+  ]
+
+  const createBulkProduct = (payload) => adminAPI.createProduct({
+    ...payload,
+    pts: payload.pts ? parseFloat(payload.pts) : null,
+    ptr: payload.ptr ? parseFloat(payload.ptr) : null,
+    mrp: payload.mrp ? parseFloat(payload.mrp) : null,
+    nrv: payload.nrv ? parseFloat(payload.nrv) : null,
+    division_id: payload.division_id ? parseInt(payload.division_id) : null,
+    brand_group_id: payload.brand_group_id ? parseInt(payload.brand_group_id) : null,
+    category_id: payload.category_id ? parseInt(payload.category_id) : null,
+    pack_size_id: payload.pack_size_id ? parseInt(payload.pack_size_id) : null,
+    strength_id: payload.strength_id ? parseInt(payload.strength_id) : null
+  })
+
   if (loading) {
     return (
       <div className="section-content">
@@ -310,6 +347,16 @@ const ProductManagement = ({ mode = 'management' }) => {
         <div className="alert alert-danger">
           <i className="fas fa-exclamation-triangle"></i> {error}
         </div>
+      )}
+
+      {isAdditionMode && (
+        <BulkUploadPanel
+          title="Product"
+          fields={productBulkFields}
+          defaults={{ status: 'active', gstRate: 18, schedule: 'H' }}
+          createRecord={createBulkProduct}
+          onComplete={loadProducts}
+        />
       )}
 
       <div className="search-bar">

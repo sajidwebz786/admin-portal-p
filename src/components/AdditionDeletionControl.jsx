@@ -140,7 +140,7 @@ const AdditionDeletionControl = () => {
       <div className="page-header governance-header">
         <div>
           <h2>Addition / Deletion Control</h2>
-          <p>Choose Addition for add-only forms or Deletion for delete-only request screens. Master setup remains separate.</p>
+          <p>Choose Addition for add-only forms with bulk Excel/CSV upload, or Deletion for delete-only request screens. Master setup remains separate.</p>
         </div>
         <button className="btn btn-secondary" type="button" onClick={loadControlData}>Refresh</button>
       </div>

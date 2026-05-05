@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import apiService from '../services/apiService';
+import BulkUploadPanel from './BulkUploadPanel';
 
 const asArray = (value, key) => Array.isArray(value) ? value : (Array.isArray(value?.[key]) ? value[key] : []);
 
@@ -168,6 +169,15 @@ const InputMaster = ({ mode = 'addition' }) => {
     return cls ? cls.class_name : '-';
   };
 
+  const bulkFields = [
+    { key: 'input_name', label: 'Input Name', type: 'text', required: true },
+    { key: 'short_name', label: 'Short Name', type: 'text', required: true },
+    { key: 'input_type_id', label: 'Input Type', type: 'select', required: true, options: inputTypes.map(type => ({ value: type.id, label: `${type.type_name} (${type.short_name})` })) },
+    { key: 'input_class_id', label: 'Input Class', type: 'select', options: inputClasses.map(cls => ({ value: cls.id, label: `${cls.class_name} (${cls.short_name})` })) },
+    { key: 'description', label: 'Description', type: 'text' },
+    { key: 'status', label: 'Status', type: 'select', options: [{ value: 'active', label: 'Active' }, { value: 'inactive', label: 'Inactive' }] }
+  ];
+
   return (
     <div className="master-page">
       <div className="page-header-container">
@@ -195,6 +205,20 @@ const InputMaster = ({ mode = 'addition' }) => {
           )}
         </div>
       </div>
+
+      {!isDeletionMode && (
+        <BulkUploadPanel
+          title="Input"
+          fields={bulkFields}
+          defaults={{ status: 'active' }}
+          createRecord={(payload) => apiService.createInput({
+            ...payload,
+            input_type_id: payload.input_type_id ? parseInt(payload.input_type_id) : null,
+            input_class_id: payload.input_class_id ? parseInt(payload.input_class_id) : null
+          })}
+          onComplete={fetchData}
+        />
+      )}
 
       {error && (
         <div className="alert alert-danger alert-dismissible">

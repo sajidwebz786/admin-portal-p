@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
+import BulkUploadPanel from './BulkUploadPanel'
 
 const TerritoryManagement = ({ mode = 'management' }) => {
   const [territories, setTerritories] = useState([])
@@ -150,6 +151,21 @@ const TerritoryManagement = ({ mode = 'management' }) => {
     (territory.headquarter && territory.headquarter.name.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
+  const zones = ['North', 'South', 'East', 'West', 'Central', 'North-East']
+  const stateTypes = ['State', 'Union Territory']
+  const bulkFields = [
+    { key: 'name', label: 'Patch/Route Name', type: 'text', required: true },
+    { key: 'code', label: 'Patch/Route Code', type: 'text', required: true },
+    { key: 'hq_id', label: 'Head Quarter', type: 'select', required: true, options: headquarters.map(hq => ({ value: hq.id, label: `${hq.name} (${hq.code})` })) },
+    { key: 'region', label: 'Region', type: 'text', required: true },
+    { key: 'state', label: 'State/Union Territory', type: 'text', required: true },
+    { key: 'stateType', label: 'State Type', type: 'select', options: stateTypes.map(value => ({ value, label: value })) },
+    { key: 'zone', label: 'Zone', type: 'select', options: zones.map(value => ({ value, label: value })) },
+    { key: 'district', label: 'District', type: 'text', required: true },
+    { key: 'description', label: 'Description', type: 'text' },
+    { key: 'isActive', label: 'Active', type: 'boolean' }
+  ]
+
   if (loading) {
     return (
       <div className="section-content">
@@ -178,6 +194,19 @@ const TerritoryManagement = ({ mode = 'management' }) => {
         <div className="alert alert-danger">
           <i className="fas fa-exclamation-triangle"></i> {error}
         </div>
+      )}
+
+      {isAdditionMode && (
+        <BulkUploadPanel
+          title="Patch / Route"
+          fields={bulkFields}
+          defaults={{ stateType: 'State', isActive: true }}
+          createRecord={(payload) => adminAPI.createTerritory({
+            ...payload,
+            hq_id: payload.hq_id ? parseInt(payload.hq_id) : null
+          })}
+          onComplete={loadTerritories}
+        />
       )}
 
       <div className="search-bar">

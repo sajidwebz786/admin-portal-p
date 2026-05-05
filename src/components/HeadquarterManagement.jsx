@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
+import BulkUploadPanel from './BulkUploadPanel'
 
 const HeadquarterManagement = ({ mode = 'management' }) => {
   const [headquarters, setHeadquarters] = useState([])
@@ -157,6 +158,28 @@ const HeadquarterManagement = ({ mode = 'management' }) => {
     (headquarter.region && headquarter.region.toLowerCase().includes(searchTerm.toLowerCase()))
   )
 
+  const zones = ['North', 'South', 'East', 'West', 'Central', 'North-East']
+  const types = ['Head Office', 'Regional Office', 'Zonal Office', 'Branch Office', 'Metro', 'Non Metro', 'Hill Station', 'Semi Metro']
+  const stateTypes = ['State', 'Union Territory']
+  const bulkFields = [
+    { key: 'name', label: 'HQ Name', type: 'text', required: true },
+    { key: 'code', label: 'HQ Code', type: 'text', required: true },
+    { key: 'type', label: 'Type', type: 'select', required: true, options: types.map(value => ({ value, label: value })) },
+    { key: 'address', label: 'Address', type: 'text' },
+    { key: 'city', label: 'City', type: 'text' },
+    { key: 'state', label: 'State/Union Territory', type: 'text', required: true },
+    { key: 'stateType', label: 'State Type', type: 'select', required: true, options: stateTypes.map(value => ({ value, label: value })) },
+    { key: 'pincode', label: 'Pincode', type: 'text' },
+    { key: 'phone', label: 'Phone', type: 'text' },
+    { key: 'email', label: 'Email', type: 'text' },
+    { key: 'manager', label: 'Manager', type: 'text' },
+    { key: 'region', label: 'Region', type: 'text', required: true },
+    { key: 'zone', label: 'Zone', type: 'select', required: true, options: zones.map(value => ({ value, label: value })) },
+    { key: 'territoryCount', label: 'Territory Count', type: 'number' },
+    { key: 'employeeCount', label: 'Employee Count', type: 'number' },
+    { key: 'isActive', label: 'Active', type: 'boolean' }
+  ]
+
   if (loading) {
     return (
       <div className="section-content">
@@ -185,6 +208,20 @@ const HeadquarterManagement = ({ mode = 'management' }) => {
         <div className="alert alert-danger">
           <i className="fas fa-exclamation-triangle"></i> {error}
         </div>
+      )}
+
+      {isAdditionMode && (
+        <BulkUploadPanel
+          title="HQ"
+          fields={bulkFields}
+          defaults={{ type: 'Branch Office', stateType: 'State', isActive: true }}
+          createRecord={(payload) => adminAPI.createHeadquarter({
+            ...payload,
+            territoryCount: payload.territoryCount ? parseInt(payload.territoryCount) : 0,
+            employeeCount: payload.employeeCount ? parseInt(payload.employeeCount) : 0
+          })}
+          onComplete={loadHeadquarters}
+        />
       )}
 
       <div className="search-bar">

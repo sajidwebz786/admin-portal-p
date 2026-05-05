@@ -36,8 +36,9 @@ const Sidebar = ({ onLogout, userRole }) => {
   // Main nav items
   const mainNavItems = [
     { id: 'addition-deletion-control', label: 'Addition / Deletion Control', icon: 'fas fa-shield-alt', path: '/addition-deletion-control' },
+    // { id: 'bulk-uploads', label: 'Bulk Uploads', icon: 'fas fa-file-excel', path: '/bulk-uploads' },
     { id: 'expense-management', label: 'Expense Management', icon: 'fas fa-receipt', path: '/expense-management' },
-    { id: 'doctors-chemists', label: 'Doctors/Chemists', icon: 'fas fa-user-md', path: '/doctors-chemists' },
+    // { id: 'doctors-chemists', label: 'Doctors/Chemists', icon: 'fas fa-user-md', path: '/doctors-chemists' },
     { id: 'sales-projections', label: 'Sales & Projections', icon: 'fas fa-chart-line', path: '/sales-projections' },
     { id: 'activity-approvals', label: 'Activity Approvals', icon: 'fas fa-check-circle', path: '/activity-approvals' },
     { id: 'reports', label: 'Reports', icon: 'fas fa-file-alt', path: '/reports' }
@@ -137,7 +138,7 @@ const Sidebar = ({ onLogout, userRole }) => {
             {/* Main nav items - filtered by role */}
             {visibleMainNav.map((item) => (
               <li key={item.id} className="nav-item">
-                <Link to={item.path} className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}>
+                <Link to={item.path} className={`nav-link ${location.pathname === item.path || (item.id === 'bulk-uploads' && location.pathname.startsWith('/addition/')) ? 'active' : ''}`}>
                   <i className={`${item.icon} nav-icon`}></i>
                   <p>{item.label}</p>
                 </Link>

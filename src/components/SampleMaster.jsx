@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import apiService from '../services/apiService';
+import BulkUploadPanel from './BulkUploadPanel';
 
 const asArray = (value, key) => Array.isArray(value) ? value : (Array.isArray(value?.[key]) ? value[key] : []);
 
@@ -173,6 +174,16 @@ const SampleMaster = ({ mode = 'addition' }) => {
     return pack ? pack.pack_size : '-';
   };
 
+  const bulkFields = [
+    { key: 'product_id', label: 'Product', type: 'select', required: true, options: products.map(product => ({ value: product.id, label: `${product.name} (${product.short_name || product.code || product.id})` })) },
+    { key: 'pack_size_id', label: 'Pack Size', type: 'select', options: packSizes.map(pack => ({ value: pack.id, label: `${pack.pack_size}${pack.short_name ? ` (${pack.short_name})` : ''}` })) },
+    { key: 'sample_name', label: 'Sample Name', type: 'text', required: true },
+    { key: 'sample_qty', label: 'Sample Qty', type: 'number', required: true },
+    { key: 'unit', label: 'Unit', type: 'select', options: ['Tab', 'ml', 'g', 'Cap', 'Syr', 'Inj'].map(value => ({ value, label: value })) },
+    { key: 'max_per_call', label: 'Max Per Call', type: 'number' },
+    { key: 'status', label: 'Status', type: 'select', options: [{ value: 'active', label: 'Active' }, { value: 'inactive', label: 'Inactive' }] }
+  ];
+
   return (
     <div className="master-page">
       <div className="page-header-container">
@@ -200,6 +211,22 @@ const SampleMaster = ({ mode = 'addition' }) => {
           )}
         </div>
       </div>
+
+      {!isDeletionMode && (
+        <BulkUploadPanel
+          title="Sample"
+          fields={bulkFields}
+          defaults={{ unit: 'Tab', max_per_call: 5, status: 'active' }}
+          createRecord={(payload) => apiService.createSample({
+            ...payload,
+            product_id: payload.product_id ? parseInt(payload.product_id) : null,
+            pack_size_id: payload.pack_size_id ? parseInt(payload.pack_size_id) : null,
+            sample_qty: payload.sample_qty ? parseFloat(payload.sample_qty) : null,
+            max_per_call: payload.max_per_call ? parseInt(payload.max_per_call) : 5
+          })}
+          onComplete={fetchData}
+        />
+      )}
 
       {error && (
         <div className="alert alert-danger alert-dismissible">

@@ -205,6 +205,7 @@ function AppContent() {
           {/* System Setup */}
           <Route path="/system-setup" element={<ProtectedRoute path="/system-setup" element={<SystemSetup />} />} />
           <Route path="/addition-deletion-control" element={<ProtectedRoute path="/addition-deletion-control" element={<AdditionDeletionControl />} />} />
+          <Route path="/bulk-uploads" element={<ProtectedRoute path="/bulk-uploads" element={<AdditionDeletionControl />} />} />
           <Route path="/master-administration" element={<Navigate to="/addition-deletion-control" replace />} />
 
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

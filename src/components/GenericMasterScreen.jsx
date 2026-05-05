@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
+import BulkUploadPanel from './BulkUploadPanel'
 
 const emptyOption = { value: '', label: 'Select' }
 const today = () => new Date().toISOString().slice(0, 10)
@@ -37,6 +38,7 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
     return {
       doctors: [emptyOption, ...support.doctors.map((item) => ({ value: item.id, label: `${item.firstName || ''} ${item.lastName || ''}`.trim() || `Doctor ${item.id}` }))],
       patches: [emptyOption, ...support.patches.map((item) => ({ value: item.id, label: item.patch_name || `Patch ${item.id}` }))],
+      territoriesAll: [emptyOption, ...support.territories.map((item) => ({ value: item.id, label: `${item.name || `Patch/Route ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))],
       territories: [emptyOption, ...filteredTerritories.map((item) => ({ value: item.id, label: `${item.name || `Patch/Route ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))],
       headquarters: [emptyOption, ...support.headquarters.map((item) => ({ value: item.id, label: `${item.name || `HQ ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))],
       states: uniqueOptions([
@@ -316,6 +318,13 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
   }
 
   const sanitize = (data) => Object.fromEntries(Object.entries(data).map(([key, value]) => [key, value === '' ? null : value]))
+  const bulkFields = config.fields.map(([key, label, type = 'text', required = false, fieldOptions = []]) => ({
+    key,
+    label,
+    type: type === 'textarea' ? 'text' : type,
+    required,
+    options: key === 'territory_id' ? options.territoriesAll : fieldOptions
+  }))
 
   const handleFieldChange = (key, value) => {
     const nextForm = { ...form, [key]: value }
@@ -386,12 +395,24 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
       {!isDeletionMode && (
-        <form className="master-admin-form" onSubmit={handleSubmit}>
-          {config.fields.map(renderField)}
-          <div className="master-admin-actions">
-            <button type="submit" className="btn btn-primary">Add {config.shortTitle || config.title}</button>
-          </div>
-        </form>
+        <>
+          <BulkUploadPanel
+            title={config.shortTitle || config.title}
+            fields={bulkFields}
+            defaults={config.defaults || {}}
+            createRecord={(payload) => config.create(sanitize(payload))}
+            onComplete={async () => {
+              await loadRecords()
+              await loadSupport()
+            }}
+          />
+          <form className="master-admin-form" onSubmit={handleSubmit}>
+            {config.fields.map(renderField)}
+            <div className="master-admin-actions">
+              <button type="submit" className="btn btn-primary">Add {config.shortTitle || config.title}</button>
+            </div>
+          </form>
+        </>
       )}
       <table className="table table-striped table-bordered">
         <thead className="table-dark">
