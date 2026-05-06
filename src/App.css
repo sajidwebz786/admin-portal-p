@@ -1026,12 +1026,6 @@ html, body {
   padding: 12px;
 }
 
-.sticky-sales-filters {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-
 .sales-filter-bar label,
 .sales-module-form label {
   display: flex;
@@ -1055,18 +1049,6 @@ html, body {
   border-radius: 6px;
   min-height: 38px;
   padding: 8px 10px;
-}
-
-.sales-module-form small,
-.auto-calc-note {
-  color: #64748b;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.field-error {
-  border-color: #dc2626 !important;
-  color: #991b1b !important;
 }
 
 .sales-tabs {
@@ -1110,206 +1092,6 @@ html, body {
 .sales-flow span {
   color: #2563eb;
   padding: 0 8px;
-}
-
-.sales-governance-strip {
-  align-items: center;
-  background: #ecfdf5;
-  border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  color: #14532d;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
-  padding: 10px 12px;
-}
-
-.sales-governance-strip span {
-  font-size: 12px;
-}
-
-.enterprise-summary {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.enterprise-summary .summary-card,
-.sales-summary .summary-card {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
-  min-height: 106px;
-  padding: 14px;
-}
-
-.enterprise-summary .summary-card h3,
-.sales-summary .summary-card h3 {
-  color: #334155;
-  font-size: 13px;
-  font-weight: 800;
-  margin: 0 0 8px;
-}
-
-.summary-value {
-  color: #0f172a;
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1.1;
-  margin: 0 0 8px;
-}
-
-.summary-change {
-  font-size: 12px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.summary-change.positive {
-  color: #047857;
-}
-
-.summary-change.negative {
-  color: #b91c1c;
-}
-
-.summary-change.neutral {
-  color: #475569;
-}
-
-.sales-alert-panel,
-.sales-placeholder-panel,
-.target-projection-panel,
-.stock-impact-note,
-.sales-table-card {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 14px;
-}
-
-.sales-alert-panel h3,
-.target-projection-panel h3,
-.sales-table-card h3,
-.sales-placeholder-panel h3 {
-  color: #0f172a;
-  font-size: 16px;
-  font-weight: 900;
-  margin: 0 0 10px;
-}
-
-.sales-alert-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.status-pill {
-  border-radius: 999px;
-  display: inline-flex;
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1.2;
-  padding: 5px 8px;
-  white-space: nowrap;
-}
-
-.status-pill.success {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status-pill.warning {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.status-pill.danger {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.status-pill.neutral {
-  background: #e0f2fe;
-  color: #075985;
-}
-
-.sales-month-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  grid-column: span 2;
-}
-
-.sales-month-grid > span {
-  color: #334155;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.sales-month-grid > div {
-  display: grid;
-  gap: 6px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-.sales-month-grid label {
-  align-items: center;
-  background: #f8fafc;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  color: #1e293b;
-  display: flex;
-  flex-direction: row;
-  font-size: 12px;
-  font-weight: 800;
-  gap: 5px;
-  justify-content: center;
-  min-height: 34px;
-}
-
-.stock-impact-note {
-  color: #334155;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.stock-impact-note strong {
-  color: #0f172a;
-}
-
-.achievement-cards {
-  display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-bottom: 14px;
-}
-
-.achievement-cards div {
-  background: #f8fafc;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 12px;
-}
-
-.achievement-cards strong,
-.achievement-cards span {
-  display: block;
-}
-
-.achievement-cards strong {
-  color: #0f172a;
-  font-size: 20px;
-  font-weight: 900;
-}
-
-.achievement-cards span {
-  color: #475569;
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 4px;
 }
 
 .addition-deletion-title {
@@ -1435,15 +1217,6 @@ html, body {
     grid-template-columns: 1fr;
   }
 
-  .enterprise-summary,
-  .achievement-cards,
-  .sales-month-grid > div {
-    grid-template-columns: 1fr;
-  }
-
-  .sales-month-grid {
-    grid-column: span 1;
-  }
 }
 
 @media (max-width: 960px) {

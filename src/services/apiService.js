@@ -413,14 +413,6 @@ class AdminAPIService {
     return this.request(`/sales/reports${queryString}`);
   }
 
-  getSalesMonthLocks() {
-    return this.request("/sales/locks");
-  }
-
-  setSalesMonthLock(data) {
-    return this.request("/sales/locks", { method: "POST", data });
-  }
-
   seedSalesExampleData() {
     return this.request("/sales/seed-example", { method: "POST" });
   }
