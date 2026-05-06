@@ -36,12 +36,12 @@ const Sidebar = ({ onLogout, userRole }) => {
   // Main nav items
   const mainNavItems = [
     { id: 'addition-deletion-control', label: 'Addition / Deletion Control', icon: 'fas fa-shield-alt', path: '/addition-deletion-control' },
-    { id: 'sales-projections', label: 'Sales Module', icon: 'fas fa-chart-line', path: '/sales-projections' },
+    { id: 'sales-projections', label: 'Sales Intelligence', icon: 'fas fa-chart-line', path: '/sales-projections' },
     // { id: 'bulk-uploads', label: 'Bulk Uploads', icon: 'fas fa-file-excel', path: '/bulk-uploads' },
     { id: 'expense-management', label: 'Expense Management', icon: 'fas fa-receipt', path: '/expense-management' },
     // { id: 'doctors-chemists', label: 'Doctors/Chemists', icon: 'fas fa-user-md', path: '/doctors-chemists' },
     { id: 'activity-approvals', label: 'Activity Approvals', icon: 'fas fa-check-circle', path: '/activity-approvals' },
-    { id: 'reports', label: 'Reports', icon: 'fas fa-file-alt', path: '/reports' }
+    { id: 'reports', label: 'Sales Reports', icon: 'fas fa-file-alt', path: '/reports' }
   ]
   const visibleMainNav = mainNavItems.filter(item => allowedScreens.includes(item.path))
 
