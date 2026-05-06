@@ -358,6 +358,65 @@ class AdminAPIService {
     return this.request("/sales");
   }
 
+  getSalesDashboard(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/sales/dashboard${queryString}`);
+  }
+
+  getSalesTargets(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/sales/targets${queryString}`);
+  }
+
+  createSalesTarget(data) {
+    return this.request("/sales/targets", { method: "POST", data });
+  }
+
+  getModuleProjections(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/sales/module-projections${queryString}`);
+  }
+
+  createModuleProjection(data) {
+    return this.request("/sales/module-projections", { method: "POST", data });
+  }
+
+  getPrimarySales(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/sales/primary${queryString}`);
+  }
+
+  createPrimarySale(data) {
+    return this.request("/sales/primary", { method: "POST", data });
+  }
+
+  getSecondarySales(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/sales/secondary${queryString}`);
+  }
+
+  createSecondarySale(data) {
+    return this.request("/sales/secondary", { method: "POST", data });
+  }
+
+  getExpiryEntries(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/sales/expiry${queryString}`);
+  }
+
+  createExpiryEntry(data) {
+    return this.request("/sales/expiry", { method: "POST", data });
+  }
+
+  getSalesModuleReport(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/sales/reports${queryString}`);
+  }
+
+  seedSalesExampleData() {
+    return this.request("/sales/seed-example", { method: "POST" });
+  }
+
   getProjections() {
     return this.request("/projections");
   }

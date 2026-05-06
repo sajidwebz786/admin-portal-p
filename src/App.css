@@ -1006,6 +1006,94 @@ html, body {
   padding-left: 18px;
 }
 
+.sales-module {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sales-filter-bar,
+.sales-module-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.sales-filter-bar {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.sales-filter-bar label,
+.sales-module-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.sales-filter-bar span,
+.sales-module-form span {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sales-filter-bar input,
+.sales-filter-bar select,
+.sales-module-form input,
+.sales-module-form select {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
+.sales-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sales-tabs button {
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  color: #1e293b;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 8px 12px;
+}
+
+.sales-tabs button.active {
+  background: #1e3a5f;
+  color: #ffffff;
+}
+
+.sales-module-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sales-flow {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  color: #1e3a5f;
+  font-size: 15px;
+  font-weight: 800;
+  padding: 14px;
+  text-align: center;
+}
+
+.sales-flow span {
+  color: #2563eb;
+  padding: 0 8px;
+}
+
 .addition-deletion-title {
   max-width: 100%;
   line-height: 1.15;
@@ -1122,6 +1210,11 @@ html, body {
   .bulk-upload-actions,
   .bulk-upload-actions .btn {
     width: 100%;
+  }
+
+  .sales-filter-bar,
+  .sales-module-form {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -1,179 +1,381 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import adminAPI from '../services/apiService'
+import BulkUploadPanel from './BulkUploadPanel'
+
+const months = [
+  ['1', 'January'], ['2', 'February'], ['3', 'March'], ['4', 'April'], ['5', 'May'], ['6', 'June'],
+  ['7', 'July'], ['8', 'August'], ['9', 'September'], ['10', 'October'], ['11', 'November'], ['12', 'December']
+]
+
+const emptyOption = { value: '', label: 'Select' }
+const asArray = (value, key) => Array.isArray(value) ? value : (Array.isArray(value?.[key]) ? value[key] : [])
+const money = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(value || 0))
+const number = (value) => Number(value || 0)
+const today = () => new Date().toISOString().slice(0, 10)
+
+const initialFinancialYear = () => {
+  const now = new Date()
+  const year = now.getFullYear()
+  return now.getMonth() + 1 >= 4 ? `${year}-${year + 1}` : `${year - 1}-${year}`
+}
 
 const SalesProjections = () => {
-  const [sales, setSales] = useState([])
-  const [projections, setProjections] = useState([])
+  const [activeTab, setActiveTab] = useState('dashboard')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
+  const [meta, setMeta] = useState({ users: [], products: [], stockists: [], headquarters: [], territories: [] })
+  const [data, setData] = useState({ targets: [], projections: [], primarySales: [], secondarySales: [], expiryEntries: [], report: [], dashboard: {} })
+  const [filters, setFilters] = useState({ financial_year: initialFinancialYear(), month: String(new Date().getMonth() + 1), product_id: 'all', user_id: 'all' })
+  const [forms, setForms] = useState({
+    target: { financial_year: initialFinancialYear(), month: '4', target_strip: '', rate: '' },
+    projection: { financial_year: initialFinancialYear(), month: '4', projection_strip: '', rate: '' },
+    primary: { sale_date: today(), quantity_strip: '', rate: '' },
+    secondary: { financial_year: initialFinancialYear(), month: '4', opening_strip: '', sale_strip: '', rate: '' },
+    expiry: { entry_date: today(), quantity_strip: '', rate: '' }
+  })
 
   useEffect(() => {
-    loadData()
+    loadAll()
   }, [])
 
-  const loadData = async () => {
+  const options = useMemo(() => {
+    const products = [emptyOption, ...meta.products.map((item) => ({ value: item.id, label: item.name || `Product ${item.id}` }))]
+    const users = [emptyOption, ...meta.users.map((item) => ({ value: item.id, label: item.fullName || `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.email || `User ${item.id}` }))]
+    const stockists = [emptyOption, ...meta.stockists.map((item) => ({ value: item.id, label: item.stockist_name || `Stockist ${item.id}` }))]
+    const headquarters = [emptyOption, ...meta.headquarters.map((item) => ({ value: item.id, label: `${item.name || `HQ ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))]
+    const territories = [emptyOption, ...meta.territories.map((item) => ({ value: item.id, label: `${item.name || `Patch ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))]
+    return { products, users, stockists, headquarters, territories, months: [emptyOption, ...months.map(([value, label]) => ({ value, label }))] }
+  }, [meta])
+
+  const loadMeta = async () => {
+    const [users, products, stockists, headquarters, territories] = await Promise.all([
+      adminAPI.getUsers().catch(() => []),
+      adminAPI.getProducts().catch(() => []),
+      adminAPI.getStockists().catch(() => []),
+      adminAPI.getHeadquarters().catch(() => []),
+      adminAPI.getTerritories().catch(() => [])
+    ])
+    setMeta({
+      users: asArray(users, 'users'),
+      products: asArray(products, 'products'),
+      stockists: asArray(stockists, 'stockists'),
+      headquarters: asArray(headquarters, 'headquarters'),
+      territories: asArray(territories, 'territories')
+    })
+  }
+
+  const loadSalesData = async () => {
+    const params = Object.fromEntries(Object.entries(filters).filter(([, value]) => value && value !== 'all'))
+    const [dashboard, targets, projections, primarySales, secondarySales, expiryEntries, report] = await Promise.all([
+      adminAPI.getSalesDashboard(params).catch(() => ({ summary: {} })),
+      adminAPI.getSalesTargets(params).catch(() => ({ targets: [] })),
+      adminAPI.getModuleProjections(params).catch(() => ({ projections: [] })),
+      adminAPI.getPrimarySales(params).catch(() => ({ primarySales: [] })),
+      adminAPI.getSecondarySales(params).catch(() => ({ secondarySales: [] })),
+      adminAPI.getExpiryEntries(params).catch(() => ({ expiryEntries: [] })),
+      adminAPI.getSalesModuleReport(params).catch(() => ({ report: [] }))
+    ])
+    setData({
+      dashboard: dashboard.summary || {},
+      targets: asArray(targets, 'targets'),
+      projections: asArray(projections, 'projections'),
+      primarySales: asArray(primarySales, 'primarySales'),
+      secondarySales: asArray(secondarySales, 'secondarySales'),
+      expiryEntries: asArray(expiryEntries, 'expiryEntries'),
+      report: asArray(report, 'report')
+    })
+  }
+
+  const loadAll = async () => {
     try {
       setLoading(true)
       setError('')
-
-      let salesData = []
-      let projectionsData = []
-
-      try {
-        const salesResponse = await adminAPI.getSales()
-        salesData = salesResponse?.sales || salesResponse || []
-      } catch (e) {
-        console.error('Sales API error:', e)
-      }
-
-      try {
-        const projectionsResponse = await adminAPI.getProjections()
-        projectionsData = projectionsResponse?.projections || projectionsResponse || []
-      } catch (e) {
-        console.error('Projections API error:', e)
-      }
-
-      setSales(salesData)
-      setProjections(projectionsData)
-    } catch (error) {
-      console.error('Error loading data:', error)
-      setError('Failed to load sales and projections data')
+      await loadMeta()
+      await loadSalesData()
+    } catch (err) {
+      setError(err.message || 'Failed to load sales module')
     } finally {
       setLoading(false)
     }
   }
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR'
-    }).format(amount)
+  useEffect(() => {
+    if (!loading) loadSalesData()
+  }, [filters.financial_year, filters.month, filters.product_id, filters.user_id])
+
+  const productName = (id) => meta.products.find((item) => String(item.id) === String(id))?.name || `Product ${id || '-'}`
+  const stockistName = (id) => meta.stockists.find((item) => String(item.id) === String(id))?.stockist_name || `Stockist ${id || '-'}`
+  const userName = (id) => {
+    const user = meta.users.find((item) => String(item.id) === String(id))
+    return user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.email || `User ${id || '-'}`
+  }
+  const hqName = (id) => meta.headquarters.find((item) => String(item.id) === String(id))?.name || `HQ ${id || '-'}`
+
+  const updateForm = (name, key, value) => setForms((prev) => ({ ...prev, [name]: { ...prev[name], [key]: value } }))
+  const withAutoValue = (payload, stripKey, valueKey) => ({ ...payload, [valueKey]: number(payload[valueKey]) || number(payload[stripKey]) * number(payload.rate) })
+  const resetNotice = () => {
+    setError('')
+    setSuccess('')
   }
 
-  const getMonthlySalesData = () => {
-    const monthlyData = {}
-
-    sales.forEach(sale => {
-      if (!sale?.date) return
-      const monthKey = sale.date.substring(0, 7)
-      if (!monthlyData[monthKey]) {
-        monthlyData[monthKey] = {
-          month: monthKey,
-          actual: 0,
-          projection: 0
-        }
-      }
-      monthlyData[monthKey].actual += parseFloat(sale.totalAmount || 0)
-    })
-
-    return Object.values(monthlyData).sort((a, b) => b.month.localeCompare(a.month)).slice(0, 6)
+  const submit = async (type, event) => {
+    event.preventDefault()
+    resetNotice()
+    const payload = forms[type]
+    try {
+      if (type === 'target') await adminAPI.createSalesTarget(withAutoValue(payload, 'target_strip', 'target_value'))
+      if (type === 'projection') await adminAPI.createModuleProjection(withAutoValue(payload, 'projection_strip', 'projection_value'))
+      if (type === 'primary') await adminAPI.createPrimarySale(withAutoValue(payload, 'quantity_strip', 'total_value'))
+      if (type === 'secondary') await adminAPI.createSecondarySale(payload)
+      if (type === 'expiry') await adminAPI.createExpiryEntry(withAutoValue(payload, 'quantity_strip', 'total_value'))
+      setSuccess('Sales entry saved successfully')
+      await loadSalesData()
+    } catch (err) {
+      setError(err.message || 'Failed to save sales entry')
+    }
   }
 
-  const getMonthlyProjectionsData = () => {
-    const monthlyData = {}
-
-    projections.forEach(proj => {
-      if (!proj?.year || !proj?.month) return
-      const monthKey = `${proj.year}-${proj.month.toString().padStart(2, '0')}`
-      if (!monthlyData[monthKey]) {
-        monthlyData[monthKey] = {
-          month: monthKey,
-          actual: parseFloat(proj.actualAmount || 0),
-          projection: parseFloat(proj.projectedAmount || 0)
-        }
-      } else {
-        monthlyData[monthKey].actual += parseFloat(proj.actualAmount || 0)
-        monthlyData[monthKey].projection += parseFloat(proj.projectedAmount || 0)
-      }
-    })
-
-    return Object.values(monthlyData).sort((a, b) => b.month.localeCompare(a.month)).slice(0, 6)
+  const seedExample = async () => {
+    resetNotice()
+    try {
+      await adminAPI.seedSalesExampleData()
+      setSuccess('Example sales module data created')
+      await loadSalesData()
+    } catch (err) {
+      setError(err.message || 'Failed to create example data')
+    }
   }
+
+  const bulkFields = {
+    target: [
+      { key: 'user_id', label: 'MR Name', type: 'select', options: options.users },
+      { key: 'hq_id', label: 'HQ Name', type: 'select', options: options.headquarters },
+      { key: 'territory_id', label: 'Patch / Route', type: 'select', options: options.territories },
+      { key: 'financial_year', label: 'Financial Year', type: 'text', required: true },
+      { key: 'month', label: 'Month', type: 'select', required: true, options: options.months },
+      { key: 'product_id', label: 'Brand', type: 'select', required: true, options: options.products },
+      { key: 'target_strip', label: 'TGT in Strip', type: 'number', required: true },
+      { key: 'rate', label: 'Rate', type: 'number', required: true },
+      { key: 'target_value', label: 'TGT in Value', type: 'number' }
+    ],
+    projection: [
+      { key: 'user_id', label: 'MR Name', type: 'select', options: options.users },
+      { key: 'hq_id', label: 'HQ Name', type: 'select', options: options.headquarters },
+      { key: 'financial_year', label: 'Financial Year', type: 'text', required: true },
+      { key: 'month', label: 'Month', type: 'select', required: true, options: options.months },
+      { key: 'product_id', label: 'Brand', type: 'select', required: true, options: options.products },
+      { key: 'projection_strip', label: 'Projection in Strip', type: 'number', required: true },
+      { key: 'rate', label: 'Rate', type: 'number', required: true },
+      { key: 'projection_value', label: 'Projection in Value', type: 'number' }
+    ],
+    primary: [
+      { key: 'stockist_id', label: 'Stockist Name', type: 'select', options: options.stockists },
+      { key: 'invoice_no', label: 'Invoice No', type: 'text', required: true },
+      { key: 'product_id', label: 'Product Name', type: 'select', required: true, options: options.products },
+      { key: 'batch_number', label: 'Batch Number', type: 'text' },
+      { key: 'quantity_strip', label: 'Quantity in Strip', type: 'number', required: true },
+      { key: 'rate', label: 'Rate', type: 'number', required: true },
+      { key: 'total_value', label: 'Total Value', type: 'number' },
+      { key: 'sale_date', label: 'Sale Date', type: 'date' }
+    ],
+    secondary: [
+      { key: 'hq_id', label: 'HQ Name', type: 'select', options: options.headquarters },
+      { key: 'user_id', label: 'MR Name', type: 'select', options: options.users },
+      { key: 'stockist_id', label: 'Stockist Name', type: 'select', options: options.stockists },
+      { key: 'product_id', label: 'Product Name', type: 'select', required: true, options: options.products },
+      { key: 'financial_year', label: 'Financial Year', type: 'text', required: true },
+      { key: 'month', label: 'Month', type: 'select', required: true, options: options.months },
+      { key: 'opening_strip', label: 'Opening in Strip', type: 'number' },
+      { key: 'sale_strip', label: 'Sale in Strip', type: 'number', required: true },
+      { key: 'rate', label: 'Rate', type: 'number', required: true }
+    ],
+    expiry: [
+      { key: 'stockist_id', label: 'Stockist Name', type: 'select', options: options.stockists },
+      { key: 'credit_note_no', label: 'Credit Note No', type: 'text', required: true },
+      { key: 'product_id', label: 'Product Name', type: 'select', required: true, options: options.products },
+      { key: 'batch_number', label: 'Batch Number', type: 'text' },
+      { key: 'quantity_strip', label: 'Quantity in Strip', type: 'number', required: true },
+      { key: 'rate', label: 'Rate', type: 'number', required: true },
+      { key: 'total_value', label: 'Total Value', type: 'number' },
+      { key: 'entry_date', label: 'Entry Date', type: 'date' }
+    ]
+  }
+
+  const renderSelect = (formName, key, fieldOptions, required = false) => (
+    <select value={forms[formName][key] || ''} required={required} onChange={(event) => updateForm(formName, key, event.target.value)}>
+      {fieldOptions.map((option) => <option key={`${formName}-${key}-${option.value}`} value={option.value}>{option.label}</option>)}
+    </select>
+  )
+
+  const SalesForm = ({ type, title, children }) => (
+    <div className="sales-module-card">
+      <BulkUploadPanel
+        title={title}
+        fields={bulkFields[type]}
+        defaults={forms[type]}
+        createRecord={(payload) => {
+          if (type === 'target') return adminAPI.createSalesTarget(withAutoValue(payload, 'target_strip', 'target_value'))
+          if (type === 'projection') return adminAPI.createModuleProjection(withAutoValue(payload, 'projection_strip', 'projection_value'))
+          if (type === 'primary') return adminAPI.createPrimarySale(withAutoValue(payload, 'quantity_strip', 'total_value'))
+          if (type === 'secondary') return adminAPI.createSecondarySale(payload)
+          return adminAPI.createExpiryEntry(withAutoValue(payload, 'quantity_strip', 'total_value'))
+        }}
+        onComplete={loadSalesData}
+      />
+      <form className="sales-module-form" onSubmit={(event) => submit(type, event)}>
+        {children}
+        <div className="master-admin-actions">
+          <button type="submit" className="btn btn-primary">Save {title}</button>
+        </div>
+      </form>
+    </div>
+  )
+
+  const rowDate = (row) => row.sale_date || row.entry_date || `${row.financial_year || ''} / ${months.find(([value]) => Number(value) === Number(row.month))?.[1] || row.month || '-'}`
 
   if (loading) {
     return (
       <div className="section-content">
-        <h2>Sales & Projections</h2>
-        <div className="loading-spinner">
-          <i className="fas fa-spinner fa-spin"></i> Loading sales data...
-        </div>
+        <h2>Sales Module</h2>
+        <div className="loading-spinner"><i className="fas fa-spinner fa-spin"></i> Loading sales module...</div>
       </div>
     )
   }
 
-  const totalSales = sales.reduce((sum, sale) => sum + parseFloat(sale?.totalAmount || 0), 0)
-  const totalProjections = projections.reduce((sum, proj) => sum + parseFloat(proj?.projectedAmount || 0), 0)
-  const uniqueProducts = new Set([
-    ...sales.map(s => s?.productName).filter(Boolean),
-    ...projections.map(p => p?.productName).filter(Boolean)
-  ]).size
-
-  const monthlySales = getMonthlySalesData()
-  const monthlyProjections = getMonthlyProjectionsData()
-
   return (
-    <div className="section-content">
-      <h2>Sales & Projections</h2>
-      
-      {error && (
-        <div className="alert alert-warning">
-          <i className="fas fa-exclamation-triangle"></i> {error}
+    <div className="section-content sales-module">
+      <div className="operation-mode-header addition">
+        <div>
+          <h2>Sales Module</h2>
+          <p>Manage targets, projection planning, primary sales, secondary sales, expiry, reports, growth, and achievement tracking.</p>
+        </div>
+        <div className="operation-header-actions">
+          <button type="button" className="btn btn-light" onClick={seedExample}>Seed Example Data</button>
+          <button type="button" className="btn btn-secondary" onClick={loadAll}>Refresh</button>
+        </div>
+      </div>
+
+      {error && <div className="alert alert-danger">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
+
+      <div className="sales-filter-bar">
+        <label><span>Financial Year</span><input value={filters.financial_year} onChange={(event) => setFilters({ ...filters, financial_year: event.target.value })} /></label>
+        <label><span>Month</span><select value={filters.month} onChange={(event) => setFilters({ ...filters, month: event.target.value })}>{months.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+        <label><span>Product</span><select value={filters.product_id} onChange={(event) => setFilters({ ...filters, product_id: event.target.value })}><option value="all">All Products</option>{options.products.slice(1).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label><span>Employee</span><select value={filters.user_id} onChange={(event) => setFilters({ ...filters, user_id: event.target.value })}><option value="all">All Employees</option>{options.users.slice(1).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+      </div>
+
+      <div className="sales-tabs">
+        {[
+          ['dashboard', 'Dashboard'], ['target', 'Target Entry'], ['projection', 'Projection Planning'], ['primary', 'Primary Sales'],
+          ['secondary', 'Secondary Sales'], ['expiry', 'Expiry'], ['reports', 'Reports'], ['growth', 'Growth & Achievement']
+        ].map(([key, label]) => <button type="button" key={key} className={activeTab === key ? 'active' : ''} onClick={() => setActiveTab(key)}>{label}</button>)}
+      </div>
+
+      {activeTab === 'dashboard' && (
+        <>
+          <div className="sales-summary">
+            <div className="summary-card"><h3>Target</h3><p className="summary-value">{money(data.dashboard.target)}</p><p className="summary-change positive">{data.dashboard.monthName}</p></div>
+            <div className="summary-card"><h3>Projection</h3><p className="summary-value">{money(data.dashboard.projection)}</p><p className="summary-change positive">Expected sales</p></div>
+            <div className="summary-card"><h3>Achieved</h3><p className="summary-value">{money(data.dashboard.achieved)}</p><p className="summary-change positive">{data.dashboard.achievementPercent || 0}% achievement</p></div>
+            <div className="summary-card"><h3>Primary Sale</h3><p className="summary-value">{money(data.dashboard.primary_sale)}</p><p className="summary-change positive">Company to stockist</p></div>
+          </div>
+          <div className="sales-flow">Target Set <span>→</span> Primary Sales <span>→</span> Secondary Sales <span>→</span> Reports <span>→</span> Achievement <span>→</span> Incentive</div>
+        </>
+      )}
+
+      {activeTab === 'target' && (
+        <SalesForm type="target" title="Target Entry">
+          <label><span>MR Name</span>{renderSelect('target', 'user_id', options.users)}</label>
+          <label><span>HQ Name</span>{renderSelect('target', 'hq_id', options.headquarters)}</label>
+          <label><span>Financial Year</span><input value={forms.target.financial_year} onChange={(e) => updateForm('target', 'financial_year', e.target.value)} required /></label>
+          <label><span>Month</span>{renderSelect('target', 'month', options.months, true)}</label>
+          <label><span>Brand</span>{renderSelect('target', 'product_id', options.products, true)}</label>
+          <label><span>TGT in Strip</span><input type="number" value={forms.target.target_strip} onChange={(e) => updateForm('target', 'target_strip', e.target.value)} required /></label>
+          <label><span>Rate</span><input type="number" value={forms.target.rate} onChange={(e) => updateForm('target', 'rate', e.target.value)} required /></label>
+          <label><span>TGT in Value</span><input value={money(number(forms.target.target_strip) * number(forms.target.rate))} readOnly /></label>
+        </SalesForm>
+      )}
+
+      {activeTab === 'projection' && (
+        <SalesForm type="projection" title="Projection Planning">
+          <label><span>MR Name</span>{renderSelect('projection', 'user_id', options.users)}</label>
+          <label><span>HQ Name</span>{renderSelect('projection', 'hq_id', options.headquarters)}</label>
+          <label><span>Financial Year</span><input value={forms.projection.financial_year} onChange={(e) => updateForm('projection', 'financial_year', e.target.value)} required /></label>
+          <label><span>Month</span>{renderSelect('projection', 'month', options.months, true)}</label>
+          <label><span>Brand</span>{renderSelect('projection', 'product_id', options.products, true)}</label>
+          <label><span>Projection in Strip</span><input type="number" value={forms.projection.projection_strip} onChange={(e) => updateForm('projection', 'projection_strip', e.target.value)} required /></label>
+          <label><span>Rate</span><input type="number" value={forms.projection.rate} onChange={(e) => updateForm('projection', 'rate', e.target.value)} required /></label>
+          <label><span>Projection in Value</span><input value={money(number(forms.projection.projection_strip) * number(forms.projection.rate))} readOnly /></label>
+        </SalesForm>
+      )}
+
+      {activeTab === 'primary' && (
+        <SalesForm type="primary" title="Primary Sales">
+          <label><span>Stockist Name</span>{renderSelect('primary', 'stockist_id', options.stockists)}</label>
+          <label><span>Invoice No</span><input value={forms.primary.invoice_no || ''} onChange={(e) => updateForm('primary', 'invoice_no', e.target.value)} required /></label>
+          <label><span>Product Name</span>{renderSelect('primary', 'product_id', options.products, true)}</label>
+          <label><span>Batch Number</span><input value={forms.primary.batch_number || ''} onChange={(e) => updateForm('primary', 'batch_number', e.target.value)} /></label>
+          <label><span>Quantity in Strip</span><input type="number" value={forms.primary.quantity_strip} onChange={(e) => updateForm('primary', 'quantity_strip', e.target.value)} required /></label>
+          <label><span>Rate</span><input type="number" value={forms.primary.rate} onChange={(e) => updateForm('primary', 'rate', e.target.value)} required /></label>
+          <label><span>Total Value</span><input value={money(number(forms.primary.quantity_strip) * number(forms.primary.rate))} readOnly /></label>
+          <label><span>Sale Date</span><input type="date" value={forms.primary.sale_date} onChange={(e) => updateForm('primary', 'sale_date', e.target.value)} /></label>
+        </SalesForm>
+      )}
+
+      {activeTab === 'secondary' && (
+        <SalesForm type="secondary" title="Secondary Sales">
+          <label><span>HQ Name</span>{renderSelect('secondary', 'hq_id', options.headquarters)}</label>
+          <label><span>MR Name</span>{renderSelect('secondary', 'user_id', options.users)}</label>
+          <label><span>Stockist Name</span>{renderSelect('secondary', 'stockist_id', options.stockists)}</label>
+          <label><span>Product Name</span>{renderSelect('secondary', 'product_id', options.products, true)}</label>
+          <label><span>Financial Year</span><input value={forms.secondary.financial_year} onChange={(e) => updateForm('secondary', 'financial_year', e.target.value)} required /></label>
+          <label><span>Month</span>{renderSelect('secondary', 'month', options.months, true)}</label>
+          <label><span>Opening Strip</span><input type="number" value={forms.secondary.opening_strip} onChange={(e) => updateForm('secondary', 'opening_strip', e.target.value)} /></label>
+          <label><span>Sale Strip</span><input type="number" value={forms.secondary.sale_strip} onChange={(e) => updateForm('secondary', 'sale_strip', e.target.value)} required /></label>
+          <label><span>Rate</span><input type="number" value={forms.secondary.rate} onChange={(e) => updateForm('secondary', 'rate', e.target.value)} required /></label>
+          <label><span>Closing</span><input value={`${Math.max(number(forms.secondary.opening_strip) - number(forms.secondary.sale_strip), 0)} strips`} readOnly /></label>
+        </SalesForm>
+      )}
+
+      {activeTab === 'expiry' && (
+        <SalesForm type="expiry" title="Expiry Entry">
+          <label><span>Stockist Name</span>{renderSelect('expiry', 'stockist_id', options.stockists)}</label>
+          <label><span>Credit Note No</span><input value={forms.expiry.credit_note_no || ''} onChange={(e) => updateForm('expiry', 'credit_note_no', e.target.value)} required /></label>
+          <label><span>Product Name</span>{renderSelect('expiry', 'product_id', options.products, true)}</label>
+          <label><span>Batch Number</span><input value={forms.expiry.batch_number || ''} onChange={(e) => updateForm('expiry', 'batch_number', e.target.value)} /></label>
+          <label><span>Quantity in Strip</span><input type="number" value={forms.expiry.quantity_strip} onChange={(e) => updateForm('expiry', 'quantity_strip', e.target.value)} required /></label>
+          <label><span>Rate</span><input type="number" value={forms.expiry.rate} onChange={(e) => updateForm('expiry', 'rate', e.target.value)} required /></label>
+          <label><span>Total Value</span><input value={money(number(forms.expiry.quantity_strip) * number(forms.expiry.rate))} readOnly /></label>
+          <label><span>Entry Date</span><input type="date" value={forms.expiry.entry_date} onChange={(e) => updateForm('expiry', 'entry_date', e.target.value)} /></label>
+        </SalesForm>
+      )}
+
+      {activeTab === 'reports' && (
+        <div className="projections-table">
+          <h3>Sales Report</h3>
+          <table className="table table-striped">
+            <thead className="thead-dark"><tr><th>Product</th><th>Target</th><th>Projection</th><th>Secondary</th><th>Expiry</th><th>Achievement</th></tr></thead>
+            <tbody>{data.report.map((row) => <tr key={row.product_id}><td>{row.product_name}</td><td>{money(row.target_value)}</td><td>{money(row.projection_value)}</td><td>{money(row.achieved_value)}</td><td>{money(row.expiry_value)}</td><td>{row.achievementPercent}%</td></tr>)}</tbody>
+          </table>
         </div>
       )}
 
-      <div className="sales-summary">
-        <div className="summary-card">
-          <h3>Total Sales</h3>
-          <p className="summary-value">{formatCurrency(totalSales)}</p>
-          <p className="summary-change positive">All time sales</p>
-        </div>
-        <div className="summary-card">
-          <h3>Total Projections</h3>
-          <p className="summary-value">{formatCurrency(totalProjections)}</p>
-          <p className="summary-change positive">Target amount</p>
-        </div>
-        <div className="summary-card">
-          <h3>Active Products</h3>
-          <p className="summary-value">{uniqueProducts}</p>
-          <p className="summary-change positive">Unique products</p>
-        </div>
-      </div>
-      
-      <div className="projections-table">
-        <h3>Recent Sales & Projections</h3>
-        {monthlySales.length === 0 && monthlyProjections.length === 0 ? (
-          <div className="alert alert-info">No sales or projection data available.</div>
-        ) : (
+      {activeTab === 'growth' && (
+        <div className="projections-table">
+          <h3>Growth & Achievement View</h3>
           <table className="table table-striped">
-            <thead className="thead-dark">
-              <tr>
-                <th>Month</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
+            <thead className="thead-dark"><tr><th>Type</th><th>Date/Month</th><th>Product</th><th>Employee/Stockist</th><th>Value</th></tr></thead>
             <tbody>
-              {monthlySales.map((sale, index) => (
-                <tr key={`sale-${index}`}>
-                  <td>{sale.month}</td>
-                  <td>Sales</td>
-                  <td>{formatCurrency(sale.actual)}</td>
-                  <td><span className="badge badge-success">Actual</span></td>
-                </tr>
-              ))}
-              {monthlyProjections.map((proj, index) => (
-                <tr key={`proj-${index}`}>
-                  <td>{proj.month}</td>
-                  <td>Projection</td>
-                  <td>{formatCurrency(proj.projection)}</td>
-                  <td><span className="badge badge-warning">Target</span></td>
-                </tr>
-              ))}
+              {data.targets.slice(0, 8).map((row) => <tr key={`t-${row.id}`}><td>Target</td><td>{rowDate(row)}</td><td>{productName(row.product_id)}</td><td>{userName(row.user_id)}</td><td>{money(row.target_value)}</td></tr>)}
+              {data.projections.slice(0, 8).map((row) => <tr key={`p-${row.id}`}><td>Projection</td><td>{rowDate(row)}</td><td>{productName(row.product_id)}</td><td>{userName(row.user_id)}</td><td>{money(row.projection_value)}</td></tr>)}
+              {data.secondarySales.slice(0, 8).map((row) => <tr key={`s-${row.id}`}><td>Achievement</td><td>{rowDate(row)}</td><td>{productName(row.product_id)}</td><td>{hqName(row.hq_id)}</td><td>{money(row.sale_value)}</td></tr>)}
+              {data.primarySales.slice(0, 8).map((row) => <tr key={`pr-${row.id}`}><td>Primary</td><td>{rowDate(row)}</td><td>{productName(row.product_id)}</td><td>{stockistName(row.stockist_id)}</td><td>{money(row.total_value)}</td></tr>)}
             </tbody>
           </table>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
