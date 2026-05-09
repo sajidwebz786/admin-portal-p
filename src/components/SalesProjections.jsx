@@ -24,9 +24,9 @@ const SalesProjections = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [meta, setMeta] = useState({ users: [], products: [], stockists: [], headquarters: [], territories: [] })
+  const [meta, setMeta] = useState({ users: [], products: [], stockists: [], headquarters: [], territories: [], divisions: [] })
   const [data, setData] = useState({ targets: [], projections: [], primarySales: [], secondarySales: [], expiryEntries: [], report: [], dashboard: {} })
-  const [filters, setFilters] = useState({ financial_year: initialFinancialYear(), month: String(new Date().getMonth() + 1), product_id: 'all', user_id: 'all' })
+  const [filters, setFilters] = useState({ financial_year: initialFinancialYear(), month: String(new Date().getMonth() + 1), product_id: 'all', user_id: 'all', division_id: 'all', state: 'all', hq_id: 'all' })
   const [forms, setForms] = useState({
     target: { financial_year: initialFinancialYear(), month: '4', target_strip: '', rate: '' },
     projection: { financial_year: initialFinancialYear(), month: '4', projection_strip: '', rate: '' },
@@ -45,23 +45,27 @@ const SalesProjections = () => {
     const stockists = [emptyOption, ...meta.stockists.map((item) => ({ value: item.id, label: item.stockist_name || `Stockist ${item.id}` }))]
     const headquarters = [emptyOption, ...meta.headquarters.map((item) => ({ value: item.id, label: `${item.name || `HQ ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))]
     const territories = [emptyOption, ...meta.territories.map((item) => ({ value: item.id, label: `${item.name || `Patch ${item.id}`}${item.code ? ` (${item.code})` : ''}` }))]
-    return { products, users, stockists, headquarters, territories, months: [emptyOption, ...months.map(([value, label]) => ({ value, label }))] }
+    const divisions = [emptyOption, ...meta.divisions.map((item) => ({ value: item.id, label: `${item.division_name || `Division ${item.id}`}${item.short_name ? ` (${item.short_name})` : ''}` }))]
+    const states = [emptyOption, ...Array.from(new Set([...meta.headquarters.map((item) => item.state), ...meta.territories.map((item) => item.state)].filter(Boolean))).sort().map((state) => ({ value: state, label: state }))]
+    return { products, users, stockists, headquarters, territories, divisions, states, months: [emptyOption, ...months.map(([value, label]) => ({ value, label }))] }
   }, [meta])
 
   const loadMeta = async () => {
-    const [users, products, stockists, headquarters, territories] = await Promise.all([
+    const [users, products, stockists, headquarters, territories, divisions] = await Promise.all([
       adminAPI.getUsers().catch(() => []),
       adminAPI.getProducts().catch(() => []),
       adminAPI.getStockists().catch(() => []),
       adminAPI.getHeadquarters().catch(() => []),
-      adminAPI.getTerritories().catch(() => [])
+      adminAPI.getTerritories().catch(() => []),
+      adminAPI.getDivisions().catch(() => [])
     ])
     setMeta({
       users: asArray(users, 'users'),
       products: asArray(products, 'products'),
       stockists: asArray(stockists, 'stockists'),
       headquarters: asArray(headquarters, 'headquarters'),
-      territories: asArray(territories, 'territories')
+      territories: asArray(territories, 'territories'),
+      divisions: asArray(divisions, 'divisions')
     })
   }
 
@@ -102,7 +106,7 @@ const SalesProjections = () => {
 
   useEffect(() => {
     if (!loading) loadSalesData()
-  }, [filters.financial_year, filters.month, filters.product_id, filters.user_id])
+  }, [filters.financial_year, filters.month, filters.product_id, filters.user_id, filters.division_id, filters.state, filters.hq_id])
 
   const productName = (id) => meta.products.find((item) => String(item.id) === String(id))?.name || `Product ${id || '-'}`
   const stockistName = (id) => meta.stockists.find((item) => String(item.id) === String(id))?.stockist_name || `Stockist ${id || '-'}`
@@ -147,11 +151,25 @@ const SalesProjections = () => {
     }
   }
 
+  const toggleFreeze = async () => {
+    resetNotice()
+    try {
+      await adminAPI.setSalesMonthLock({
+        financial_year: filters.financial_year,
+        month: Number(filters.month),
+        is_locked: !data.dashboard.is_locked
+      })
+      setSuccess(!data.dashboard.is_locked ? 'Sales month frozen' : 'Sales month unlocked')
+      await loadSalesData()
+    } catch (err) {
+      setError(err.message || 'Failed to update sales freeze')
+    }
+  }
+
   const bulkFields = {
     target: [
       { key: 'user_id', label: 'MR Name', type: 'select', options: options.users },
       { key: 'hq_id', label: 'HQ Name', type: 'select', options: options.headquarters },
-      { key: 'territory_id', label: 'Patch / Route', type: 'select', options: options.territories },
       { key: 'financial_year', label: 'Financial Year', type: 'text', required: true },
       { key: 'month', label: 'Month', type: 'select', required: true, options: options.months },
       { key: 'product_id', label: 'Brand', type: 'select', required: true, options: options.products },
@@ -234,6 +252,24 @@ const SalesProjections = () => {
 
   const rowDate = (row) => row.sale_date || row.entry_date || `${row.financial_year || ''} / ${months.find(([value]) => Number(value) === Number(row.month))?.[1] || row.month || '-'}`
 
+  const EntryTable = ({ title, rows, columns }) => (
+    <div className="projections-table">
+      <h3>{title}</h3>
+      {rows.length === 0 ? (
+        <div className="alert alert-info">No records found for the selected criteria.</div>
+      ) : (
+        <table className="table table-striped">
+          <thead className="thead-dark"><tr>{columns.map((column) => <th key={column.label}>{column.label}</th>)}</tr></thead>
+          <tbody>
+            {rows.slice(0, 25).map((row) => (
+              <tr key={`${title}-${row.id}`}>{columns.map((column) => <td key={`${row.id}-${column.label}`}>{column.render(row)}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  )
+
   if (loading) {
     return (
       <div className="section-content">
@@ -252,6 +288,9 @@ const SalesProjections = () => {
         </div>
         <div className="operation-header-actions">
           <button type="button" className="btn btn-light" onClick={seedExample}>Seed Example Data</button>
+          <button type="button" className={data.dashboard.is_locked ? 'btn btn-danger' : 'btn btn-light'} onClick={toggleFreeze}>
+            {data.dashboard.is_locked ? 'Unlock Month' : 'Freeze Month'}
+          </button>
           <button type="button" className="btn btn-secondary" onClick={loadAll}>Refresh</button>
         </div>
       </div>
@@ -264,6 +303,9 @@ const SalesProjections = () => {
         <label><span>Month</span><select value={filters.month} onChange={(event) => setFilters({ ...filters, month: event.target.value })}>{months.map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
         <label><span>Product</span><select value={filters.product_id} onChange={(event) => setFilters({ ...filters, product_id: event.target.value })}><option value="all">All Products</option>{options.products.slice(1).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
         <label><span>Employee</span><select value={filters.user_id} onChange={(event) => setFilters({ ...filters, user_id: event.target.value })}><option value="all">All Employees</option>{options.users.slice(1).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label><span>Division</span><select value={filters.division_id} onChange={(event) => setFilters({ ...filters, division_id: event.target.value })}><option value="all">All Divisions</option>{options.divisions.slice(1).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label><span>State</span><select value={filters.state} onChange={(event) => setFilters({ ...filters, state: event.target.value })}><option value="all">All States</option>{options.states.slice(1).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label><span>HQ / Region / Zone</span><select value={filters.hq_id} onChange={(event) => setFilters({ ...filters, hq_id: event.target.value })}><option value="all">All HQ</option>{options.headquarters.slice(1).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
       </div>
 
       <div className="sales-tabs">
@@ -280,76 +322,116 @@ const SalesProjections = () => {
             <div className="summary-card"><h3>Projection</h3><p className="summary-value">{money(data.dashboard.projection)}</p><p className="summary-change positive">Expected sales</p></div>
             <div className="summary-card"><h3>Achieved</h3><p className="summary-value">{money(data.dashboard.achieved)}</p><p className="summary-change positive">{data.dashboard.achievementPercent || 0}% achievement</p></div>
             <div className="summary-card"><h3>Primary Sale</h3><p className="summary-value">{money(data.dashboard.primary_sale)}</p><p className="summary-change positive">Company to stockist</p></div>
+            <div className="summary-card"><h3>Sales Freeze</h3><p className="summary-value">{data.dashboard.is_locked ? 'Locked' : 'Open'}</p><p className="summary-change positive">Month lock</p></div>
           </div>
           <div className="sales-flow">Target Set <span>→</span> Primary Sales <span>→</span> Secondary Sales <span>→</span> Reports <span>→</span> Achievement <span>→</span> Incentive</div>
         </>
       )}
 
       {activeTab === 'target' && (
-        <SalesForm type="target" title="Target Entry">
-          <label><span>MR Name</span>{renderSelect('target', 'user_id', options.users)}</label>
-          <label><span>HQ Name</span>{renderSelect('target', 'hq_id', options.headquarters)}</label>
-          <label><span>Financial Year</span><input value={forms.target.financial_year} onChange={(e) => updateForm('target', 'financial_year', e.target.value)} required /></label>
-          <label><span>Month</span>{renderSelect('target', 'month', options.months, true)}</label>
-          <label><span>Brand</span>{renderSelect('target', 'product_id', options.products, true)}</label>
-          <label><span>TGT in Strip</span><input type="number" value={forms.target.target_strip} onChange={(e) => updateForm('target', 'target_strip', e.target.value)} required /></label>
-          <label><span>Rate</span><input type="number" value={forms.target.rate} onChange={(e) => updateForm('target', 'rate', e.target.value)} required /></label>
-          <label><span>TGT in Value</span><input value={money(number(forms.target.target_strip) * number(forms.target.rate))} readOnly /></label>
-        </SalesForm>
+        <>
+          <SalesForm type="target" title="Target Entry">
+            <label><span>MR Name</span>{renderSelect('target', 'user_id', options.users)}</label>
+            <label><span>HQ Name</span>{renderSelect('target', 'hq_id', options.headquarters)}</label>
+            <label><span>Financial Year</span><input value={forms.target.financial_year} onChange={(e) => updateForm('target', 'financial_year', e.target.value)} required /></label>
+            <label><span>Month</span>{renderSelect('target', 'month', options.months, true)}</label>
+            <label><span>Brand</span>{renderSelect('target', 'product_id', options.products, true)}</label>
+            <label><span>TGT in Strip</span><input type="number" value={forms.target.target_strip} onChange={(e) => updateForm('target', 'target_strip', e.target.value)} required /></label>
+            <label><span>Rate</span><input type="number" value={forms.target.rate} onChange={(e) => updateForm('target', 'rate', e.target.value)} required /></label>
+            <label><span>TGT in Value</span><input value={money(number(forms.target.target_strip) * number(forms.target.rate))} readOnly /></label>
+          </SalesForm>
+          <EntryTable title="Target View" rows={data.targets} columns={[
+            { label: 'HQ', render: (row) => hqName(row.hq_id) },
+            { label: 'MR', render: (row) => userName(row.user_id) },
+            { label: 'Brand', render: (row) => productName(row.product_id) },
+            { label: 'Month', render: rowDate },
+            { label: 'TGT Strip', render: (row) => row.target_strip },
+            { label: 'TGT Value', render: (row) => money(row.target_value) }
+          ]} />
+        </>
       )}
 
       {activeTab === 'projection' && (
-        <SalesForm type="projection" title="Projection Planning">
-          <label><span>MR Name</span>{renderSelect('projection', 'user_id', options.users)}</label>
-          <label><span>HQ Name</span>{renderSelect('projection', 'hq_id', options.headquarters)}</label>
-          <label><span>Financial Year</span><input value={forms.projection.financial_year} onChange={(e) => updateForm('projection', 'financial_year', e.target.value)} required /></label>
-          <label><span>Month</span>{renderSelect('projection', 'month', options.months, true)}</label>
-          <label><span>Brand</span>{renderSelect('projection', 'product_id', options.products, true)}</label>
-          <label><span>Projection in Strip</span><input type="number" value={forms.projection.projection_strip} onChange={(e) => updateForm('projection', 'projection_strip', e.target.value)} required /></label>
-          <label><span>Rate</span><input type="number" value={forms.projection.rate} onChange={(e) => updateForm('projection', 'rate', e.target.value)} required /></label>
-          <label><span>Projection in Value</span><input value={money(number(forms.projection.projection_strip) * number(forms.projection.rate))} readOnly /></label>
-        </SalesForm>
+        <EntryTable title="Projection Planning View" rows={data.projections} columns={[
+          { label: 'HQ', render: (row) => hqName(row.hq_id) },
+          { label: 'MR', render: (row) => userName(row.user_id) },
+          { label: 'Brand', render: (row) => productName(row.product_id) },
+          { label: 'Month', render: rowDate },
+          { label: 'Projection Strip', render: (row) => row.projection_strip },
+          { label: 'Projection Value', render: (row) => money(row.projection_value) }
+        ]} />
       )}
 
       {activeTab === 'primary' && (
-        <SalesForm type="primary" title="Primary Sales">
-          <label><span>Stockist Name</span>{renderSelect('primary', 'stockist_id', options.stockists)}</label>
-          <label><span>Invoice No</span><input value={forms.primary.invoice_no || ''} onChange={(e) => updateForm('primary', 'invoice_no', e.target.value)} required /></label>
-          <label><span>Product Name</span>{renderSelect('primary', 'product_id', options.products, true)}</label>
-          <label><span>Batch Number</span><input value={forms.primary.batch_number || ''} onChange={(e) => updateForm('primary', 'batch_number', e.target.value)} /></label>
-          <label><span>Quantity in Strip</span><input type="number" value={forms.primary.quantity_strip} onChange={(e) => updateForm('primary', 'quantity_strip', e.target.value)} required /></label>
-          <label><span>Rate</span><input type="number" value={forms.primary.rate} onChange={(e) => updateForm('primary', 'rate', e.target.value)} required /></label>
-          <label><span>Total Value</span><input value={money(number(forms.primary.quantity_strip) * number(forms.primary.rate))} readOnly /></label>
-          <label><span>Sale Date</span><input type="date" value={forms.primary.sale_date} onChange={(e) => updateForm('primary', 'sale_date', e.target.value)} /></label>
-        </SalesForm>
+        <>
+          <SalesForm type="primary" title="Primary Sales">
+            <label><span>Stockist Name</span>{renderSelect('primary', 'stockist_id', options.stockists)}</label>
+            <label><span>Invoice No</span><input value={forms.primary.invoice_no || ''} onChange={(e) => updateForm('primary', 'invoice_no', e.target.value)} required /></label>
+            <label><span>Product Name</span>{renderSelect('primary', 'product_id', options.products, true)}</label>
+            <label><span>Batch Number</span><input value={forms.primary.batch_number || ''} onChange={(e) => updateForm('primary', 'batch_number', e.target.value)} /></label>
+            <label><span>Quantity in Strip</span><input type="number" value={forms.primary.quantity_strip} onChange={(e) => updateForm('primary', 'quantity_strip', e.target.value)} required /></label>
+            <label><span>Rate</span><input type="number" value={forms.primary.rate} onChange={(e) => updateForm('primary', 'rate', e.target.value)} required /></label>
+            <label><span>Total Value</span><input value={money(number(forms.primary.quantity_strip) * number(forms.primary.rate))} readOnly /></label>
+            <label><span>Sale Date</span><input type="date" value={forms.primary.sale_date} onChange={(e) => updateForm('primary', 'sale_date', e.target.value)} /></label>
+          </SalesForm>
+          <EntryTable title="Primary Sales View" rows={data.primarySales} columns={[
+            { label: 'Stockist', render: (row) => stockistName(row.stockist_id) },
+            { label: 'Invoice', render: (row) => row.invoice_no },
+            { label: 'Product', render: (row) => productName(row.product_id) },
+            { label: 'Batch', render: (row) => row.batch_number || '-' },
+            { label: 'Qty Strip', render: (row) => row.quantity_strip },
+            { label: 'Total', render: (row) => money(row.total_value) }
+          ]} />
+        </>
       )}
 
       {activeTab === 'secondary' && (
-        <SalesForm type="secondary" title="Secondary Sales">
-          <label><span>HQ Name</span>{renderSelect('secondary', 'hq_id', options.headquarters)}</label>
-          <label><span>MR Name</span>{renderSelect('secondary', 'user_id', options.users)}</label>
-          <label><span>Stockist Name</span>{renderSelect('secondary', 'stockist_id', options.stockists)}</label>
-          <label><span>Product Name</span>{renderSelect('secondary', 'product_id', options.products, true)}</label>
-          <label><span>Financial Year</span><input value={forms.secondary.financial_year} onChange={(e) => updateForm('secondary', 'financial_year', e.target.value)} required /></label>
-          <label><span>Month</span>{renderSelect('secondary', 'month', options.months, true)}</label>
-          <label><span>Opening Strip</span><input type="number" value={forms.secondary.opening_strip} onChange={(e) => updateForm('secondary', 'opening_strip', e.target.value)} /></label>
-          <label><span>Sale Strip</span><input type="number" value={forms.secondary.sale_strip} onChange={(e) => updateForm('secondary', 'sale_strip', e.target.value)} required /></label>
-          <label><span>Rate</span><input type="number" value={forms.secondary.rate} onChange={(e) => updateForm('secondary', 'rate', e.target.value)} required /></label>
-          <label><span>Closing</span><input value={`${Math.max(number(forms.secondary.opening_strip) - number(forms.secondary.sale_strip), 0)} strips`} readOnly /></label>
-        </SalesForm>
+        <>
+          <SalesForm type="secondary" title="Secondary Sales">
+            <label><span>HQ Name</span>{renderSelect('secondary', 'hq_id', options.headquarters)}</label>
+            <label><span>MR Name</span>{renderSelect('secondary', 'user_id', options.users)}</label>
+            <label><span>Stockist Name</span>{renderSelect('secondary', 'stockist_id', options.stockists)}</label>
+            <label><span>Product Name</span>{renderSelect('secondary', 'product_id', options.products, true)}</label>
+            <label><span>Financial Year</span><input value={forms.secondary.financial_year} onChange={(e) => updateForm('secondary', 'financial_year', e.target.value)} required /></label>
+            <label><span>Month</span>{renderSelect('secondary', 'month', options.months, true)}</label>
+            <label><span>Opening Strip</span><input type="number" value={forms.secondary.opening_strip} onChange={(e) => updateForm('secondary', 'opening_strip', e.target.value)} /></label>
+            <label><span>Sale Strip</span><input type="number" value={forms.secondary.sale_strip} onChange={(e) => updateForm('secondary', 'sale_strip', e.target.value)} required /></label>
+            <label><span>Rate</span><input type="number" value={forms.secondary.rate} onChange={(e) => updateForm('secondary', 'rate', e.target.value)} required /></label>
+            <label><span>Closing</span><input value={`${Math.max(number(forms.secondary.opening_strip) - number(forms.secondary.sale_strip), 0)} strips`} readOnly /></label>
+          </SalesForm>
+          <EntryTable title="Secondary Sales View" rows={data.secondarySales} columns={[
+            { label: 'HQ', render: (row) => hqName(row.hq_id) },
+            { label: 'MR', render: (row) => userName(row.user_id) },
+            { label: 'Stockist', render: (row) => stockistName(row.stockist_id) },
+            { label: 'Product', render: (row) => productName(row.product_id) },
+            { label: 'Opening', render: (row) => `${row.opening_strip} / ${money(row.opening_value)}` },
+            { label: 'Sale', render: (row) => `${row.sale_strip} / ${money(row.sale_value)}` },
+            { label: 'Closing', render: (row) => `${row.closing_strip} / ${money(row.closing_value)}` }
+          ]} />
+        </>
       )}
 
       {activeTab === 'expiry' && (
-        <SalesForm type="expiry" title="Expiry Entry">
-          <label><span>Stockist Name</span>{renderSelect('expiry', 'stockist_id', options.stockists)}</label>
-          <label><span>Credit Note No</span><input value={forms.expiry.credit_note_no || ''} onChange={(e) => updateForm('expiry', 'credit_note_no', e.target.value)} required /></label>
-          <label><span>Product Name</span>{renderSelect('expiry', 'product_id', options.products, true)}</label>
-          <label><span>Batch Number</span><input value={forms.expiry.batch_number || ''} onChange={(e) => updateForm('expiry', 'batch_number', e.target.value)} /></label>
-          <label><span>Quantity in Strip</span><input type="number" value={forms.expiry.quantity_strip} onChange={(e) => updateForm('expiry', 'quantity_strip', e.target.value)} required /></label>
-          <label><span>Rate</span><input type="number" value={forms.expiry.rate} onChange={(e) => updateForm('expiry', 'rate', e.target.value)} required /></label>
-          <label><span>Total Value</span><input value={money(number(forms.expiry.quantity_strip) * number(forms.expiry.rate))} readOnly /></label>
-          <label><span>Entry Date</span><input type="date" value={forms.expiry.entry_date} onChange={(e) => updateForm('expiry', 'entry_date', e.target.value)} /></label>
-        </SalesForm>
+        <>
+          <SalesForm type="expiry" title="Expiry Entry">
+            <label><span>Stockist Name</span>{renderSelect('expiry', 'stockist_id', options.stockists)}</label>
+            <label><span>Credit Note No</span><input value={forms.expiry.credit_note_no || ''} onChange={(e) => updateForm('expiry', 'credit_note_no', e.target.value)} required /></label>
+            <label><span>Product Name</span>{renderSelect('expiry', 'product_id', options.products, true)}</label>
+            <label><span>Batch Number</span><input value={forms.expiry.batch_number || ''} onChange={(e) => updateForm('expiry', 'batch_number', e.target.value)} /></label>
+            <label><span>Quantity in Strip</span><input type="number" value={forms.expiry.quantity_strip} onChange={(e) => updateForm('expiry', 'quantity_strip', e.target.value)} required /></label>
+            <label><span>Rate</span><input type="number" value={forms.expiry.rate} onChange={(e) => updateForm('expiry', 'rate', e.target.value)} required /></label>
+            <label><span>Total Value</span><input value={money(number(forms.expiry.quantity_strip) * number(forms.expiry.rate))} readOnly /></label>
+            <label><span>Entry Date</span><input type="date" value={forms.expiry.entry_date} onChange={(e) => updateForm('expiry', 'entry_date', e.target.value)} /></label>
+          </SalesForm>
+          <EntryTable title="Expiry View" rows={data.expiryEntries} columns={[
+            { label: 'Stockist', render: (row) => stockistName(row.stockist_id) },
+            { label: 'Credit Note', render: (row) => row.credit_note_no },
+            { label: 'Product', render: (row) => productName(row.product_id) },
+            { label: 'Batch', render: (row) => row.batch_number || '-' },
+            { label: 'Qty Strip', render: (row) => row.quantity_strip },
+            { label: 'Total', render: (row) => money(row.total_value) }
+          ]} />
+        </>
       )}
 
       {activeTab === 'reports' && (
