@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import logo from '../assets/images/logo.png'
 import { canAccessScreen, getAllowedScreens, SCREENS, MENU_SECTIONS } from '../config/roleAccess'
 
 const Sidebar = ({ onLogout, userRole }) => {
   const location = useLocation()
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
   const [mastersExpanded, setMastersExpanded] = useState(true)
   const [doctorsExpanded, setDoctorsExpanded] = useState(true)
   const [productsExpanded, setProductsExpanded] = useState(true)
@@ -14,6 +15,11 @@ const Sidebar = ({ onLogout, userRole }) => {
   const [expenseExpanded, setExpenseExpanded] = useState(true)
 
   const allowedScreens = getAllowedScreens(userRole)
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
 
   // Filter helper - checks if ANY item in a section is accessible
   const filterAccessible = (items) => items.filter(item => allowedScreens.includes(item.path))
@@ -148,6 +154,9 @@ const Sidebar = ({ onLogout, userRole }) => {
         </nav>
 
         <div className="sidebar-footer mt-auto">
+          <button className="btn btn-light btn-sm btn-block theme-toggle-btn" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+            <i className={`fas fa-${theme === 'dark' ? 'sun' : 'moon'}`}></i> {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+          </button>
           <button className="btn btn-danger btn-sm btn-block" onClick={onLogout}>
             <i className="fas fa-sign-out-alt"></i> Logout
           </button>

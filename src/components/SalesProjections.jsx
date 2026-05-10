@@ -12,6 +12,7 @@ const asArray = (value, key) => Array.isArray(value) ? value : (Array.isArray(va
 const money = (value) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(value || 0))
 const number = (value) => Number(value || 0)
 const today = () => new Date().toISOString().slice(0, 10)
+const csvEscape = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`
 
 const initialFinancialYear = () => {
   const now = new Date()
@@ -24,6 +25,7 @@ const SalesProjections = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [reportSearch, setReportSearch] = useState('')
   const [meta, setMeta] = useState({ users: [], products: [], stockists: [], headquarters: [], territories: [], divisions: [] })
   const [data, setData] = useState({ targets: [], projections: [], primarySales: [], secondarySales: [], expiryEntries: [], report: [], dashboard: {} })
   const [filters, setFilters] = useState({ financial_year: initialFinancialYear(), month: String(new Date().getMonth() + 1), product_id: 'all', user_id: 'all', division_id: 'all', state: 'all', hq_id: 'all' })
@@ -129,25 +131,12 @@ const SalesProjections = () => {
     const payload = forms[type]
     try {
       if (type === 'target') await adminAPI.createSalesTarget(withAutoValue(payload, 'target_strip', 'target_value'))
-      if (type === 'projection') await adminAPI.createModuleProjection(withAutoValue(payload, 'projection_strip', 'projection_value'))
       if (type === 'primary') await adminAPI.createPrimarySale(withAutoValue(payload, 'quantity_strip', 'total_value'))
-      if (type === 'secondary') await adminAPI.createSecondarySale(payload)
       if (type === 'expiry') await adminAPI.createExpiryEntry(withAutoValue(payload, 'quantity_strip', 'total_value'))
       setSuccess('Sales entry saved successfully')
       await loadSalesData()
     } catch (err) {
       setError(err.message || 'Failed to save sales entry')
-    }
-  }
-
-  const seedExample = async () => {
-    resetNotice()
-    try {
-      await adminAPI.seedSalesExampleData()
-      setSuccess('Example sales module data created')
-      await loadSalesData()
-    } catch (err) {
-      setError(err.message || 'Failed to create example data')
     }
   }
 
@@ -177,16 +166,6 @@ const SalesProjections = () => {
       { key: 'rate', label: 'Rate', type: 'number', required: true },
       { key: 'target_value', label: 'TGT in Value', type: 'number' }
     ],
-    projection: [
-      { key: 'user_id', label: 'MR Name', type: 'select', options: options.users },
-      { key: 'hq_id', label: 'HQ Name', type: 'select', options: options.headquarters },
-      { key: 'financial_year', label: 'Financial Year', type: 'text', required: true },
-      { key: 'month', label: 'Month', type: 'select', required: true, options: options.months },
-      { key: 'product_id', label: 'Brand', type: 'select', required: true, options: options.products },
-      { key: 'projection_strip', label: 'Projection in Strip', type: 'number', required: true },
-      { key: 'rate', label: 'Rate', type: 'number', required: true },
-      { key: 'projection_value', label: 'Projection in Value', type: 'number' }
-    ],
     primary: [
       { key: 'stockist_id', label: 'Stockist Name', type: 'select', options: options.stockists },
       { key: 'invoice_no', label: 'Invoice No', type: 'text', required: true },
@@ -196,17 +175,6 @@ const SalesProjections = () => {
       { key: 'rate', label: 'Rate', type: 'number', required: true },
       { key: 'total_value', label: 'Total Value', type: 'number' },
       { key: 'sale_date', label: 'Sale Date', type: 'date' }
-    ],
-    secondary: [
-      { key: 'hq_id', label: 'HQ Name', type: 'select', options: options.headquarters },
-      { key: 'user_id', label: 'MR Name', type: 'select', options: options.users },
-      { key: 'stockist_id', label: 'Stockist Name', type: 'select', options: options.stockists },
-      { key: 'product_id', label: 'Product Name', type: 'select', required: true, options: options.products },
-      { key: 'financial_year', label: 'Financial Year', type: 'text', required: true },
-      { key: 'month', label: 'Month', type: 'select', required: true, options: options.months },
-      { key: 'opening_strip', label: 'Opening in Strip', type: 'number' },
-      { key: 'sale_strip', label: 'Sale in Strip', type: 'number', required: true },
-      { key: 'rate', label: 'Rate', type: 'number', required: true }
     ],
     expiry: [
       { key: 'stockist_id', label: 'Stockist Name', type: 'select', options: options.stockists },
@@ -234,9 +202,7 @@ const SalesProjections = () => {
         defaults={forms[type]}
         createRecord={(payload) => {
           if (type === 'target') return adminAPI.createSalesTarget(withAutoValue(payload, 'target_strip', 'target_value'))
-          if (type === 'projection') return adminAPI.createModuleProjection(withAutoValue(payload, 'projection_strip', 'projection_value'))
           if (type === 'primary') return adminAPI.createPrimarySale(withAutoValue(payload, 'quantity_strip', 'total_value'))
-          if (type === 'secondary') return adminAPI.createSecondarySale(payload)
           return adminAPI.createExpiryEntry(withAutoValue(payload, 'quantity_strip', 'total_value'))
         }}
         onComplete={loadSalesData}
@@ -252,9 +218,26 @@ const SalesProjections = () => {
 
   const rowDate = (row) => row.sale_date || row.entry_date || `${row.financial_year || ''} / ${months.find(([value]) => Number(value) === Number(row.month))?.[1] || row.month || '-'}`
 
+  const downloadCsv = (title, rows, columns) => {
+    const csv = [
+      columns.map((column) => csvEscape(column.label)).join(','),
+      ...rows.map((row) => columns.map((column) => csvEscape(column.render(row))).join(','))
+    ].join('\n')
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${title.replace(/[^a-z0-9]+/gi, '_').toLowerCase()}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   const EntryTable = ({ title, rows, columns }) => (
     <div className="projections-table">
-      <h3>{title}</h3>
+      <div className="table-toolbar">
+        <h3>{title}</h3>
+        <button type="button" className="btn btn-light" onClick={() => downloadCsv(title, rows, columns)} disabled={!rows.length}>Export CSV</button>
+      </div>
       {rows.length === 0 ? (
         <div className="alert alert-info">No records found for the selected criteria.</div>
       ) : (
@@ -287,7 +270,6 @@ const SalesProjections = () => {
           <p>Manage targets, projection planning, primary sales, secondary sales, expiry, reports, growth, and achievement tracking.</p>
         </div>
         <div className="operation-header-actions">
-          <button type="button" className="btn btn-light" onClick={seedExample}>Seed Example Data</button>
           <button type="button" className={data.dashboard.is_locked ? 'btn btn-danger' : 'btn btn-light'} onClick={toggleFreeze}>
             {data.dashboard.is_locked ? 'Unlock Month' : 'Freeze Month'}
           </button>
@@ -352,14 +334,19 @@ const SalesProjections = () => {
       )}
 
       {activeTab === 'projection' && (
-        <EntryTable title="Projection Planning View" rows={data.projections} columns={[
-          { label: 'HQ', render: (row) => hqName(row.hq_id) },
-          { label: 'MR', render: (row) => userName(row.user_id) },
-          { label: 'Brand', render: (row) => productName(row.product_id) },
-          { label: 'Month', render: rowDate },
-          { label: 'Projection Strip', render: (row) => row.projection_strip },
-          { label: 'Projection Value', render: (row) => money(row.projection_value) }
-        ]} />
+        <>
+          <div className="sales-owner-note">
+            <strong>View only.</strong> Projection is entered by the base/allocated field user from the mobile flow and rolls up here for HQ, state, zone, and division review.
+          </div>
+          <EntryTable title="Projection Planning View" rows={data.projections} columns={[
+            { label: 'HQ', render: (row) => hqName(row.hq_id) },
+            { label: 'MR', render: (row) => userName(row.user_id) },
+            { label: 'Brand', render: (row) => productName(row.product_id) },
+            { label: 'Month', render: rowDate },
+            { label: 'Projection Strip', render: (row) => row.projection_strip },
+            { label: 'Projection Value', render: (row) => money(row.projection_value) }
+          ]} />
+        </>
       )}
 
       {activeTab === 'primary' && (
@@ -387,18 +374,9 @@ const SalesProjections = () => {
 
       {activeTab === 'secondary' && (
         <>
-          <SalesForm type="secondary" title="Secondary Sales">
-            <label><span>HQ Name</span>{renderSelect('secondary', 'hq_id', options.headquarters)}</label>
-            <label><span>MR Name</span>{renderSelect('secondary', 'user_id', options.users)}</label>
-            <label><span>Stockist Name</span>{renderSelect('secondary', 'stockist_id', options.stockists)}</label>
-            <label><span>Product Name</span>{renderSelect('secondary', 'product_id', options.products, true)}</label>
-            <label><span>Financial Year</span><input value={forms.secondary.financial_year} onChange={(e) => updateForm('secondary', 'financial_year', e.target.value)} required /></label>
-            <label><span>Month</span>{renderSelect('secondary', 'month', options.months, true)}</label>
-            <label><span>Opening Strip</span><input type="number" value={forms.secondary.opening_strip} onChange={(e) => updateForm('secondary', 'opening_strip', e.target.value)} /></label>
-            <label><span>Sale Strip</span><input type="number" value={forms.secondary.sale_strip} onChange={(e) => updateForm('secondary', 'sale_strip', e.target.value)} required /></label>
-            <label><span>Rate</span><input type="number" value={forms.secondary.rate} onChange={(e) => updateForm('secondary', 'rate', e.target.value)} required /></label>
-            <label><span>Closing</span><input value={`${Math.max(number(forms.secondary.opening_strip) - number(forms.secondary.sale_strip), 0)} strips`} readOnly /></label>
-          </SalesForm>
+          <div className="sales-owner-note">
+            <strong>Field-owned entry.</strong> Secondary Sales is entered by MR/ABM, or the next immediate level when the base user is absent. Admin portal displays the submitted chain data.
+          </div>
           <EntryTable title="Secondary Sales View" rows={data.secondarySales} columns={[
             { label: 'HQ', render: (row) => hqName(row.hq_id) },
             { label: 'MR', render: (row) => userName(row.user_id) },
@@ -436,10 +414,23 @@ const SalesProjections = () => {
 
       {activeTab === 'reports' && (
         <div className="projections-table">
-          <h3>Sales Report</h3>
+          <div className="table-toolbar">
+            <h3>Sales Report</h3>
+            <div className="table-actions">
+              <input type="search" placeholder="Search product" value={reportSearch} onChange={(event) => setReportSearch(event.target.value)} />
+              <button type="button" className="btn btn-light" onClick={() => downloadCsv('Sales Report', data.report, [
+                { label: 'Product', render: (row) => row.product_name },
+                { label: 'Target', render: (row) => row.target_value },
+                { label: 'Projection', render: (row) => row.projection_value },
+                { label: 'Secondary', render: (row) => row.achieved_value },
+                { label: 'Expiry', render: (row) => row.expiry_value },
+                { label: 'Achievement', render: (row) => `${row.achievementPercent}%` }
+              ])} disabled={!data.report.length}>Export CSV</button>
+            </div>
+          </div>
           <table className="table table-striped">
             <thead className="thead-dark"><tr><th>Product</th><th>Target</th><th>Projection</th><th>Secondary</th><th>Expiry</th><th>Achievement</th></tr></thead>
-            <tbody>{data.report.map((row) => <tr key={row.product_id}><td>{row.product_name}</td><td>{money(row.target_value)}</td><td>{money(row.projection_value)}</td><td>{money(row.achieved_value)}</td><td>{money(row.expiry_value)}</td><td>{row.achievementPercent}%</td></tr>)}</tbody>
+            <tbody>{data.report.filter((row) => row.product_name?.toLowerCase().includes(reportSearch.toLowerCase())).map((row) => <tr key={row.product_id}><td>{row.product_name}</td><td>{money(row.target_value)}</td><td>{money(row.projection_value)}</td><td>{money(row.achieved_value)}</td><td>{money(row.expiry_value)}</td><td>{row.achievementPercent}%</td></tr>)}</tbody>
           </table>
         </div>
       )}

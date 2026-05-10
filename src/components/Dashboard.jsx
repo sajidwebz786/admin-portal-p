@@ -10,17 +10,9 @@ const Dashboard = () => {
   const [recentActivity, setRecentActivity] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
     loadDashboardData()
-
-    // Check for saved dark mode preference
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme) {
-      setDarkMode(savedTheme === 'dark')
-      document.documentElement.setAttribute('data-theme', savedTheme)
-    }
   }, [])
 
   const loadDashboardData = async () => {
@@ -56,13 +48,6 @@ const Dashboard = () => {
     }
   }
 
-  const toggleDarkMode = () => {
-    const newTheme = darkMode ? 'light' : 'dark'
-    setDarkMode(!darkMode)
-    document.documentElement.setAttribute('data-theme', newTheme)
-    localStorage.setItem('theme', newTheme)
-  }
-
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -75,9 +60,6 @@ const Dashboard = () => {
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1>Admin Dashboard</h1>
-          <button className="dark-mode-toggle" onClick={toggleDarkMode}>
-            <i className={`fas fa-${darkMode ? 'sun' : 'moon'}`}></i>
-          </button>
         </div>
         <div className="loading-spinner">
           <i className="fas fa-spinner fa-spin"></i> Loading dashboard data...
@@ -90,10 +72,6 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <div className="dashboard-header">
         <h1>Admin Dashboard</h1>
-        <button className="dark-mode-toggle" onClick={toggleDarkMode}>
-          <i className={`fas fa-${darkMode ? 'sun' : 'moon'}`}></i>
-          {darkMode ? 'Light Mode' : 'Dark Mode'}
-        </button>
       </div>
 
       {error && (

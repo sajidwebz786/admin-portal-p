@@ -6,29 +6,40 @@
 }
 
 :root {
-  /* Professional color palette for Pamsforce */
-  --primary-color: #1e3a5f;    /* Deep navy blue - professional, trustworthy */
-  --secondary-color: #4a5568;   /* Slate gray - balanced */
-  --success-color: #2d6a4f;    /* Forest green - mature, professional */
-  --danger-color: #9b2c2c;     /* Deep red - serious but not harsh */
-  --warning-color: #b7791f;    /* Amber - visible but not bright */
-  --info-color: #2c5282;       /* Navy blue - professional */
-  --light-color: #e2e8f0;      /* Cool gray - softer than white */
-  --dark-color: #1a202c;       /* Near black - readable */
+  --primary-color: #17375f;
+  --secondary-color: #dbeafe;
+  --success-color: #17375f;
+  --danger-color: #17375f;
+  --warning-color: #dbeafe;
+  --info-color: #17375f;
+  --light-color: #f8fbff;
+  --dark-color: #10233d;
   --white: #ffffff;
 
-  /* Dark mode variables */
-  --bg-color: #f1f5f9;         /* Cool light gray - easier on eyes */
-  --text-color: #1e293b;        /* Slate 800 - high contrast but not harsh */
+  --bg-color: #f8fbff;
+  --text-color: #10233d;
+  --muted-text: #496682;
   --card-bg: #ffffff;
-  --border-color: #cbd5e1;      /* Slate 300 - subtle borders */
+  --border-color: #dbeafe;
+  --soft-shadow: 0 8px 24px rgba(23, 55, 95, 0.08);
 }
 
 [data-theme="dark"] {
-  --bg-color: #1a1a1a;
-  --text-color: #e9ecef;
-  --card-bg: #2d3748;
-  --border-color: #4a5568;
+  --bg-color: #10233d;
+  --text-color: #f8fbff;
+  --muted-text: #dbeafe;
+  --card-bg: #17375f;
+  --border-color: rgba(219, 234, 254, 0.22);
+  --soft-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: Inter, Roboto, "Segoe UI", Arial, sans-serif;
 }
 
 /* ===================== COMPREHENSIVE DARK MODE OVERRIDES ===================== */
