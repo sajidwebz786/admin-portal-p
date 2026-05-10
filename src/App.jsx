@@ -72,6 +72,7 @@ function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [userRole, setUserRole] = useState('user')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -102,6 +103,7 @@ function AppContent() {
     localStorage.removeItem('adminUser')
     setIsAuthenticated(false)
     setUserRole('user')
+    setSidebarOpen(false)
     navigate('/')
   }
 
@@ -120,8 +122,31 @@ function AppContent() {
   }
 
   return (
-    <div className="admin-portal">
-      <Sidebar onLogout={handleLogout} userRole={userRole} />
+    <div className={`admin-portal ${sidebarOpen ? 'sidebar-open' : ''}`}>
+      <button
+        type="button"
+        className="mobile-menu-toggle"
+        aria-label={sidebarOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        aria-expanded={sidebarOpen}
+        onClick={() => setSidebarOpen((open) => !open)}
+      >
+        <i className={`fas fa-${sidebarOpen ? 'times' : 'bars'}`}></i>
+        <span>Menu</span>
+      </button>
+
+      <button
+        type="button"
+        className="sidebar-backdrop"
+        aria-label="Close navigation menu"
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      <Sidebar
+        onLogout={handleLogout}
+        userRole={userRole}
+        isOpen={sidebarOpen}
+        onNavigate={() => setSidebarOpen(false)}
+      />
 
       <main className="main-content">
         <Routes>

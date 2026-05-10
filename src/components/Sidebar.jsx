@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import logo from '../assets/images/logo.png'
 import { canAccessScreen, getAllowedScreens, SCREENS, MENU_SECTIONS } from '../config/roleAccess'
 
-const Sidebar = ({ onLogout, userRole }) => {
+const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) => {
   const location = useLocation()
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
   const [mastersExpanded, setMastersExpanded] = useState(true)
@@ -67,7 +67,7 @@ const Sidebar = ({ onLogout, userRole }) => {
     <ul className="nav nav-treeview">
       {items.map((item) => (
         <li key={item.id} className="nav-item">
-          <Link to={item.path} className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}>
+          <Link to={item.path} className={`nav-link ${location.pathname === item.path ? 'active' : ''}`} onClick={onNavigate}>
             <i className={`${item.icon} nav-icon`}></i>
             <p>{item.label}</p>
           </Link>
@@ -96,8 +96,8 @@ const Sidebar = ({ onLogout, userRole }) => {
   }
 
   return (
-    <aside className="main-sidebar sidebar-dark-primary elevation-4">
-      <Link to="/dashboard" className="brand-link custom-brand">
+    <aside className={`main-sidebar sidebar-dark-primary elevation-4 ${isOpen ? 'show' : ''}`}>
+      <Link to="/dashboard" className="brand-link custom-brand" onClick={onNavigate}>
         <img src={logo} alt="PAMSFORCE Logo" className="brand-image" />
       </Link>
 
@@ -114,7 +114,7 @@ const Sidebar = ({ onLogout, userRole }) => {
 
             {/* Dashboard - always visible */}
             <li className="nav-item">
-              <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`}>
+              <Link to="/dashboard" className={`nav-link ${location.pathname === '/dashboard' ? 'active' : ''}`} onClick={onNavigate}>
                 <i className="fas fa-tachometer-alt nav-icon"></i>
                 <p>Dashboard</p>
               </Link>
@@ -144,7 +144,7 @@ const Sidebar = ({ onLogout, userRole }) => {
             {/* Main nav items - filtered by role */}
             {visibleMainNav.map((item) => (
               <li key={item.id} className="nav-item">
-                <Link to={item.path} className={`nav-link ${location.pathname === item.path || (item.id === 'bulk-uploads' && location.pathname.startsWith('/addition/')) ? 'active' : ''}`}>
+                <Link to={item.path} className={`nav-link ${location.pathname === item.path || (item.id === 'bulk-uploads' && location.pathname.startsWith('/addition/')) ? 'active' : ''}`} onClick={onNavigate}>
                   <i className={`${item.icon} nav-icon`}></i>
                   <p>{item.label}</p>
                 </Link>
