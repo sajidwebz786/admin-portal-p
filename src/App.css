@@ -1304,7 +1304,7 @@ html, body {
   margin: 2px 4px 2px 0;
   opacity: 1;
   padding: 6px 10px;
-  white-space: normal;
+  white-space: nowrap;
 }
 
 .btn-outline-primary.action-btn {
@@ -1329,6 +1329,99 @@ html, body {
 .btn-outline-danger.action-btn:focus {
   background: #dc2626;
   color: #ffffff;
+}
+
+/* Compact table policy: show summary columns first, keep actions usable. */
+.table-responsive,
+.management-table,
+.projections-table,
+.sales-table-scroll,
+.sales-table-card,
+.box {
+  overflow-x: auto;
+}
+
+.table {
+  table-layout: auto;
+}
+
+.table th,
+.table td {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table th:last-child,
+.table td:last-child {
+  max-width: none;
+  min-width: 150px;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.table td:last-child .btn,
+.table td:last-child button,
+.table td:last-child a,
+.management-table td:last-child .btn,
+.management-table td:last-child button,
+.management-table td:last-child a {
+  display: inline-flex;
+  margin: 2px 4px 2px 0;
+  white-space: nowrap;
+  width: auto;
+}
+
+.table td:last-child .btn + .btn,
+.table td:last-child button + button,
+.table td:last-child a + a {
+  margin-left: 4px;
+}
+
+@media (max-width: 1360px) {
+  .management-table .table th:nth-child(n+5):not(:last-child),
+  .management-table .table td:nth-child(n+5):not(:last-child),
+  .table-responsive .table th:nth-child(n+6):not(:last-child),
+  .table-responsive .table td:nth-child(n+6):not(:last-child) {
+    display: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .management-table .table th:nth-child(n+4):not(:last-child),
+  .management-table .table td:nth-child(n+4):not(:last-child),
+  .projections-table .table th:nth-child(n+5):not(:last-child),
+  .projections-table .table td:nth-child(n+5):not(:last-child),
+  .sales-table-card .table th:nth-child(n+5):not(:last-child),
+  .sales-table-card .table td:nth-child(n+5):not(:last-child) {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .table th,
+  .table td {
+    max-width: 160px;
+    padding: 8px;
+  }
+
+  .management-table .table th:nth-child(n+3):not(:last-child),
+  .management-table .table td:nth-child(n+3):not(:last-child),
+  .table-responsive .table th:nth-child(n+4):not(:last-child),
+  .table-responsive .table td:nth-child(n+4):not(:last-child),
+  .projections-table .table th:nth-child(n+4):not(:last-child),
+  .projections-table .table td:nth-child(n+4):not(:last-child),
+  .sales-table-card .table th:nth-child(n+4):not(:last-child),
+  .sales-table-card .table td:nth-child(n+4):not(:last-child) {
+    display: none;
+  }
+
+  .table th:last-child,
+  .table td:last-child {
+    min-width: 132px;
+  }
 }
 
 @media (max-width: 720px) {
