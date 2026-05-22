@@ -453,6 +453,60 @@ class AdminAPIService {
     return this.request(`/admin/reports?${params}`);
   }
 
+  // ----- Marketing Campaigns, Brand Strategy, ROI, and RCPA -----
+  getMarketingDashboard() {
+    return this.request("/marketing/dashboard");
+  }
+
+  getMarketingCampaigns(params = {}) {
+    const queryString = Object.keys(params).length ? `?${new URLSearchParams(params)}` : '';
+    return this.request(`/marketing/campaigns${queryString}`);
+  }
+
+  createMarketingCampaign(data) {
+    return this.request("/marketing/campaigns", { method: "POST", data });
+  }
+
+  updateMarketingCampaign(id, data) {
+    return this.request(`/marketing/campaigns/${id}`, { method: "PUT", data });
+  }
+
+  cancelMarketingCampaign(id) {
+    return this.request(`/marketing/campaigns/${id}`, { method: "DELETE" });
+  }
+
+  getMarketingStrategies() {
+    return this.request("/marketing/strategies");
+  }
+
+  createMarketingStrategy(data) {
+    return this.request("/marketing/strategies", { method: "POST", data });
+  }
+
+  updateMarketingStrategy(id, data) {
+    return this.request(`/marketing/strategies/${id}`, { method: "PUT", data });
+  }
+
+  getMarketingRCPAs() {
+    return this.request("/marketing/rcpa");
+  }
+
+  createMarketingRCPA(data) {
+    return this.request("/marketing/rcpa", { method: "POST", data });
+  }
+
+  updateMarketingRCPA(id, data) {
+    return this.request(`/marketing/rcpa/${id}`, { method: "PUT", data });
+  }
+
+  getMarketingRCPAEntries(id) {
+    return this.request(`/marketing/rcpa/${id}/entries`);
+  }
+
+  createMarketingRCPAEntry(id, data) {
+    return this.request(`/marketing/rcpa/${id}/entries`, { method: "POST", data });
+  }
+
   getMonthlyStatsReport(startDate, endDate) {
     const params = new URLSearchParams({ startDate, endDate });
     return this.request(`/admin/reports/monthly-stats?${params}`);

@@ -2298,3 +2298,133 @@ html, body {
     max-height: 82px !important;
   }
 }
+.marketing-module .marketing-header {
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.marketing-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 22px;
+}
+
+.marketing-tabs button {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.marketing-tabs button.active {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+}
+
+.marketing-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.marketing-kpi,
+.marketing-panel,
+.marketing-form {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+
+.marketing-kpi {
+  padding: 16px;
+}
+
+.marketing-kpi span {
+  display: block;
+  color: #64748b;
+  font-size: 0.86rem;
+  margin-bottom: 8px;
+}
+
+.marketing-kpi strong {
+  color: #0f172a;
+  font-size: 1.45rem;
+}
+
+.marketing-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(420px, 1.1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.marketing-panel,
+.marketing-form {
+  padding: 18px;
+}
+
+.marketing-panel h3,
+.marketing-form h3 {
+  margin: 0 0 16px;
+  color: #0f172a;
+}
+
+.marketing-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.marketing-form h3,
+.marketing-form .visit-box,
+.marketing-form button[type="submit"],
+.marketing-form label:has(textarea) {
+  grid-column: 1 / -1;
+}
+
+.marketing-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.marketing-form input,
+.marketing-form select,
+.marketing-form textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px 12px;
+  min-height: 42px;
+  color: #0f172a;
+  background: #fff;
+}
+
+.marketing-form textarea {
+  min-height: 88px;
+}
+
+.visit-box {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  padding: 14px;
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+@media (max-width: 980px) {
+  .marketing-grid,
+  .marketing-form {
+    grid-template-columns: 1fr;
+  }
+}

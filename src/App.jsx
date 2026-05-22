@@ -11,6 +11,7 @@ import SalesProjections from './components/SalesProjections'
 import ActivityApprovals from './components/ActivityApprovals'
 import RuleConfiguration from './components/RuleConfiguration'
 import Reports from './components/Reports'
+import MarketingModule from './components/MarketingModule'
 import Sidebar from './components/Sidebar'
 import { canAccessScreen } from './config/roleAccess'
 
@@ -175,6 +176,7 @@ function AppContent() {
           <Route path="/activity-approvals" element={<ProtectedRoute path="/activity-approvals" element={<ActivityApprovals />} />} />
           <Route path="/rule-config" element={<ProtectedRoute path="/rule-config" element={<RuleConfiguration />} />} />
           <Route path="/reports" element={<ProtectedRoute path="/reports" element={<Reports />} />} />
+          <Route path="/marketing" element={<ProtectedRoute path="/marketing" element={<MarketingModule />} />} />
 
           {/* Doctor Master */}
           <Route path="/doctor-class" element={<ProtectedRoute path="/doctor-class" element={<DoctorClassMaster />} />} />

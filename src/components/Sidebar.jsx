@@ -43,6 +43,7 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const mainNavItems = [
     { id: 'addition-deletion-control', label: 'Addition / Deletion Control', icon: 'fas fa-shield-alt', path: '/addition-deletion-control' },
     { id: 'sales-projections', label: 'Sales Module', icon: 'fas fa-chart-line', path: '/sales-projections' },
+    { id: 'marketing', label: 'Marketing', icon: 'fas fa-bullhorn', path: '/marketing' },
     // { id: 'bulk-uploads', label: 'Bulk Uploads', icon: 'fas fa-file-excel', path: '/bulk-uploads' },
     { id: 'expense-management', label: 'Expense Management', icon: 'fas fa-receipt', path: '/expense-management' },
     // { id: 'doctors-chemists', label: 'Doctors/Chemists', icon: 'fas fa-user-md', path: '/doctors-chemists' },
