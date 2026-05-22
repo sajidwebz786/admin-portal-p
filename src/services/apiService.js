@@ -487,6 +487,10 @@ class AdminAPIService {
     return this.request(`/marketing/strategies/${id}`, { method: "PUT", data });
   }
 
+  deleteMarketingStrategy(id) {
+    return this.request(`/marketing/strategies/${id}`, { method: "DELETE" });
+  }
+
   getMarketingRCPAs() {
     return this.request("/marketing/rcpa");
   }
@@ -499,12 +503,24 @@ class AdminAPIService {
     return this.request(`/marketing/rcpa/${id}`, { method: "PUT", data });
   }
 
+  deleteMarketingRCPA(id) {
+    return this.request(`/marketing/rcpa/${id}`, { method: "DELETE" });
+  }
+
   getMarketingRCPAEntries(id) {
     return this.request(`/marketing/rcpa/${id}/entries`);
   }
 
   createMarketingRCPAEntry(id, data) {
     return this.request(`/marketing/rcpa/${id}/entries`, { method: "POST", data });
+  }
+
+  updateMarketingRCPAEntry(rcpaId, entryId, data) {
+    return this.request(`/marketing/rcpa/${rcpaId}/entries/${entryId}`, { method: "PUT", data });
+  }
+
+  deleteMarketingRCPAEntry(rcpaId, entryId) {
+    return this.request(`/marketing/rcpa/${rcpaId}/entries/${entryId}`, { method: "DELETE" });
   }
 
   getMonthlyStatsReport(startDate, endDate) {

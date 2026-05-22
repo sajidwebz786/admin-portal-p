@@ -57,6 +57,11 @@ const defaultRcpa = {
   status: 'draft'
 }
 
+const cloneDefaultStrategy = () => ({
+  ...defaultStrategy,
+  visits: defaultStrategy.visits.map((visit) => ({ ...visit }))
+})
+
 const MarketingModule = () => {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [dashboard, setDashboard] = useState(null)
@@ -65,8 +70,11 @@ const MarketingModule = () => {
   const [rcpas, setRcpas] = useState([])
   const [support, setSupport] = useState({ products: [], inputs: [], users: [], divisions: [], specialties: [] })
   const [campaignForm, setCampaignForm] = useState(defaultCampaign)
-  const [strategyForm, setStrategyForm] = useState(defaultStrategy)
+  const [strategyForm, setStrategyForm] = useState(cloneDefaultStrategy())
   const [rcpaForm, setRcpaForm] = useState(defaultRcpa)
+  const [editingCampaignId, setEditingCampaignId] = useState(null)
+  const [editingStrategyId, setEditingStrategyId] = useState(null)
+  const [editingRcpaId, setEditingRcpaId] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -122,22 +130,99 @@ const MarketingModule = () => {
 
   const submitCampaign = async (event) => {
     event.preventDefault()
-    await adminAPI.createMarketingCampaign(sanitize(campaignForm))
+    if (editingCampaignId) {
+      await adminAPI.updateMarketingCampaign(editingCampaignId, sanitize(campaignForm))
+    } else {
+      await adminAPI.createMarketingCampaign(sanitize(campaignForm))
+    }
+    setEditingCampaignId(null)
     setCampaignForm(defaultCampaign)
     await loadAll()
   }
 
   const submitStrategy = async (event) => {
     event.preventDefault()
-    await adminAPI.createMarketingStrategy(sanitize(strategyForm))
-    setStrategyForm(defaultStrategy)
+    if (editingStrategyId) {
+      await adminAPI.updateMarketingStrategy(editingStrategyId, sanitize(strategyForm))
+    } else {
+      await adminAPI.createMarketingStrategy(sanitize(strategyForm))
+    }
+    setEditingStrategyId(null)
+    setStrategyForm(cloneDefaultStrategy())
     await loadAll()
   }
 
   const submitRcpa = async (event) => {
     event.preventDefault()
-    await adminAPI.createMarketingRCPA(sanitize(rcpaForm))
+    if (editingRcpaId) {
+      await adminAPI.updateMarketingRCPA(editingRcpaId, sanitize(rcpaForm))
+    } else {
+      await adminAPI.createMarketingRCPA(sanitize(rcpaForm))
+    }
+    setEditingRcpaId(null)
     setRcpaForm(defaultRcpa)
+    await loadAll()
+  }
+
+  const editCampaign = (item) => {
+    setEditingCampaignId(item.id)
+    setCampaignForm({
+      ...defaultCampaign,
+      ...item,
+      start_date: String(item.start_date || today()).slice(0, 10),
+      end_date: String(item.end_date || nextQuarter()).slice(0, 10)
+    })
+    setActiveTab('campaigns')
+  }
+
+  const editStrategy = (item) => {
+    setEditingStrategyId(item.id)
+    setStrategyForm({
+      ...cloneDefaultStrategy(),
+      ...item,
+      visits: Array.isArray(item.visits) && item.visits.length ? item.visits : cloneDefaultStrategy().visits,
+      start_date: item.start_date ? String(item.start_date).slice(0, 10) : '',
+      end_date: item.end_date ? String(item.end_date).slice(0, 10) : ''
+    })
+    setActiveTab('strategy')
+  }
+
+  const editRcpa = (item) => {
+    setEditingRcpaId(item.id)
+    setRcpaForm({ ...defaultRcpa, ...item })
+    setActiveTab('rcpa')
+  }
+
+  const cancelCampaignEdit = () => {
+    setEditingCampaignId(null)
+    setCampaignForm(defaultCampaign)
+  }
+
+  const cancelStrategyEdit = () => {
+    setEditingStrategyId(null)
+    setStrategyForm(cloneDefaultStrategy())
+  }
+
+  const cancelRcpaEdit = () => {
+    setEditingRcpaId(null)
+    setRcpaForm(defaultRcpa)
+  }
+
+  const deleteCampaign = async (item) => {
+    if (!window.confirm(`Cancel campaign "${item.campaign_name}"?`)) return
+    await adminAPI.cancelMarketingCampaign(item.id)
+    await loadAll()
+  }
+
+  const deleteStrategy = async (item) => {
+    if (!window.confirm(`Inactivate strategy "${item.brand_name}"?`)) return
+    await adminAPI.deleteMarketingStrategy(item.id)
+    await loadAll()
+  }
+
+  const deleteRcpa = async (item) => {
+    if (!window.confirm(`Close RCPA "${item.rcpa_name}"?`)) return
+    await adminAPI.deleteMarketingRCPA(item.id)
     await loadAll()
   }
 
@@ -230,7 +315,7 @@ const MarketingModule = () => {
       {activeTab === 'campaigns' && (
         <div className="marketing-grid">
           <form className="marketing-form" onSubmit={submitCampaign}>
-            <h3>Create Campaign</h3>
+            <h3>{editingCampaignId ? 'Edit Campaign' : 'Create Campaign'}</h3>
             <Field label="Campaign Code" required value={campaignForm.campaign_code} onChange={(v) => handleCampaignChange('campaign_code', v)} />
             <Field label="Campaign Name" required value={campaignForm.campaign_name} onChange={(v) => handleCampaignChange('campaign_name', v)} />
             <Field label="Start Date" type="date" required value={campaignForm.start_date} onChange={(v) => handleCampaignChange('start_date', v)} />
@@ -260,16 +345,19 @@ const MarketingModule = () => {
             <Field label="Expected ROI" type="number" value={campaignForm.expected_roi} onChange={(v) => handleCampaignChange('expected_roi', v)} />
             <Field label="Prescription / Month" type="number" value={campaignForm.prescription_per_month} onChange={(v) => handleCampaignChange('prescription_per_month', v)} />
             <Field label="Strip Sale / Rx" type="number" value={campaignForm.strip_sale_per_rx} onChange={(v) => handleCampaignChange('strip_sale_per_rx', v)} />
-            <button className="btn btn-primary" type="submit">Create Campaign</button>
+            <div className="marketing-form-actions">
+              <button className="btn btn-primary" type="submit">{editingCampaignId ? 'Save Campaign' : 'Create Campaign'}</button>
+              {editingCampaignId && <button className="btn btn-light" type="button" onClick={cancelCampaignEdit}>Cancel Edit</button>}
+            </div>
           </form>
-          <RecordList title="Campaigns" items={campaigns} columns={['campaign_name', 'campaign_for', 'status']} />
+          <RecordList title="Campaigns" items={campaigns} columns={['campaign_name', 'campaign_for', 'status']} onEdit={editCampaign} onDelete={deleteCampaign} deleteLabel="Cancel" />
         </div>
       )}
 
       {activeTab === 'strategy' && (
         <div className="marketing-grid">
           <form className="marketing-form" onSubmit={submitStrategy}>
-            <h3>Brand Wise Strategy Creation</h3>
+            <h3>{editingStrategyId ? 'Edit Brand Strategy' : 'Brand Wise Strategy Creation'}</h3>
             <Field label="Financial Year" required value={strategyForm.financial_year} onChange={(v) => handleStrategyChange('financial_year', v)} />
             <Field label="Brand Name" required value={strategyForm.brand_name} onChange={(v) => handleStrategyChange('brand_name', v)} />
             <Field label="Activity Name" required value={strategyForm.activity_name} onChange={(v) => handleStrategyChange('activity_name', v)} />
@@ -284,16 +372,19 @@ const MarketingModule = () => {
               ))}
               <button type="button" className="btn btn-light" onClick={addVisit}>Add Visit</button>
             </div>
-            <button className="btn btn-primary" type="submit">Save Strategy</button>
+            <div className="marketing-form-actions">
+              <button className="btn btn-primary" type="submit">{editingStrategyId ? 'Update Strategy' : 'Save Strategy'}</button>
+              {editingStrategyId && <button className="btn btn-light" type="button" onClick={cancelStrategyEdit}>Cancel Edit</button>}
+            </div>
           </form>
-          <RecordList title="Brand Strategies" items={strategies} columns={['financial_year', 'brand_name', 'status']} />
+          <RecordList title="Brand Strategies" items={strategies} columns={['financial_year', 'brand_name', 'status']} onEdit={editStrategy} onDelete={deleteStrategy} deleteLabel="Inactivate" />
         </div>
       )}
 
       {activeTab === 'rcpa' && (
         <div className="marketing-grid">
           <form className="marketing-form" onSubmit={submitRcpa}>
-            <h3>RCPA Creation</h3>
+            <h3>{editingRcpaId ? 'Edit RCPA' : 'RCPA Creation'}</h3>
             <Field label="RCPA Code" required value={rcpaForm.rcpa_code} onChange={(v) => handleRcpaChange('rcpa_code', v)} />
             <Field label="RCPA Name" required value={rcpaForm.rcpa_name} onChange={(v) => handleRcpaChange('rcpa_name', v)} />
             <label><span>RCPA Type</span>{renderSelect(rcpaForm.rcpa_type, (v) => handleRcpaChange('rcpa_type', v), [
@@ -305,9 +396,12 @@ const MarketingModule = () => {
             <label><span>Product</span>{renderSelect(rcpaForm.product_id, (v) => handleRcpaChange('product_id', v), options.products)}</label>
             <label><span>Allocate To Role</span>{renderSelect(rcpaForm.allocated_role, (v) => handleRcpaChange('allocated_role', v), [empty, 'ZBM', 'RBM', 'ABM', 'TBM'].map((role) => typeof role === 'string' ? { value: role, label: role } : role))}</label>
             <label><span>Allocate To Name</span>{renderSelect(rcpaForm.allocated_user_id, (v) => handleRcpaChange('allocated_user_id', v), options.users)}</label>
-            <button className="btn btn-primary" type="submit">Create RCPA</button>
+            <div className="marketing-form-actions">
+              <button className="btn btn-primary" type="submit">{editingRcpaId ? 'Update RCPA' : 'Create RCPA'}</button>
+              {editingRcpaId && <button className="btn btn-light" type="button" onClick={cancelRcpaEdit}>Cancel Edit</button>}
+            </div>
           </form>
-          <RecordList title="RCPA View" items={rcpas} columns={['rcpa_name', 'rcpa_type', 'status']} />
+          <RecordList title="RCPA View" items={rcpas} columns={['rcpa_name', 'rcpa_type', 'status']} onEdit={editRcpa} onDelete={deleteRcpa} deleteLabel="Close" />
         </div>
       )}
     </div>
@@ -332,22 +426,29 @@ const Field = ({ label, value, onChange, type = 'text', required = false, textar
   </label>
 )
 
-const RecordList = ({ title, items, columns }) => (
+const RecordList = ({ title, items, columns, onEdit, onDelete, deleteLabel = 'Delete' }) => (
   <div className="marketing-panel">
     <h3>{title}</h3>
     <table className="table table-striped table-bordered">
       <thead className="table-dark">
         <tr>
           {columns.map((col) => <th key={col}>{col.replaceAll('_', ' ')}</th>)}
+          {(onEdit || onDelete) && <th>Actions</th>}
         </tr>
       </thead>
       <tbody>
         {items.map((item) => (
           <tr key={item.id}>
             {columns.map((col) => <td key={`${item.id}-${col}`}>{item[col] || '-'}</td>)}
+            {(onEdit || onDelete) && (
+              <td className="marketing-actions-cell">
+                {onEdit && <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => onEdit(item)}>Edit</button>}
+                {onDelete && <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => onDelete(item)}>{deleteLabel}</button>}
+              </td>
+            )}
           </tr>
         ))}
-        {items.length === 0 && <tr><td colSpan={columns.length} className="text-center">No records found.</td></tr>}
+        {items.length === 0 && <tr><td colSpan={columns.length + (onEdit || onDelete ? 1 : 0)} className="text-center">No records found.</td></tr>}
       </tbody>
     </table>
   </div>
