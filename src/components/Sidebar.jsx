@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import logo from '../assets/images/logo.png'
-import { canAccessScreen, getAllowedScreens, SCREENS, MENU_SECTIONS } from '../config/roleAccess'
+import { getAllowedScreens, MENU_SECTIONS } from '../config/roleAccess'
 
 const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) => {
   const location = useLocation()
@@ -13,6 +13,7 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const [inputsExpanded, setInputsExpanded] = useState(true)
   const [policyExpanded, setPolicyExpanded] = useState(true)
   const [expenseExpanded, setExpenseExpanded] = useState(true)
+  const [marketingExpanded, setMarketingExpanded] = useState(true)
 
   const allowedScreens = getAllowedScreens(userRole)
 
@@ -32,6 +33,7 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const inputsItems = filterAccessible(MENU_SECTIONS.inputs.items)
   const policyItems = filterAccessible(MENU_SECTIONS.policy.items)
   const expenseItems = filterAccessible(MENU_SECTIONS.expense.items)
+  const marketingItems = filterAccessible(MENU_SECTIONS.marketing.items)
   const mastersItems = [
     { id: 'user-management', label: 'User Master', icon: 'fas fa-users', path: '/user-management' },
     { id: 'rule-config', label: 'Rule Configuration', icon: 'fas fa-cogs', path: '/rule-config' },
@@ -43,7 +45,6 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const mainNavItems = [
     { id: 'addition-deletion-control', label: 'Addition / Deletion Control', icon: 'fas fa-shield-alt', path: '/addition-deletion-control' },
     { id: 'sales-projections', label: 'Sales Module', icon: 'fas fa-chart-line', path: '/sales-projections' },
-    { id: 'marketing', label: 'Marketing', icon: 'fas fa-bullhorn', path: '/marketing' },
     // { id: 'bulk-uploads', label: 'Bulk Uploads', icon: 'fas fa-file-excel', path: '/bulk-uploads' },
     { id: 'expense-management', label: 'Expense Management', icon: 'fas fa-receipt', path: '/expense-management' },
     // { id: 'doctors-chemists', label: 'Doctors/Chemists', icon: 'fas fa-user-md', path: '/doctors-chemists' },
@@ -59,6 +60,7 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const isPolicyActive = policyItems.some(item => location.pathname === item.path)
   const isTerritoryActive = territoryItems.some(item => location.pathname === item.path)
   const isExpenseActive = expenseItems.some(item => location.pathname === item.path) || location.pathname === '/expense-management'
+  const isMarketingActive = location.pathname === '/marketing' || marketingItems.some(item => location.pathname === item.path)
   const isMastersActive = visibleMastersItems.some(item => location.pathname === item.path)
 
   // Should Masters parent show?
@@ -151,6 +153,16 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
                 </Link>
               </li>
             ))}
+
+            {marketingItems.length > 0 && (
+              <li className="nav-item has-treeview menu-open">
+                <Link to="#" className={`nav-link ${isMarketingActive ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setMarketingExpanded(!marketingExpanded) }}>
+                  <i className="nav-icon fas fa-bullhorn"></i>
+                  <p>Marketing<i className={`right fas fa-angle-left ${marketingExpanded ? 'transform-rotate' : ''}`}></i></p>
+                </Link>
+                {marketingExpanded && renderSubItems(marketingItems, isMarketingActive)}
+              </li>
+            )}
           </ul>
         </nav>
 

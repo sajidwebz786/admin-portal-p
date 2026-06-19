@@ -176,7 +176,14 @@ function AppContent() {
           <Route path="/activity-approvals" element={<ProtectedRoute path="/activity-approvals" element={<ActivityApprovals />} />} />
           <Route path="/rule-config" element={<ProtectedRoute path="/rule-config" element={<RuleConfiguration />} />} />
           <Route path="/reports" element={<ProtectedRoute path="/reports" element={<Reports />} />} />
-          <Route path="/marketing" element={<ProtectedRoute path="/marketing" element={<MarketingModule />} />} />
+          <Route path="/marketing" element={<Navigate to="/marketing/report" replace />} />
+          <Route path="/marketing/campaigns" element={<ProtectedRoute path="/marketing/campaigns" element={<MarketingModule view="campaigns" />} />} />
+          <Route path="/marketing/brand-strategy" element={<ProtectedRoute path="/marketing/brand-strategy" element={<MarketingModule view="strategy" />} />} />
+          <Route path="/marketing/report" element={<ProtectedRoute path="/marketing/report" element={<MarketingModule view="report" />} />} />
+          <Route path="/marketing/campaign-view" element={<ProtectedRoute path="/marketing/campaign-view" element={<MarketingModule view="campaign-view" />} />} />
+          <Route path="/marketing/allocation-roi" element={<ProtectedRoute path="/marketing/allocation-roi" element={<MarketingModule view="allocation-roi" />} />} />
+          <Route path="/marketing/rcpa-admin" element={<ProtectedRoute path="/marketing/rcpa-admin" element={<MarketingModule view="rcpa-admin" />} />} />
+          <Route path="/marketing/rcpa-executive" element={<ProtectedRoute path="/marketing/rcpa-executive" element={<MarketingModule view="rcpa-executive" />} />} />
 
           {/* Doctor Master */}
           <Route path="/doctor-class" element={<ProtectedRoute path="/doctor-class" element={<DoctorClassMaster />} />} />
