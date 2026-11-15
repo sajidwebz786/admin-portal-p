@@ -8,6 +8,7 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
   const [mastersExpanded, setMastersExpanded] = useState(true)
   const [userSystemExpanded, setUserSystemExpanded] = useState(true)
+  const [systemExpanded, setSystemExpanded] = useState(true)
   const [doctorsExpanded, setDoctorsExpanded] = useState(true)
   const [productsExpanded, setProductsExpanded] = useState(true)
   const [territoryExpanded, setTerritoryExpanded] = useState(true)
@@ -38,8 +39,14 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const mastersItems = [
     { id: 'user-management', label: 'User Master', icon: 'fas fa-users', path: '/user-management' },
     { id: 'rule-config', label: 'Rule Configuration', icon: 'fas fa-cogs', path: '/rule-config' },
-    { id: 'system-setup', label: 'System Setup', icon: 'fas fa-sliders-h', path: '/system-setup' }
+    { id: 'master-approvals', label: 'Master Approvals', icon: 'fas fa-check-double', path: '/approvals' }
   ]
+  const systemItems = allowedScreens.includes('/system-setup') ? [
+    {id:'call-average',label:'Call Average Setup',icon:'fas fa-phone-alt',path:'/system-setup',search:'?tab=call-average'},
+    {id:'coverage',label:'Coverage Setup',icon:'fas fa-percentage',path:'/system-setup',search:'?tab=coverage'},
+    {id:'work-type',label:'Work Type Setup',icon:'fas fa-briefcase',path:'/system-setup',search:'?tab=work-type'},
+    {id:'leave-policy',label:'Leave Setup',icon:'fas fa-calendar-minus',path:'/system-setup',search:'?tab=leave-policy'}
+  ] : []
   const visibleMastersItems = mastersItems.filter(item => allowedScreens.includes(item.path))
 
   // Main nav items
@@ -65,13 +72,13 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const isMastersActive = visibleMastersItems.some(item => location.pathname === item.path)
 
   // Should Masters parent show?
-  const showMasters = hasAnyAccess(MENU_SECTIONS.doctors.items) || hasAnyAccess(MENU_SECTIONS.products.items) || hasAnyAccess(MENU_SECTIONS.territory.items) || hasAnyAccess(MENU_SECTIONS.inputs.items) || hasAnyAccess(MENU_SECTIONS.policy.items) || hasAnyAccess(MENU_SECTIONS.expense.items) || visibleMastersItems.length > 0
+  const showMasters = hasAnyAccess(MENU_SECTIONS.doctors.items) || hasAnyAccess(MENU_SECTIONS.products.items) || hasAnyAccess(MENU_SECTIONS.territory.items) || hasAnyAccess(MENU_SECTIONS.inputs.items) || hasAnyAccess(MENU_SECTIONS.policy.items) || hasAnyAccess(MENU_SECTIONS.expense.items) || visibleMastersItems.length > 0 || systemItems.length > 0
 
   const renderSubItems = (items, isActive) => (
     <ul className="nav nav-treeview">
       {items.map((item) => (
         <li key={item.id} className="nav-item">
-          <Link to={item.path} className={`nav-link ${location.pathname === item.path ? 'active' : ''}`} onClick={onNavigate}>
+          <Link to={item.path + (item.search || '')} className={`nav-link ${location.pathname === item.path && location.search === (item.search || '') ? 'active' : ''}`} onClick={onNavigate}>
             <i className={`${item.icon} nav-icon`}></i>
             <p>{item.label}</p>
           </Link>
@@ -134,8 +141,9 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
                 {mastersExpanded && (
                   <ul className="nav nav-treeview">
                     {renderSection('User & System', 'fas fa-cogs', visibleMastersItems, userSystemExpanded, setUserSystemExpanded, isMastersActive)}
-                    {renderSection('Territory', 'fas fa-map-marked-alt', territoryItems, territoryExpanded, setTerritoryExpanded, isTerritoryActive)}
-                    {renderSection('Doctors', 'fas fa-user-md', doctorsItems, doctorsExpanded, setDoctorsExpanded, isDoctorsActive)}
+                    {renderSection('System Setup', 'fas fa-sliders-h', systemItems, systemExpanded, setSystemExpanded, location.pathname === '/system-setup')}
+                    {renderSection('Territory & HQ', 'fas fa-map-marked-alt', territoryItems, territoryExpanded, setTerritoryExpanded, isTerritoryActive)}
+                    {renderSection('Doctors & Customers', 'fas fa-user-md', doctorsItems, doctorsExpanded, setDoctorsExpanded, isDoctorsActive)}
                     {renderSection('Products', 'fas fa-pills', productsItems, productsExpanded, setProductsExpanded, isProductsActive)}
                     {renderSection('Inputs & Samples', 'fas fa-file-alt', inputsItems, inputsExpanded, setInputsExpanded, isInputsActive)}
                     {renderSection('Policy & Control', 'fas fa-shield-alt', policyItems, policyExpanded, setPolicyExpanded, isPolicyActive)}

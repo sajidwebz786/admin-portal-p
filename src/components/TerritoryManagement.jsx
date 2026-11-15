@@ -196,7 +196,7 @@ const TerritoryManagement = ({ mode = 'management' }) => {
         </div>
       )}
 
-      {isAdditionMode && (
+      {!isDeletionMode && (
         <BulkUploadPanel
           title="Patch / Route"
           fields={bulkFields}
@@ -221,7 +221,7 @@ const TerritoryManagement = ({ mode = 'management' }) => {
         </button>
       </div>
 
-      {isAdditionMode && (
+      {!isDeletionMode && (
         <div className="management-actions mb-4 d-flex gap-3">
           <button className="btn btn-primary" onClick={showAddModal}>
             <i className="fas fa-plus"></i> Add New Patch/Route

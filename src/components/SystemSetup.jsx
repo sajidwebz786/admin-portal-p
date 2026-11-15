@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import adminAPI from '../services/apiService'
 
 const SystemSetup = () => {
-  const [activeTab, setActiveTab] = useState('call-average')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedTab = searchParams.get('tab')
+  const activeTab = ['call-average','coverage','work-type','leave-policy'].includes(requestedTab) ? requestedTab : 'call-average'
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -25,7 +28,7 @@ const SystemSetup = () => {
               <li key={tab.id} className="nav-item">
                 <button 
                   className={`nav-link ${activeTab === tab.id ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => setSearchParams({tab:tab.id})}
                 >
                   <i className={tab.icon}></i> {tab.label}
                 </button>

@@ -90,7 +90,7 @@ const UserManagement = () => {
       password: '',
       role: user.role || 'Field Representative',
       employeeId: user.employeeId || '',
-      employeeType: user.employeeType || 'MR',
+      employeeType: user.employeeType || '',
       hq_id: user.hq_id || '',
       reportingTo: user.reportingTo || '',
       assigned_manager_id: user.assigned_manager_id || '',
@@ -195,6 +195,7 @@ const UserManagement = () => {
               <th>Email</th>
               <th>Mobile</th>
               <th>Role</th>
+              <th>Designation</th>
               <th>Employee ID</th>
               <th>HQ</th>
               <th>Status</th>
@@ -204,7 +205,7 @@ const UserManagement = () => {
           </thead>
           <tbody>
             {users.length === 0 ? (
-              <tr><td colSpan="10" className="text-center">No users found.</td></tr>
+              <tr><td colSpan="11" className="text-center">No users found.</td></tr>
             ) : (
               users.map((user) => (
                 <tr key={user.id}>
@@ -213,6 +214,7 @@ const UserManagement = () => {
                   <td>{user.email}</td>
                   <td>{user.mobileNumber || '-'}</td>
                   <td>{user.role}</td>
+                  <td>{user.employeeType || 'Not assigned'}</td>
                   <td>{user.employeeId || '-'}</td>
                   <td>{user.hq || '-'}</td>
                   <td>
@@ -310,6 +312,7 @@ const UserManagement = () => {
                       <div className="form-group">
                         <label htmlFor="employeeType">Employee Type</label>
                         <select id="employeeType" name="employeeType" className="form-control" value={formData.employeeType} onChange={handleInputChange}>
+                          <option value="">Not assigned</option>
                           <option value="MR">MR (Medical Representative)</option>
                           <option value="TBM">TBM (Territory Business Manager)</option>
                           <option value="ABM">ABM (Area Business Manager)</option>
@@ -327,6 +330,7 @@ const UserManagement = () => {
                       <div className="form-group">
                         <label htmlFor="role">Role *</label>
                         <select id="role" name="role" className="form-control" value={formData.role} onChange={handleInputChange} required>
+                          <option value="user">User — designation pending</option>
                           <option value="Field Representative">Field Representative</option>
                           <option value="Area Manager">Area Manager</option>
                           <option value="Regional Manager">Regional Manager</option>

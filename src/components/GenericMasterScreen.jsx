@@ -246,9 +246,11 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
 
   const config = configs[masterKey] || configs.chemists
   const isDeletionMode = mode === 'deletion'
-  const operationLabel = isDeletionMode ? 'Deletion' : 'Addition'
+  const isManagementMode = mode === 'management'
+  const hasActions = isDeletionMode || isManagementMode
+  const operationLabel = isManagementMode ? 'Master' : isDeletionMode ? 'Deletion' : 'Addition'
   const modeTitle = `${config.shortTitle || config.title} ${operationLabel}`
-  const modeDescription = isDeletionMode
+  const modeDescription = isManagementMode ? 'Maintain records and their assignments.' : isDeletionMode
     ? `Search existing ${config.shortTitle || 'records'} records and submit only deletion or deactivation requests.`
     : `Create only new ${config.shortTitle || 'record'} records from this screen.`
 
@@ -348,10 +350,11 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
     setError('')
     setSuccess('')
     try {
-      await config.create(sanitize(form))
+      if (editing && isManagementMode) await config.update(editing, sanitize(form))
+      else await config.create(sanitize(form))
       await loadRecords()
       await loadSupport()
-      setSuccess(`${config.shortTitle || config.title} added successfully.`)
+      setSuccess(`${config.shortTitle || config.title} saved successfully.`)
     } catch (err) {
       setError(err.message || 'Unable to save this record.')
     } finally {
@@ -433,7 +436,8 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
           <form className="master-admin-form" onSubmit={handleSubmit}>
             {config.fields.map(renderField)}
             <div className="master-admin-actions">
-              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : `Add ${config.shortTitle || config.title}`}</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : editing ? 'Save Changes' : `Add ${config.shortTitle || config.title}`}</button>
+              {editing && <button type="button" className="btn btn-secondary" disabled={saving} onClick={() => {setEditing(null);setForm(config.defaults || {})}}>Cancel</button>}
             </div>
           </form>
         </>
@@ -445,20 +449,24 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
             <th>Name</th>
             <th>Status</th>
             <th>Updated</th>
-            {isDeletionMode && <th>Deletion Action</th>}
+            {hasActions && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
-          {loading && <tr><td colSpan={isDeletionMode ? '5' : '4'} className="text-center">Loading...</td></tr>}
-          {!loading && records.length === 0 && <tr><td colSpan={isDeletionMode ? '5' : '4'} className="text-center">No records found.</td></tr>}
+          {loading && <tr><td colSpan={hasActions ? '5' : '4'} className="text-center">Loading...</td></tr>}
+          {!loading && records.length === 0 && <tr><td colSpan={hasActions ? '5' : '4'} className="text-center">No records found.</td></tr>}
           {!loading && records.map((item) => (
             <tr key={item.id}>
               <td>{item.id}</td>
               <td>{config.name(item)}</td>
               <td>{item.isActive === false || item.status === 'inactive' ? 'Inactive' : 'Active'}</td>
               <td>{item.updatedAt || item.updated_at || '-'}</td>
-              {isDeletionMode && (
+              {hasActions && (
                 <td>
+                  {isManagementMode && config.update && <button type="button" className="btn btn-secondary btn-sm mr-2" disabled={saving} onClick={() => {
+                    setEditing(item.id)
+                    setForm(Object.fromEntries(config.fields.map(([key,,type]) => [key, type === 'date' && item[key] ? String(item[key]).slice(0,10) : item[key] ?? ''])))
+                  }}>Edit</button>}
                   <button type="button" className="btn btn-outline-danger btn-sm action-btn" disabled={saving || item.isActive === false || item.status === 'inactive'} onClick={() => handleDelete(item)}>Deactivate</button>
                 </td>
               )}

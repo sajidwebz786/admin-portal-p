@@ -5,6 +5,8 @@ export const SCREENS = {
   USER_MANAGEMENT: '/user-management',
   DOCTORS_CHEMISTS: '/doctors-chemists',
   TERRITORY: '/territory-management',
+  GEOGRAPHY: '/territory-hierarchy',
+  PATCH: '/patch-master',
   HEADQUARTER: '/headquarter-management',
   PRODUCT: '/product-management',
   SALES_PROJECTIONS: '/sales-projections',
@@ -60,7 +62,7 @@ const FULL_MASTER_ACCESS = [
   SCREENS.INPUT_CLASS, SCREENS.INPUT_MASTER, SCREENS.SAMPLE_MASTER,
   SCREENS.INPUT_ALLOCATION, SCREENS.RATE_FIXATION, SCREENS.NOTICE_UPLOAD,
   SCREENS.SOP_MASTER, SCREENS.EXPENSE_TYPE, SCREENS.TRAVEL_MODE,
-  SCREENS.FARE_CHART, SCREENS.HEADQUARTER, SCREENS.TERRITORY
+  SCREENS.FARE_CHART, SCREENS.HEADQUARTER, SCREENS.TERRITORY, SCREENS.GEOGRAPHY, SCREENS.PATCH
 ]
 
 const MARKETING_ACCESS = [
@@ -124,6 +126,8 @@ export const ROLE_ACCESS = {
 
 export const getAllowedScreens = (role) => {
   if (!role) return [SCREENS.DASHBOARD]
+  const aliases = { 'national manager':'NSM', 'zonal manager':'RBM', zbm:'RBM', zsm:'RBM', 'regional manager':'RBM', rsm:'RBM', 'area manager':'ABM', mr:'Field Representative' }
+  role = aliases[String(role).toLowerCase()] || role
   if (ROLE_ACCESS[role]) return ROLE_ACCESS[role]
 
   for (const [key, screens] of Object.entries(ROLE_ACCESS)) {
@@ -140,10 +144,20 @@ export const canAccessScreen = (role, screenPath) => {
 
 export const MENU_SECTIONS = {
   territory: {
-    items: []
+    items: [
+      { id: 'territory-hierarchy', label: 'Zone / State / Region', icon: 'fas fa-sitemap', path: SCREENS.GEOGRAPHY },
+      { id: 'headquarters', label: 'Headquarters', icon: 'fas fa-building', path: SCREENS.HEADQUARTER },
+      { id: 'territories', label: 'Territories / Routes', icon: 'fas fa-map-marked-alt', path: SCREENS.TERRITORY },
+      { id: 'patches', label: 'Patch / HQ Mapping', icon: 'fas fa-map-pin', path: SCREENS.PATCH }
+    ]
   },
   doctors: {
     items: [
+      { id: 'doctor-master', label: 'Doctor Master', icon: 'fas fa-user-md', path: SCREENS.DOCTOR_MASTER },
+      { id: 'chemist-master', label: 'Chemist Master', icon: 'fas fa-prescription-bottle', path: SCREENS.CHEMIST_MASTER },
+      { id: 'stockist-master', label: 'Stockist Master', icon: 'fas fa-warehouse', path: SCREENS.STOCKIST_MASTER },
+      { id: 'hospital-master', label: 'Hospital Master', icon: 'fas fa-hospital', path: SCREENS.HOSPITAL_MASTER },
+      { id: 'svl-master', label: 'Standard Visiting List', icon: 'fas fa-clipboard-list', path: SCREENS.SVL_MASTER },
       { id: 'doctor-class', label: 'Doctor Class', icon: 'fas fa-tags', path: SCREENS.DOCTOR_CLASS },
       { id: 'doctor-category', label: 'Doctor Category', icon: 'fas fa-list-alt', path: SCREENS.DOCTOR_CATEGORY },
       { id: 'doctor-specialty', label: 'Doctor Specialty', icon: 'fas fa-stethoscope', path: SCREENS.DOCTOR_SPECIALTY },
@@ -152,21 +166,29 @@ export const MENU_SECTIONS = {
   },
   products: {
     items: [
+      { id: 'product-master', label: 'Product Master', icon: 'fas fa-pills', path: SCREENS.PRODUCT },
       { id: 'division', label: 'Division', icon: 'fas fa-building', path: SCREENS.DIVISION },
       { id: 'brand-group', label: 'Brand Group', icon: 'fas fa-layer-group', path: SCREENS.BRAND_GROUP },
       { id: 'product-category', label: 'Category', icon: 'fas fa-tags', path: SCREENS.PRODUCT_CATEGORY },
       { id: 'pack-size', label: 'Pack Size', icon: 'fas fa-box', path: SCREENS.PACK_SIZE },
-      { id: 'strength', label: 'Strength', icon: 'fas fa-flask', path: SCREENS.STRENGTH }
+      { id: 'strength', label: 'Strength', icon: 'fas fa-flask', path: SCREENS.STRENGTH },
+      { id: 'rate-fixation', label: 'Rate Fixation', icon: 'fas fa-tags', path: SCREENS.RATE_FIXATION }
     ]
   },
   inputs: {
     items: [
+      { id: 'input-master', label: 'Input Master', icon: 'fas fa-file-alt', path: SCREENS.INPUT_MASTER },
+      { id: 'sample-master', label: 'Sample Master', icon: 'fas fa-box-open', path: SCREENS.SAMPLE_MASTER },
+      { id: 'input-allocation', label: 'Input Allocation', icon: 'fas fa-people-arrows', path: SCREENS.INPUT_ALLOCATION },
       { id: 'input-type', label: 'Input Type', icon: 'fas fa-tags', path: SCREENS.INPUT_TYPE },
       { id: 'input-class', label: 'Input Class', icon: 'fas fa-layer-group', path: SCREENS.INPUT_CLASS }
     ]
   },
   policy: {
-    items: []
+    items: [
+      { id: 'notices', label: 'Notice Upload', icon: 'fas fa-bullhorn', path: SCREENS.NOTICE_UPLOAD },
+      { id: 'sop-master', label: 'SOP / Policies', icon: 'fas fa-file-contract', path: SCREENS.SOP_MASTER }
+    ]
   },
   expense: {
     items: [
