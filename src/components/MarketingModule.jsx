@@ -224,33 +224,50 @@ const MarketingModule = ({ view = 'report' }) => {
   const handleEntryChange = (key, value) => setEntryForm((prev) => ({ ...prev, [key]: value }))
 
   const submitCampaign = async (event) => {
+    setError('')
+    try {
     event.preventDefault()
     if (editingCampaignId) await adminAPI.updateMarketingCampaign(editingCampaignId, sanitize(campaignForm))
     else await adminAPI.createMarketingCampaign(sanitize(campaignForm))
     setEditingCampaignId(null)
     setCampaignForm(defaultCampaign)
     await loadAll()
+    } catch (error) {
+      setError(error.message || 'Unable to complete this action.')
+    }
   }
 
   const submitStrategy = async (event) => {
+    setError('')
+    try {
     event.preventDefault()
     if (editingStrategyId) await adminAPI.updateMarketingStrategy(editingStrategyId, sanitize(strategyForm))
     else await adminAPI.createMarketingStrategy(sanitize(strategyForm))
     setEditingStrategyId(null)
     setStrategyForm(cloneDefaultStrategy())
     await loadAll()
+    } catch (error) {
+      setError(error.message || 'Unable to complete this action.')
+    }
   }
 
   const submitRcpa = async (event) => {
+    setError('')
+    try {
     event.preventDefault()
     if (editingRcpaId) await adminAPI.updateMarketingRCPA(editingRcpaId, sanitize(rcpaForm))
     else await adminAPI.createMarketingRCPA(sanitize(rcpaForm))
     setEditingRcpaId(null)
     setRcpaForm(defaultRcpa)
     await loadAll()
+    } catch (error) {
+      setError(error.message || 'Unable to complete this action.')
+    }
   }
 
   const submitEntry = async (event) => {
+    setError('')
+    try {
     event.preventDefault()
     if (!selectedRcpaId) return setError('Select an RCPA before submitting an executive entry.')
     const payload = { ...entryForm, total_business_strips: entryTotal }
@@ -259,6 +276,9 @@ const MarketingModule = ({ view = 'report' }) => {
     setEditingEntryId(null)
     setEntryForm(cloneDefaultEntry())
     await loadRcpaEntries(selectedRcpaId)
+    } catch (error) {
+      setError(error.message || 'Unable to complete this action.')
+    }
   }
 
   const editCampaign = (item) => {
@@ -297,27 +317,47 @@ const MarketingModule = ({ view = 'report' }) => {
   }
 
   const deleteCampaign = async (item) => {
+    setError('')
+    try {
     if (!window.confirm(`Cancel campaign "${item.campaign_name}"?`)) return
     await adminAPI.cancelMarketingCampaign(item.id)
     await loadAll()
+    } catch (error) {
+      setError(error.message || 'Unable to complete this action.')
+    }
   }
 
   const deleteStrategy = async (item) => {
+    setError('')
+    try {
     if (!window.confirm(`Inactivate strategy "${item.brand_name}"?`)) return
     await adminAPI.deleteMarketingStrategy(item.id)
     await loadAll()
+    } catch (error) {
+      setError(error.message || 'Unable to complete this action.')
+    }
   }
 
   const deleteRcpa = async (item) => {
+    setError('')
+    try {
     if (!window.confirm(`Close RCPA "${item.rcpa_name}"?`)) return
     await adminAPI.deleteMarketingRCPA(item.id)
     await loadAll()
+    } catch (error) {
+      setError(error.message || 'Unable to complete this action.')
+    }
   }
 
   const deleteEntry = async (item) => {
+    setError('')
+    try {
     if (!window.confirm(`Delete RCPA entry for "${item.doctor_name}"?`)) return
     await adminAPI.deleteMarketingRCPAEntry(selectedRcpaId, item.id)
     await loadRcpaEntries(selectedRcpaId)
+    } catch (error) {
+      setError(error.message || 'Unable to complete this action.')
+    }
   }
 
   const addVisit = () => setStrategyForm((prev) => ({ ...prev, visits: [...prev.visits, { visit: prev.visits.length + 1, input: '' }] }))
