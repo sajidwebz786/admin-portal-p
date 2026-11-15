@@ -2,6 +2,32 @@
 
 This is the web-based admin portal for the Pamsforce field force management system.
 
+## Render production deployment
+
+The production API is `https://serverapplication.onrender.com/api`.
+Both portal API clients share this URL. Authentication uses bearer tokens.
+
+Connect this repository on Render as a **Static Site**, or create a Blueprint
+using [render.yaml](./render.yaml). Use branch `main`, leave Root Directory blank,
+set Build Command to `npm ci --include=dev && npm run build`, and Publish Directory
+to `dist`. Enable Auto-Deploy on commit. No start command or Node web service is
+needed for the portal. For manual site creation, add a rewrite from `/*` to
+`/index.html` so refreshing a portal page works.
+
+Set `VITE_API_URL=https://serverapplication.onrender.com/api` in Render's build
+environment. Remove any old `/api` or localhost override. Vite embeds this value
+during build, so rebuild after changing it. The committed production environment
+file provides the same default and contains no secrets.
+
+The API must answer OPTIONS preflights with the requesting origin and allow
+`Content-Type` and `Authorization`. The deployed API was verified to do so for
+unrelated HTTPS origins and localhost. CORS is controlled by the API; the static
+site does not need an Access-Control-Allow-Origin header. Users can open the
+portal from any location, while protected API requests still require login.
+
+For local development, keep `VITE_API_URL=/api` in your untracked `.env` file and
+run `npm run dev`; Vite forwards requests to the local backend on port 5000.
+
 ## Table of Contents
 1. [Overview](#overview)
 2. [Features](#features)

@@ -1,9 +1,19 @@
 services:
   - type: web
     name: pamsforce-admin
-    env: static
-    buildCommand: npm run build
+    runtime: static
+    repo: https://github.com/sajidwebz786/admin-portal-p
+    branch: main
+    autoDeployTrigger: commit
+    buildCommand: npm ci --include=dev && npm run build
     staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://serverapplication.onrender.com/api
+    headers:
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
     routes:
       - type: rewrite
         source: /*

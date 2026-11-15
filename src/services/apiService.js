@@ -1,14 +1,13 @@
 import axios from "axios";
+import { API_URL } from '../config/api';
 
 // -------------------------
 // Axios Base Configuration
 // -------------------------
-// Use environment variable or fallback to localhost for development
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  // Allow the API to wake up after a Render free-service idle period.
+  timeout: 90000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -41,9 +40,7 @@ api.interceptors.response.use(
       localStorage.removeItem("adminUser");
       window.location.href = "/";
     }
-    return Promise.reject(
-      response?.data?.message || "API request failed. Please try again."
-    );
+    return Promise.reject(error);
   }
 );
 
@@ -71,7 +68,10 @@ class AdminAPIService {
     } catch (err) {
       return {
         success: false,
-        error: err.response?.data?.message || "Network error. Please try again.",
+        error: err.response?.data?.message ||
+          (err.code === 'ECONNABORTED'
+            ? 'The server is taking longer to respond. Please try again.'
+            : 'Unable to reach the server. Please check your connection and try again.'),
       };
     }
   }
@@ -525,16 +525,16 @@ class AdminAPIService {
 
   getMonthlyStatsReport(startDate, endDate) {
     const params = new URLSearchParams({ startDate, endDate });
-    return this.request(`/admin/reports/monthly-stats?${params}`);
+    return this.request(`/admin/reports?type=monthly-stats&${params}`);
   }
 
   getDailyVisitsReport(date) {
-    return this.request(`/admin/reports/daily-visits?date=${date}`);
+    return this.request(`/admin/reports?type=daily-visits&startDate=${date}&endDate=${date}`);
   }
 
   getSalesReport(startDate, endDate) {
     const params = new URLSearchParams({ startDate, endDate });
-    return this.request(`/admin/reports/sales?${params}`);
+    return this.request(`/admin/reports?type=sales&${params}`);
   }
 
   // ----- Input Type Master -----

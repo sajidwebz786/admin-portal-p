@@ -1,8 +1,9 @@
+import { API_URL } from './config/api';
+
 // Admin Portal API Integration
 class AdminAPI {
     constructor() {
-        // Use environment variable or fallback to localhost for development
-        this.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        this.baseURL = API_URL;
         this.token = localStorage.getItem('adminToken');
     }
 
