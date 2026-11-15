@@ -76,15 +76,16 @@ const SalesProjections = () => {
   const queryParams = () => Object.fromEntries(Object.entries(filters).filter(([, value]) => value && value !== 'all'))
 
   const loadSalesData = async () => {
+    setError('')
     const params = queryParams()
     const [dashboard, targets, projections, primarySales, secondarySales, expiryEntries, report] = await Promise.all([
-      adminAPI.getSalesDashboard(params).catch(() => ({ summary: {} })),
-      adminAPI.getSalesTargets(params).catch(() => ({ targets: [] })),
-      adminAPI.getModuleProjections(params).catch(() => ({ projections: [] })),
-      adminAPI.getPrimarySales(params).catch(() => ({ primarySales: [] })),
-      adminAPI.getSecondarySales(params).catch(() => ({ secondarySales: [] })),
-      adminAPI.getExpiryEntries(params).catch(() => ({ expiryEntries: [] })),
-      adminAPI.getSalesModuleReport(params).catch(() => ({ report: [] }))
+      adminAPI.getSalesDashboard(params),
+      adminAPI.getSalesTargets(params),
+      adminAPI.getModuleProjections(params),
+      adminAPI.getPrimarySales(params),
+      adminAPI.getSecondarySales(params),
+      adminAPI.getExpiryEntries(params),
+      adminAPI.getSalesModuleReport(params)
     ])
     setData({
       dashboard: dashboard.summary || {},
@@ -115,7 +116,7 @@ const SalesProjections = () => {
   }, [])
 
   useEffect(() => {
-    if (!loading) loadSalesData()
+    if (!loading) loadSalesData().catch(err => setError(err.message || 'Failed to load sales data'))
   }, [filters.financial_year, filters.month, filters.product_id, filters.user_id, filters.division_id, filters.state, filters.hq_id])
 
   const setFilter = (key, value) => setFilters((prev) => ({ ...prev, [key]: value }))

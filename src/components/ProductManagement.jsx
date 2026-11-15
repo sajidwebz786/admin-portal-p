@@ -50,8 +50,8 @@ const ProductManagement = ({ mode = 'management' }) => {
     dosage: '',
     packSize: '',
     hsnCode: '',
-    gstRate: '18',
-    schedule: 'H',
+    gstRate: '',
+    schedule: '',
     therapeuticClass: ''
   })
   const isAdditionMode = mode === 'addition'
@@ -152,8 +152,8 @@ const ProductManagement = ({ mode = 'management' }) => {
       dosage: '',
       packSize: '',
       hsnCode: '',
-      gstRate: '18',
-      schedule: 'H',
+      gstRate: '',
+      schedule: '',
       therapeuticClass: ''
     })
     setEditingProduct(null)
@@ -189,8 +189,8 @@ const ProductManagement = ({ mode = 'management' }) => {
       dosage: product.dosage || '',
       packSize: product.packSize || '',
       hsnCode: product.hsnCode || '',
-      gstRate: product.gstRate || '18',
-      schedule: product.schedule || 'H',
+      gstRate: product.gstRate ?? '',
+      schedule: product.schedule ?? '',
       therapeuticClass: product.therapeuticClass || ''
     })
     setEditingProduct(product)
@@ -217,6 +217,8 @@ const ProductManagement = ({ mode = 'management' }) => {
     try {
       const submitData = {
         ...formData,
+        gstRate: formData.gstRate === '' ? null : Number(formData.gstRate),
+        schedule: formData.schedule || null,
         pts: formData.pts ? parseFloat(formData.pts) : null,
         ptr: formData.ptr ? parseFloat(formData.ptr) : null,
         mrp: formData.mrp ? parseFloat(formData.mrp) : null,
@@ -312,6 +314,8 @@ const ProductManagement = ({ mode = 'management' }) => {
 
   const createBulkProduct = (payload) => adminAPI.createProduct({
     ...payload,
+    gstRate: payload.gstRate === '' || payload.gstRate == null ? null : Number(payload.gstRate),
+    schedule: payload.schedule || null,
     pts: payload.pts ? parseFloat(payload.pts) : null,
     ptr: payload.ptr ? parseFloat(payload.ptr) : null,
     mrp: payload.mrp ? parseFloat(payload.mrp) : null,
@@ -357,7 +361,7 @@ const ProductManagement = ({ mode = 'management' }) => {
         <BulkUploadPanel
           title="Product"
           fields={productBulkFields}
-          defaults={{ status: 'active', gstRate: 18, schedule: 'H' }}
+          defaults={{ status: 'active' }}
           createRecord={createBulkProduct}
           onComplete={loadProducts}
         />
@@ -700,6 +704,7 @@ const ProductManagement = ({ mode = 'management' }) => {
                         value={formData.gstRate}
                         onChange={handleInputChange}
                       >
+                        <option value="">Not set</option>
                         <option value="0">0%</option>
                         <option value="5">5%</option>
                         <option value="12">12%</option>
@@ -716,6 +721,7 @@ const ProductManagement = ({ mode = 'management' }) => {
                         value={formData.schedule}
                         onChange={handleInputChange}
                       >
+                        <option value="">Not set</option>
                         <option value="H">H (Prescription)</option>
                         <option value="OTC">OTC (Over the Counter)</option>
                       </select>
