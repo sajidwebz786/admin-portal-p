@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom'
 import adminAPI from '../services/apiService'
 import BulkUploadPanel from './BulkUploadPanel'
 
+const formatPrice = value => value === null || value === undefined || value === ''
+  ? 'Not set'
+  : new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(Number(value))
+
 const ProductManagement = ({ mode = 'management' }) => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -172,10 +176,10 @@ const ProductManagement = ({ mode = 'management' }) => {
       category_id: product.category_id || '',
       pack_size_id: product.pack_size_id || '',
       strength_id: product.strength_id || '',
-      pts: product.pts || '',
-      ptr: product.ptr || '',
-      mrp: product.mrp || '',
-      nrv: product.nrv || '',
+      pts: product.pts ?? '',
+      ptr: product.ptr ?? '',
+      mrp: product.mrp ?? '',
+      nrv: product.nrv ?? '',
       launch_date: product.launch_date || '',
       status: product.status || 'active',
       // Legacy fields
@@ -418,9 +422,9 @@ const ProductManagement = ({ mode = 'management' }) => {
                   <td>{product.categoryData?.category_name || getCategoryName(product.category_id) || '-'}</td>
                   <td>{product.strengthData ? `${product.strengthData.strength_value}${product.strengthData.unit || 'mg'}` : getStrengthDisplay(product.strength_id) || '-'}</td>
                   <td>{product.packSizeData?.pack_size || getPackSizeDisplay(product.pack_size_id) || '-'}</td>
-                  <td>₹{product.pts || '-'}</td>
-                  <td>₹{product.ptr || '-'}</td>
-                  <td>₹{product.mrp || '-'}</td>
+                  <td>{formatPrice(product.pts)}</td>
+                  <td>{formatPrice(product.ptr)}</td>
+                  <td>{formatPrice(product.mrp)}</td>
                   <td>
                     <span className={`badge ${product.status === 'active' ? 'badge-success' : 'badge-danger'}`}>
                       {product.status === 'active' ? 'Active' : 'Inactive'}
