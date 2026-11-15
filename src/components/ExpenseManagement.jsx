@@ -386,7 +386,7 @@ const ExpenseManagement = () => {
                   </tbody>
                 </table>
                 {reportData.summary && (
-                  <div style={{ background: '#f8f9fa', padding: '1rem', borderRadius: '4px' }}>
+                  <div style={{ background: 'var(--surface-subtle)', padding: '1rem', borderRadius: '4px' }}>
                     <h6>Summary</h6>
                     <div className="row">
                       <div className="col-md-3"><strong>Total DA:</strong> {reportData.summary.totalDA}</div>

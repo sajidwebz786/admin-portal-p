@@ -7,6 +7,7 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const location = useLocation()
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
   const [mastersExpanded, setMastersExpanded] = useState(true)
+  const [userSystemExpanded, setUserSystemExpanded] = useState(true)
   const [doctorsExpanded, setDoctorsExpanded] = useState(true)
   const [productsExpanded, setProductsExpanded] = useState(true)
   const [territoryExpanded, setTerritoryExpanded] = useState(true)
@@ -82,11 +83,11 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
   const renderSection = (label, icon, items, expanded, setExpanded, isActive) => {
     if (items.length === 0) return null
     return (
-      <li className="nav-item has-treeview menu-open">
-        <Link to="#" className={`nav-link ${isActive ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setExpanded(!expanded) }}>
+      <li className={`nav-item has-treeview ${expanded ? 'menu-open' : ''}`}>
+        <button type="button" className={`nav-link nav-section-toggle ${isActive ? 'active' : ''}`} aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
           <i className={`nav-icon ${icon}`}></i>
           <p>{label}<i className={`right fas fa-angle-left ${expanded ? 'transform-rotate' : ''}`}></i></p>
-        </Link>
+        </button>
         {expanded && renderSubItems(items, isActive)}
       </li>
     )
@@ -106,14 +107,14 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
 
       <div className="sidebar">
         {/* Role Badge */}
-        <div style={{ padding: '10px 15px', textAlign: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <div className="sidebar-role">
           <span className="badge badge-info" style={{ fontSize: '0.85rem', padding: '5px 12px' }}>
             <i className="fas fa-user-shield"></i> {getDisplayRole()}
           </span>
         </div>
 
         <nav className="mt-2">
-          <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+          <ul className="nav nav-pills nav-sidebar flex-column">
 
             {/* Dashboard - always visible */}
             <li className="nav-item">
@@ -125,14 +126,14 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
 
             {/* Masters - only if user has access to any sub-item */}
             {showMasters && (
-              <li className="nav-item has-treeview menu-open">
-                <Link to="#" className={`nav-link ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive || isPolicyActive || isExpenseActive || isMastersActive ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setMastersExpanded(!mastersExpanded) }}>
+              <li className={`nav-item has-treeview ${mastersExpanded ? 'menu-open' : ''}`}>
+                <button type="button" aria-expanded={mastersExpanded} className={`nav-link nav-section-toggle ${isDoctorsActive || isProductsActive || isTerritoryActive || isInputsActive || isPolicyActive || isExpenseActive || isMastersActive ? 'active' : ''}`} onClick={() => setMastersExpanded(!mastersExpanded)}>
                   <i className="nav-icon fas fa-database"></i>
                   <p>Masters<i className={`right fas fa-angle-left ${mastersExpanded ? 'transform-rotate' : ''}`}></i></p>
-                </Link>
+                </button>
                 {mastersExpanded && (
                   <ul className="nav nav-treeview">
-                    {renderSection('User & System', 'fas fa-cogs', visibleMastersItems, mastersExpanded, setMastersExpanded, isMastersActive)}
+                    {renderSection('User & System', 'fas fa-cogs', visibleMastersItems, userSystemExpanded, setUserSystemExpanded, isMastersActive)}
                     {renderSection('Territory', 'fas fa-map-marked-alt', territoryItems, territoryExpanded, setTerritoryExpanded, isTerritoryActive)}
                     {renderSection('Doctors', 'fas fa-user-md', doctorsItems, doctorsExpanded, setDoctorsExpanded, isDoctorsActive)}
                     {renderSection('Products', 'fas fa-pills', productsItems, productsExpanded, setProductsExpanded, isProductsActive)}
@@ -147,7 +148,7 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
             {/* Main nav items - filtered by role */}
             {visibleMainNav.map((item) => (
               <li key={item.id} className="nav-item">
-                <Link to={item.path} className={`nav-link ${location.pathname === item.path || (item.id === 'bulk-uploads' && location.pathname.startsWith('/addition/')) ? 'active' : ''}`} onClick={onNavigate}>
+                <Link to={item.path} className={`nav-link ${location.pathname === item.path || (item.id === 'addition-deletion-control' && /^\/(addition|deletion)\//.test(location.pathname)) ? 'active' : ''}`} onClick={onNavigate}>
                   <i className={`${item.icon} nav-icon`}></i>
                   <p>{item.label}</p>
                 </Link>
@@ -155,11 +156,11 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
             ))}
 
             {marketingItems.length > 0 && (
-              <li className="nav-item has-treeview menu-open">
-                <Link to="#" className={`nav-link ${isMarketingActive ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); setMarketingExpanded(!marketingExpanded) }}>
+              <li className={`nav-item has-treeview ${marketingExpanded ? 'menu-open' : ''}`}>
+                <button type="button" aria-expanded={marketingExpanded} className={`nav-link nav-section-toggle ${isMarketingActive ? 'active' : ''}`} onClick={() => setMarketingExpanded(!marketingExpanded)}>
                   <i className="nav-icon fas fa-bullhorn"></i>
                   <p>Marketing<i className={`right fas fa-angle-left ${marketingExpanded ? 'transform-rotate' : ''}`}></i></p>
-                </Link>
+                </button>
                 {marketingExpanded && renderSubItems(marketingItems, isMarketingActive)}
               </li>
             )}

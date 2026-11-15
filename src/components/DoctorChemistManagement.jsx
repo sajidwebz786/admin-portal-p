@@ -33,9 +33,9 @@ const Modal = ({ show, onClose, title, children }) => {
       }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div
+      <div className="portal-dialog"
         style={{
-          background: 'white',
+          background: 'var(--card-bg)',
           borderRadius: '8px',
           padding: '20px',
           width: '90%',

@@ -149,7 +149,7 @@ const ActivityApprovals = () => {
                 <div style={{ marginTop: '10px' }}>
                   <button
                     className="btn btn-sm"
-                    style={{ background: 'none', border: '1px solid #ccc', cursor: 'pointer', padding: '4px 12px' }}
+                    style={{ background: 'none', border: '1px solid var(--control-border)', cursor: 'pointer', padding: '4px 12px' }}
                     onClick={() => setExpandedId(expandedId === approval.id ? null : approval.id)}
                   >
                     {expandedId === approval.id ? '▼ Hide' : '▶ Show'} Products ({approval.callProducts.length})
@@ -158,7 +158,7 @@ const ActivityApprovals = () => {
                   {expandedId === approval.id && (
                     <table style={{ width: '100%', marginTop: '8px', borderCollapse: 'collapse', fontSize: '14px' }}>
                       <thead>
-                        <tr style={{ background: '#f5f5f5' }}>
+                        <tr style={{ background: 'var(--surface-subtle)' }}>
                           <th style={{ padding: '6px', border: '1px solid #ddd', textAlign: 'left' }}>Product</th>
                           <th style={{ padding: '6px', border: '1px solid #ddd', textAlign: 'left' }}>Sample</th>
                           <th style={{ padding: '6px', border: '1px solid #ddd', textAlign: 'left' }}>Input</th>

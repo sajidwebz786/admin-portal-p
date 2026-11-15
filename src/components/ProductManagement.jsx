@@ -466,7 +466,7 @@ const ProductManagement = ({ mode = 'management' }) => {
               <form onSubmit={handleSubmit}>
                 <div className="modal-body">
                   {/* Basic Info Section */}
-                  <h5 className="mb-3" style={{ color: '#2c3e50', borderBottom: '1px solid #dee2e6', paddingBottom: '8px' }}>
+                  <h5 className="mb-3" style={{ color: 'var(--text-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
                     Basic Information
                   </h5>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
@@ -552,7 +552,7 @@ const ProductManagement = ({ mode = 'management' }) => {
                   </div>
 
                   {/* Product Details Section */}
-                  <h5 className="mb-3 mt-4" style={{ color: '#2c3e50', borderBottom: '1px solid #dee2e6', paddingBottom: '8px' }}>
+                  <h5 className="mb-3 mt-4" style={{ color: 'var(--text-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
                     Product Details
                   </h5>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
@@ -604,7 +604,7 @@ const ProductManagement = ({ mode = 'management' }) => {
                   </div>
 
                   {/* Pricing Section */}
-                  <h5 className="mb-3 mt-4" style={{ color: '#2c3e50', borderBottom: '1px solid #dee2e6', paddingBottom: '8px' }}>
+                  <h5 className="mb-3 mt-4" style={{ color: 'var(--text-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
                     Pricing Information
                   </h5>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '15px' }}>
@@ -667,7 +667,7 @@ const ProductManagement = ({ mode = 'management' }) => {
                   </div>
 
                   {/* Additional Info Section */}
-                  <h5 className="mb-3 mt-4" style={{ color: '#2c3e50', borderBottom: '1px solid #dee2e6', paddingBottom: '8px' }}>
+                  <h5 className="mb-3 mt-4" style={{ color: 'var(--text-color)', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
                     Additional Information
                   </h5>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
@@ -782,7 +782,7 @@ const ProductManagement = ({ mode = 'management' }) => {
                   {editingProduct && priceHistory.length > 0 && (
                     <>
                       <div className="d-flex justify-content-between align-items-center mt-4 mb-2">
-                        <h5 className="mb-0" style={{ color: '#2c3e50' }}>
+                        <h5 className="mb-0" style={{ color: 'var(--text-color)' }}>
                           Price History
                         </h5>
                         <button 
