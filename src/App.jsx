@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
 import UserManagement from './components/UserManagement'
@@ -75,6 +75,7 @@ function AppContent() {
   const [userRole, setUserRole] = useState('user')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'light'
@@ -88,10 +89,10 @@ function AppContent() {
   }, [])
 
   useEffect(() => {
-    if (isAuthenticated && window.location.pathname === '/') {
+    if (isAuthenticated && location.pathname === '/') {
       navigate('/dashboard')
     }
-  }, [isAuthenticated, navigate])
+  }, [isAuthenticated, navigate, location.pathname])
 
   const handleLogin = () => {
     setIsAuthenticated(true)

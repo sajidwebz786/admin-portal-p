@@ -14,6 +14,11 @@ to `dist`. Enable Auto-Deploy on commit. No start command or Node web service is
 needed for the portal. For manual site creation, add a rewrite from `/*` to
 `/index.html` so refreshing a portal page works.
 
+Portal pages use hash routes such as `/#/dashboard` and `/#/user-management`.
+Refreshing these URLs always requests the site's root document, even when an
+existing Render site has no SPA rewrite configured. Open the root URL after
+upgrading from older `/dashboard` links and update saved bookmarks.
+
 Set `VITE_API_URL=https://serverapplication.onrender.com/api` in Render's build
 environment. Remove any old `/api` or localhost override. Vite embeds this value
 during build, so rebuild after changing it. The committed production environment
