@@ -24,7 +24,7 @@ const DoctorCategoryMaster = () => {
       const response = await api.get('/master/doctor-categories');
       setCategories(response.data);
     } catch (err) {
-      setError('Failed to fetch doctor categories');
+      setError(err.message || 'Failed to fetch doctor categories');
       console.error(err);
     } finally {
       setLoading(false);

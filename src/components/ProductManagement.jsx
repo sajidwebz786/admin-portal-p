@@ -110,7 +110,7 @@ const ProductManagement = ({ mode = 'management' }) => {
       setProducts(productsData)
     } catch (error) {
       console.error('Error loading products:', error)
-      setError('Failed to load products. Please ensure you are logged in.')
+      setError(error.message || 'Failed to load products. Please ensure you are logged in.')
     } finally {
       setLoading(false)
     }

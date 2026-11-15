@@ -50,7 +50,7 @@ const Reports = () => {
       setReportData(reportData)
     } catch (error) {
       console.error('Error generating report:', error)
-      setError('Failed to generate report')
+      setError(error.message || 'Failed to generate report')
     } finally {
       setLoading(false)
     }

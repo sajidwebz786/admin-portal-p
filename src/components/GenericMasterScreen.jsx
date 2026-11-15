@@ -28,6 +28,8 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
   const [editing, setEditing] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [success, setSuccess] = useState('')
 
   const options = useMemo(() => {
     const filteredTerritories = support.territories.filter((item) => {
@@ -341,16 +343,37 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    const payload = sanitize(form)
-    await config.create(payload)
-    await loadRecords()
-    await loadSupport()
+    if (saving) return
+    setSaving(true)
+    setError('')
+    setSuccess('')
+    try {
+      await config.create(sanitize(form))
+      await loadRecords()
+      await loadSupport()
+      setSuccess(`${config.shortTitle || config.title} added successfully.`)
+    } catch (err) {
+      setError(err.message || 'Unable to save this record.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleDelete = async (item) => {
     if (!window.confirm(`Deactivate ${config.name(item) || config.shortTitle || config.title}?`)) return
-    await config.remove(item.id)
-    await loadRecords()
+    if (saving) return
+    setSaving(true)
+    setError('')
+    setSuccess('')
+    try {
+      await config.remove(item.id)
+      await loadRecords()
+      setSuccess(`${config.shortTitle || config.title} deactivated successfully.`)
+    } catch (err) {
+      setError(err.message || 'Unable to deactivate this record.')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const renderField = ([key, label, type = 'text', required = false, fieldOptions = []]) => {
@@ -394,6 +417,7 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
         </div>
       </div>
       {error && <div className="alert alert-danger">{error}</div>}
+      {success && <div className="alert alert-success" role="status">{success}</div>}
       {!isDeletionMode && (
         <>
           <BulkUploadPanel
@@ -409,7 +433,7 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
           <form className="master-admin-form" onSubmit={handleSubmit}>
             {config.fields.map(renderField)}
             <div className="master-admin-actions">
-              <button type="submit" className="btn btn-primary">Add {config.shortTitle || config.title}</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : `Add ${config.shortTitle || config.title}`}</button>
             </div>
           </form>
         </>
@@ -435,7 +459,7 @@ const GenericMasterScreen = ({ masterKey, mode = 'addition' }) => {
               <td>{item.updatedAt || item.updated_at || '-'}</td>
               {isDeletionMode && (
                 <td>
-                  <button type="button" className="btn btn-outline-danger btn-sm action-btn" onClick={() => handleDelete(item)}>Deactivate</button>
+                  <button type="button" className="btn btn-outline-danger btn-sm action-btn" disabled={saving || item.isActive === false || item.status === 'inactive'} onClick={() => handleDelete(item)}>Deactivate</button>
                 </td>
               )}
             </tr>

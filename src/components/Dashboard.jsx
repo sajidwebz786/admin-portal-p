@@ -31,7 +31,7 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error loading dashboard data:', error)
       if (error.response?.status === 403) {
-        setError('Admin access required. Please contact administrator.')
+        setError(error.message || 'Admin access required. Please contact administrator.')
       } else {
         setError('Failed to load dashboard data. Please ensure you are logged in.')
       }

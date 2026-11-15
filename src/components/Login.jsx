@@ -35,7 +35,7 @@ const Login = ({ onLogin }) => {
         setError(result.error)
       }
     } catch (error) {
-      setError('Network error. Please check your connection and try again.')
+      setError(error.message || 'Network error. Please check your connection and try again.')
     } finally {
       setLoading(false)
     }

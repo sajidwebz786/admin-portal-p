@@ -23,7 +23,7 @@ const DoctorSpecialtyMaster = () => {
       const response = await api.get('/master/doctor-specialties');
       setSpecialties(response.data);
     } catch (err) {
-      setError('Failed to fetch doctor specialties');
+      setError(err.message || 'Failed to fetch doctor specialties');
       console.error(err);
     } finally {
       setLoading(false);

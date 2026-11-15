@@ -33,7 +33,7 @@ const BrandGroupMaster = () => {
       setDivisions(divisionsRes || [])
     } catch (error) {
       console.error('Error loading data:', error)
-      setError('Failed to load data')
+      setError(error.message || 'Failed to load data')
     } finally {
       setLoading(false)
     }
@@ -93,7 +93,7 @@ const BrandGroupMaster = () => {
       loadData()
     } catch (error) {
       console.error('Error saving brand group:', error)
-      setError('Failed to save brand group')
+      setError(error.message || 'Failed to save brand group')
     }
   }
 

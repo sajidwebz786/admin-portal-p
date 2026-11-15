@@ -27,7 +27,7 @@ const PackSizeMaster = () => {
       setPackSizes(response || [])
     } catch (error) {
       console.error('Error loading pack sizes:', error)
-      setError('Failed to load pack sizes')
+      setError(error.message || 'Failed to load pack sizes')
     } finally {
       setLoading(false)
     }
@@ -85,7 +85,7 @@ const PackSizeMaster = () => {
       loadPackSizes()
     } catch (error) {
       console.error('Error saving pack size:', error)
-      setError('Failed to save pack size')
+      setError(error.message || 'Failed to save pack size')
     }
   }
 

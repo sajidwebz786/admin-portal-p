@@ -27,7 +27,7 @@ const InputClassMaster = () => {
       setInputClasses(data);
     } catch (error) {
       console.error('Error fetching input classes:', error);
-      setError('Failed to fetch input classes');
+      setError(error.message || 'Failed to fetch input classes');
     } finally {
       setLoading(false);
     }

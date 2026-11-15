@@ -27,7 +27,7 @@ const InputTypeMaster = () => {
       setInputTypes(data);
     } catch (error) {
       console.error('Error fetching input types:', error);
-      setError('Failed to fetch input types');
+      setError(error.message || 'Failed to fetch input types');
     } finally {
       setLoading(false);
     }

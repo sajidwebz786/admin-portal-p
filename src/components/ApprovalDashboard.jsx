@@ -19,7 +19,7 @@ const ApprovalDashboard = () => {
       const response = await api.get('/approvals/all-pending');
       setPendingApprovals(response.data);
     } catch (err) {
-      setError('Failed to fetch pending approvals');
+      setError(err.message || 'Failed to fetch pending approvals');
       console.error(err);
     } finally {
       setLoading(false);

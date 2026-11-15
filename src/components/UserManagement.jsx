@@ -42,7 +42,7 @@ const UserManagement = () => {
       setHeadquarters(Array.isArray(hqData) ? hqData : [])
     } catch (error) {
       console.error('Error loading data:', error)
-      setError('Failed to load data. Please ensure you are logged in.')
+      setError(error.message || 'Failed to load data. Please ensure you are logged in.')
     } finally {
       setLoading(false)
     }
@@ -136,7 +136,7 @@ const UserManagement = () => {
       loadData()
     } catch (error) {
       console.error('Error saving user:', error)
-      setError('Failed to save user')
+      setError(error.message || 'Failed to save user')
     }
   }
 
@@ -147,7 +147,7 @@ const UserManagement = () => {
         loadData()
       } catch (error) {
         console.error('Error deleting user:', error)
-        setError('Failed to delete user')
+        setError(error.message || 'Failed to delete user')
       }
     }
   }

@@ -46,7 +46,7 @@ const TerritoryManagement = ({ mode = 'management' }) => {
       setTerritories(territoriesData)
     } catch (error) {
       console.error('Error loading territories:', error)
-      setError('Failed to load territories. Please ensure you are logged in.')
+      setError(error.message || 'Failed to load territories. Please ensure you are logged in.')
     } finally {
       setLoading(false)
     }

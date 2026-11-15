@@ -42,7 +42,7 @@ const ActivityApprovals = () => {
       setApprovals(transformedApprovals)
     } catch (error) {
       console.error('Error loading approvals:', error)
-      setError('Failed to load approvals')
+      setError(error.message || 'Failed to load approvals')
     } finally {
       setLoading(false)
     }

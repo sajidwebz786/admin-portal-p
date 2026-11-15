@@ -28,7 +28,7 @@ const ProductCategoryMaster = () => {
       setCategories(response || [])
     } catch (error) {
       console.error('Error loading categories:', error)
-      setError('Failed to load categories')
+      setError(error.message || 'Failed to load categories')
     } finally {
       setLoading(false)
     }
@@ -84,7 +84,7 @@ const ProductCategoryMaster = () => {
       loadCategories()
     } catch (error) {
       console.error('Error saving category:', error)
-      setError('Failed to save category')
+      setError(error.message || 'Failed to save category')
     }
   }
 

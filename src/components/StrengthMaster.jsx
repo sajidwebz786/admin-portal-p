@@ -28,7 +28,7 @@ const StrengthMaster = () => {
       setStrengths(response || [])
     } catch (error) {
       console.error('Error loading strengths:', error)
-      setError('Failed to load strengths')
+      setError(error.message || 'Failed to load strengths')
     } finally {
       setLoading(false)
     }
@@ -88,7 +88,7 @@ const StrengthMaster = () => {
       loadStrengths()
     } catch (error) {
       console.error('Error saving strength:', error)
-      setError('Failed to save strength')
+      setError(error.message || 'Failed to save strength')
     }
   }
 

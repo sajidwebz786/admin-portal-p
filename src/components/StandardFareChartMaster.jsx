@@ -44,7 +44,7 @@ const StandardFareChartMaster = () => {
       setUsers(usersResponse.users || usersResponse || [])
     } catch (error) {
       console.error('Error loading fare charts:', error)
-      setError('Failed to load fare charts')
+      setError(error.message || 'Failed to load fare charts')
     } finally {
       setLoading(false)
     }
@@ -124,7 +124,7 @@ const StandardFareChartMaster = () => {
       loadData()
     } catch (error) {
       console.error('Error saving fare chart:', error)
-      setError('Failed to save fare chart')
+      setError(error.message || 'Failed to save fare chart')
     }
   }
 

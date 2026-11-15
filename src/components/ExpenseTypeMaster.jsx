@@ -25,7 +25,7 @@ const ExpenseTypeMaster = () => {
       setItems(response || [])
     } catch (error) {
       console.error('Error loading expense types:', error)
-      setError('Failed to load expense types')
+      setError(error.message || 'Failed to load expense types')
     } finally {
       setLoading(false)
     }
@@ -68,7 +68,7 @@ const ExpenseTypeMaster = () => {
       loadItems()
     } catch (error) {
       console.error('Error saving:', error)
-      setError('Failed to save expense type')
+      setError(error.message || 'Failed to save expense type')
     }
   }
 

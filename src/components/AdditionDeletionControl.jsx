@@ -85,7 +85,7 @@ const AdditionDeletionControl = () => {
       setPendingApprovals(Array.isArray(approvalRes.data) ? approvalRes.data : [])
       setAuditLogs(Array.isArray(auditRes) ? auditRes : [])
     } catch (err) {
-      setError('Failed to load addition/deletion control data')
+      setError(err.message || 'Failed to load addition/deletion control data')
     } finally {
       setLoading(false)
     }

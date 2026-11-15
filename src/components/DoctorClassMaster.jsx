@@ -24,7 +24,7 @@ const DoctorClassMaster = () => {
       const response = await api.get('/master/doctor-classes');
       setClasses(response.data);
     } catch (err) {
-      setError('Failed to fetch doctor classes');
+      setError(err.message || 'Failed to fetch doctor classes');
       console.error(err);
     } finally {
       setLoading(false);

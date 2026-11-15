@@ -152,7 +152,7 @@ const DoctorChemistManagement = () => {
       setChemists(chemistsArray)
     } catch (err) {
       console.error(err)
-      setError('Failed to load data')
+      setError(err.message || 'Failed to load data')
     } finally {
       setLoading(false)
     }

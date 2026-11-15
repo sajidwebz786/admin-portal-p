@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_URL } from '../config/api';
+import { apiErrorMessage, normalizePayload } from '../utils/apiError';
 
 // -------------------------
 // Axios Base Configuration
@@ -18,6 +19,7 @@ const api = axios.create({
 // -------------------------
 api.interceptors.request.use(
   (config) => {
+    if (config.data) config.data = normalizePayload(config.data);
     const token = localStorage.getItem("adminToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -34,6 +36,10 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;
+    error.message = apiErrorMessage(error);
+    if (response?.data && typeof response.data === 'object') {
+      response.data.message = error.message;
+    }
     if (response?.status === 401 && error.config?.url !== '/auth/login') {
       console.warn("Authentication failed, redirecting to login...");
       localStorage.removeItem("adminToken");
@@ -68,10 +74,7 @@ class AdminAPIService {
     } catch (err) {
       return {
         success: false,
-        error: err.response?.data?.message ||
-          (err.code === 'ECONNABORTED'
-            ? 'The server is taking longer to respond. Please try again.'
-            : 'Unable to reach the server. Please check your connection and try again.'),
+        error: err.message,
       };
     }
   }
@@ -87,7 +90,7 @@ class AdminAPIService {
       const res = await api(endpoint, options);
       return res.data;
     } catch (err) {
-      throw new Error(err.response?.data?.message || "API request failed");
+      throw err;
     }
   }
 

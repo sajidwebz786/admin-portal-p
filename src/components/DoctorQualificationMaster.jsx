@@ -23,7 +23,7 @@ const DoctorQualificationMaster = () => {
       const response = await api.get('/master/doctor-qualifications');
       setQualifications(response.data);
     } catch (err) {
-      setError('Failed to fetch doctor qualifications');
+      setError(err.message || 'Failed to fetch doctor qualifications');
       console.error(err);
     } finally {
       setLoading(false);

@@ -26,7 +26,7 @@ const TravelModeMaster = () => {
       setItems(response || [])
     } catch (error) {
       console.error('Error loading travel modes:', error)
-      setError('Failed to load travel modes')
+      setError(error.message || 'Failed to load travel modes')
     } finally {
       setLoading(false)
     }
@@ -70,7 +70,7 @@ const TravelModeMaster = () => {
       loadItems()
     } catch (error) {
       console.error('Error saving:', error)
-      setError('Failed to save travel mode')
+      setError(error.message || 'Failed to save travel mode')
     }
   }
 

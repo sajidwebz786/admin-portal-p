@@ -28,7 +28,7 @@ const DivisionMaster = () => {
       setDivisions(response || [])
     } catch (error) {
       console.error('Error loading divisions:', error)
-      setError('Failed to load divisions')
+      setError(error.message || 'Failed to load divisions')
     } finally {
       setLoading(false)
     }
@@ -84,7 +84,7 @@ const DivisionMaster = () => {
       loadDivisions()
     } catch (error) {
       console.error('Error saving division:', error)
-      setError('Failed to save division')
+      setError(error.message || 'Failed to save division')
     }
   }
 

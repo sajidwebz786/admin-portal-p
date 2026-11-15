@@ -50,7 +50,7 @@ const HeadquarterManagement = ({ mode = 'management' }) => {
       setHeadquarters(headquartersData)
     } catch (error) {
       console.error('Error loading headquarters:', error)
-      setError('Failed to load headquarters. Please ensure you are logged in.')
+      setError(error.message || 'Failed to load headquarters. Please ensure you are logged in.')
     } finally {
       setLoading(false)
     }

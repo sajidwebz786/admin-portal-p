@@ -52,7 +52,7 @@ const SampleMaster = ({ mode = 'addition' }) => {
       setPackSizes(asArray(packSizesData, 'packSizes').filter(p => p.status === 'active'));
     } catch (error) {
       console.error('Error fetching data:', error);
-      setError('Failed to fetch data');
+      setError(error.message || 'Failed to fetch data');
     } finally {
       setLoading(false);
     }

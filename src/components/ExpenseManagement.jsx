@@ -55,7 +55,7 @@ const ExpenseManagement = () => {
       setTravelModes(tmRes || [])
     } catch (error) {
       console.error('Error loading expenses:', error)
-      setError('Failed to load expenses')
+      setError(error.message || 'Failed to load expenses')
     } finally {
       setLoading(false)
     }
@@ -134,7 +134,7 @@ const ExpenseManagement = () => {
       loadData()
     } catch (error) {
       console.error('Error saving expense:', error)
-      setError('Failed to save expense')
+      setError(error.message || 'Failed to save expense')
     }
   }
 
