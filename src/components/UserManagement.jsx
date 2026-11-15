@@ -3,6 +3,7 @@ import adminAPI from '../services/apiService'
 
 const UserManagement = () => {
   const [users, setUsers] = useState([])
+  const canManageUsers = (() => { try { return JSON.parse(localStorage.getItem('adminUser') || '{}').role?.toLowerCase() === 'admin' } catch { return false } })()
   const [headquarters, setHeadquarters] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -50,9 +51,13 @@ const UserManagement = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
+    const designationRoles = { MR: 'Field Representative', TBM: 'Field Representative', ABM: 'Area Manager', RBM: 'Regional Manager', ZBM: 'Zonal Manager', NSM: 'National Manager' }
+    const roleDesignations = { 'Field Representative': 'MR', 'Area Manager': 'ABM', 'Regional Manager': 'RBM', 'Zonal Manager': 'ZBM', 'National Manager': 'NSM' }
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
+      ...(name === 'employeeType' && designationRoles[value] ? { role: designationRoles[value] } : {}),
+      ...(name === 'role' ? { employeeType: roleDesignations[value] || '' } : {})
     }))
   }
 
@@ -178,9 +183,9 @@ const UserManagement = () => {
       )}
 
       <div className="management-actions mb-4 d-flex gap-3">
-        <button className="btn btn-primary" onClick={showAddModal}>
+        {canManageUsers && <button className="btn btn-primary" onClick={showAddModal}>
           <i className="fas fa-plus"></i> Add New User
-        </button>
+        </button>}
         <button className="btn btn-info">
           <i className="fas fa-download"></i> Export Users
         </button>
@@ -224,6 +229,7 @@ const UserManagement = () => {
                   </td>
                   <td>{formatDate(user.lastLogin)}</td>
                   <td>
+                    {canManageUsers && <>
                     <button
                       className="btn btn-outline-primary btn-sm"
                       onClick={() => showEditModal(user)}
@@ -237,7 +243,7 @@ const UserManagement = () => {
                       style={{ fontSize: '0.8rem', padding: '0.25rem 0.5rem' }}
                     >
                       <i className="fas fa-trash" style={{ fontSize: '0.75rem' }}></i>
-                    </button>
+                    </button></>}
                   </td>
                 </tr>
               ))
