@@ -34,7 +34,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const { response } = error;
-    if (response?.status === 401) {
+    if (response?.status === 401 && error.config?.url !== '/auth/login') {
       console.warn("Authentication failed, redirecting to login...");
       localStorage.removeItem("adminToken");
       localStorage.removeItem("adminUser");
@@ -55,7 +55,7 @@ class AdminAPIService {
   async login(username, password) {
     try {
       const res = await api.post("/auth/login", {
-        email: username,
+        email: username.trim(),
         password,
       });
 

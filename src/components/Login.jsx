@@ -80,11 +80,13 @@ const Login = ({ onLogin }) => {
             <form onSubmit={handleSubmit}>
               <div className="input-group mb-3">
                 <input
-                  type="text"
+                  type="email"
                   id="username"
                   name="username"
                   className="form-control"
-                  placeholder="Username"
+                  placeholder="Email address"
+                  aria-label="Email address"
+                  autoComplete="username"
                   value={formData.username}
                   onChange={handleInputChange}
                   required
@@ -100,6 +102,7 @@ const Login = ({ onLogin }) => {
               <div className="input-group mb-3">
                 <input
                   type="password"
+                  autoComplete="current-password"
                   id="password"
                   name="password"
                   className="form-control"
