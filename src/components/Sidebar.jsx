@@ -131,6 +131,12 @@ const Sidebar = ({ onLogout, userRole, isOpen = false, onNavigate = () => {} }) 
               </Link>
             </li>
 
+            <li className="nav-item">
+              <a href="#/hrms/dashboard" target="_blank" rel="noopener noreferrer" className="nav-link" onClick={onNavigate}>
+                <i className="fas fa-users nav-icon" aria-hidden="true"></i><p>Pams-HRMS <i className="fas fa-external-link-alt" aria-label="Opens in a new tab"></i></p>
+              </a>
+            </li>
+
             {/* Masters - only if user has access to any sub-item */}
             {showMasters && (
               <li className={`nav-item has-treeview ${mastersExpanded ? 'menu-open' : ''}`}>

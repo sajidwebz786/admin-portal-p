@@ -1,0 +1,1617 @@
+{
+  "modules": [
+    {
+      "id": "recruitment",
+      "label": "Recruitment",
+      "description": "Recruitment & joining",
+      "icon": "user-plus"
+    },
+    {
+      "id": "onboarding",
+      "label": "Onboarding",
+      "description": "Induction & documents",
+      "icon": "clipboard-check"
+    },
+    {
+      "id": "attendance",
+      "label": "Attendance",
+      "description": "Office & field attendance",
+      "icon": "map-marker-alt"
+    },
+    {
+      "id": "leave",
+      "label": "Leave Management",
+      "description": "Requests, balances & calendar",
+      "icon": "calendar-alt"
+    },
+    {
+      "id": "payroll",
+      "label": "Payroll",
+      "description": "Salary, deductions & payslips",
+      "icon": "wallet"
+    },
+    {
+      "id": "expenses",
+      "label": "Expense Management",
+      "description": "Claims, approval & settlement",
+      "icon": "receipt"
+    },
+    {
+      "id": "performance",
+      "label": "KPI / KRA",
+      "description": "Goals, reviews & recommendations",
+      "icon": "chart-line"
+    },
+    {
+      "id": "training",
+      "label": "Training",
+      "description": "Learning & certification",
+      "icon": "graduation-cap"
+    },
+    {
+      "id": "movement",
+      "label": "Transfer & Promotion",
+      "description": "Career & reporting changes",
+      "icon": "exchange-alt"
+    },
+    {
+      "id": "discipline",
+      "label": "Discipline",
+      "description": "Cases, notices & PIP",
+      "icon": "balance-scale"
+    },
+    {
+      "id": "separation",
+      "label": "Separation",
+      "description": "Resignation & clearance",
+      "icon": "door-open"
+    },
+    {
+      "id": "documents",
+      "label": "Documents",
+      "description": "Letters & employee records",
+      "icon": "folder-open"
+    },
+    {
+      "id": "assets",
+      "label": "Assets",
+      "description": "Allocation & return tracking",
+      "icon": "laptop"
+    }
+  ],
+  "resources": {
+    "requisitions": {
+      "module": "recruitment",
+      "label": "Manpower Requisitions",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "department",
+          "label": "Department",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "designation",
+          "label": "Designation",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "positions",
+          "label": "Positions",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "location",
+          "label": "Location",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "reason",
+          "label": "Reason",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "name": "requiredBy",
+          "label": "Required By",
+          "type": "date",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    },
+    "openings": {
+      "module": "recruitment",
+      "label": "Job Openings",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "department",
+          "label": "Department",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "designation",
+          "label": "Designation",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "positions",
+          "label": "Positions",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "location",
+          "label": "Location",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "closingDate",
+          "label": "Closing Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    },
+    "candidates": {
+      "module": "recruitment",
+      "label": "Resume Database",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "email",
+          "label": "Email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "name": "phone",
+          "label": "Phone",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "position",
+          "label": "Position",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "experienceYears",
+          "label": "Experience Years",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "resume",
+          "label": "Resume",
+          "type": "file",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": false,
+      "selfService": false
+    },
+    "interviews": {
+      "module": "recruitment",
+      "label": "Interviews & Feedback",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "candidateEmail",
+          "label": "Candidate Email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "name": "position",
+          "label": "Position",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "scheduledAt",
+          "label": "Scheduled At",
+          "type": "datetime-local",
+          "required": true
+        },
+        {
+          "name": "interviewer",
+          "label": "Interviewer",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "feedback",
+          "label": "Feedback",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "name": "rating",
+          "label": "Rating",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "recommendation",
+          "label": "Recommendation",
+          "type": "select",
+          "required": false,
+          "options": ["Pending", "Proceed", "Hold", "Reject"]
+        }
+      ],
+      "workflow": false,
+      "selfService": false
+    },
+    "offers": {
+      "module": "recruitment",
+      "label": "Offer Letters",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "candidateEmail",
+          "label": "Candidate Email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "name": "designation",
+          "label": "Designation",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "department",
+          "label": "Department",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "joiningDate",
+          "label": "Joining Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "annualSalary",
+          "label": "Annual Salary",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "letter",
+          "label": "Letter",
+          "type": "file",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    },
+    "background-checks": {
+      "module": "recruitment",
+      "label": "Background Verification",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "candidateEmail",
+          "label": "Candidate Email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "name": "provider",
+          "label": "Provider",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "identityVerified",
+          "label": "Identity Verified",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "employmentVerified",
+          "label": "Employment Verified",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "educationVerified",
+          "label": "Education Verified",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "result",
+          "label": "Result",
+          "type": "select",
+          "required": false,
+          "options": ["Pending", "Clear", "Review", "Failed"]
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    },
+    "joining-tracker": {
+      "module": "recruitment",
+      "label": "Joining Tracker",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "candidateEmail",
+          "label": "Candidate Email",
+          "type": "email",
+          "required": true
+        },
+        {
+          "name": "plannedJoining",
+          "label": "Planned Joining",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "actualJoining",
+          "label": "Actual Joining",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "designation",
+          "label": "Designation",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "documentsReceived",
+          "label": "Documents Received",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": false,
+      "selfService": false
+    },
+    "induction": {
+      "module": "onboarding",
+      "label": "Induction Checklist",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "joiningDate",
+          "label": "Joining Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "documentsVerified",
+          "label": "Documents Verified",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "appointmentLetter",
+          "label": "Appointment Letter",
+          "type": "file",
+          "required": false
+        },
+        {
+          "name": "policyAccepted",
+          "label": "Policy Accepted",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "assetsAllocated",
+          "label": "Assets Allocated",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "inductionCompleted",
+          "label": "Induction Completed",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "trainingScheduled",
+          "label": "Training Scheduled",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    },
+    "attendance": {
+      "module": "attendance",
+      "label": "Attendance Register",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "date",
+          "label": "Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "source",
+          "label": "Source",
+          "type": "select",
+          "required": true,
+          "options": ["Office", "Field", "GPS"]
+        },
+        {
+          "name": "checkIn",
+          "label": "Check In",
+          "type": "datetime-local",
+          "required": true
+        },
+        {
+          "name": "checkOut",
+          "label": "Check Out",
+          "type": "datetime-local",
+          "required": false
+        },
+        {
+          "name": "latitude",
+          "label": "Latitude",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "longitude",
+          "label": "Longitude",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "accuracyMetres",
+          "label": "Accuracy Metres",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "scheduledStart",
+          "label": "Scheduled Start",
+          "type": "datetime-local",
+          "required": false
+        },
+        {
+          "name": "scheduledEnd",
+          "label": "Scheduled End",
+          "type": "datetime-local",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "leave-requests": {
+      "module": "leave",
+      "label": "Leave Requests",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "leaveType",
+          "label": "Leave Type",
+          "type": "select",
+          "required": true,
+          "options": ["Casual", "Sick", "Earned", "Unpaid", "Comp Off", "Other"]
+        },
+        {
+          "name": "startDate",
+          "label": "Start Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "endDate",
+          "label": "End Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "days",
+          "label": "Days",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "reason",
+          "label": "Reason",
+          "type": "textarea",
+          "required": true
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "leave-balances": {
+      "module": "leave",
+      "label": "Leave Balances",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "year",
+          "label": "Year",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "leaveType",
+          "label": "Leave Type",
+          "type": "select",
+          "required": true,
+          "options": ["Casual", "Sick", "Earned", "Unpaid", "Comp Off", "Other"]
+        },
+        {
+          "name": "entitledDays",
+          "label": "Entitled Days",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "openingDays",
+          "label": "Opening Days",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": false,
+      "selfService": false
+    },
+    "holidays": {
+      "module": "leave",
+      "label": "Holiday Calendar",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "date",
+          "label": "Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "location",
+          "label": "Location",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": false,
+      "selfService": false
+    },
+    "comp-off": {
+      "module": "leave",
+      "label": "Compensatory Off",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "workedDate",
+          "label": "Worked Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "days",
+          "label": "Days",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "reason",
+          "label": "Reason",
+          "type": "textarea",
+          "required": true
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "encashments": {
+      "module": "leave",
+      "label": "Leave Encashment",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "leaveType",
+          "label": "Leave Type",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "days",
+          "label": "Days",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "amount",
+          "label": "Amount",
+          "type": "money",
+          "required": true
+        },
+        {
+          "name": "reason",
+          "label": "Reason",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "salary-structures": {
+      "module": "payroll",
+      "label": "Salary Structures",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "effectiveDate",
+          "label": "Effective Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "basic",
+          "label": "Basic",
+          "type": "money",
+          "required": true
+        },
+        {
+          "name": "allowances",
+          "label": "Allowances",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "incentives",
+          "label": "Incentives",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "bonus",
+          "label": "Bonus",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "pf",
+          "label": "Pf",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "esi",
+          "label": "Esi",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "professionalTax",
+          "label": "Professional Tax",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "tds",
+          "label": "Tds",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "otherDeductions",
+          "label": "Other Deductions",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    },
+    "payroll": {
+      "module": "payroll",
+      "label": "Payroll & Payslips",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "month",
+          "label": "Month",
+          "type": "month",
+          "required": true
+        },
+        {
+          "name": "basic",
+          "label": "Basic",
+          "type": "money",
+          "required": true
+        },
+        {
+          "name": "allowances",
+          "label": "Allowances",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "incentives",
+          "label": "Incentives",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "bonus",
+          "label": "Bonus",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "pf",
+          "label": "Pf",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "esi",
+          "label": "Esi",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "professionalTax",
+          "label": "Professional Tax",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "tds",
+          "label": "Tds",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "otherDeductions",
+          "label": "Other Deductions",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "paymentDate",
+          "label": "Payment Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "paymentReference",
+          "label": "Payment Reference",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    },
+    "claims": {
+      "module": "expenses",
+      "label": "Expense Claims",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "date",
+          "label": "Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "claimType",
+          "label": "Claim Type",
+          "type": "select",
+          "required": true,
+          "options": ["Travel", "DA", "Hotel", "Fuel", "Miscellaneous"]
+        },
+        {
+          "name": "amount",
+          "label": "Amount",
+          "type": "money",
+          "required": true
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "name": "receipt",
+          "label": "Receipt",
+          "type": "file",
+          "required": false
+        },
+        {
+          "name": "settlementDate",
+          "label": "Settlement Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "paymentReference",
+          "label": "Payment Reference",
+          "type": "text",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "evaluations": {
+      "module": "performance",
+      "label": "KPI / KRA Reviews",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "period",
+          "label": "Period",
+          "type": "select",
+          "required": true,
+          "options": ["Monthly", "Quarterly", "Annual"]
+        },
+        {
+          "name": "periodStart",
+          "label": "Period Start",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "periodEnd",
+          "label": "Period End",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "goal",
+          "label": "Goal",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "name": "target",
+          "label": "Target",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "achievement",
+          "label": "Achievement",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "managerReview",
+          "label": "Manager Review",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "name": "finalRating",
+          "label": "Final Rating",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "promotionRecommendation",
+          "label": "Promotion Recommendation",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "name": "incrementRecommendation",
+          "label": "Increment Recommendation",
+          "type": "money",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "courses": {
+      "module": "training",
+      "label": "Training Materials",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "trainingType",
+          "label": "Training Type",
+          "type": "select",
+          "required": true,
+          "options": ["Product", "Sales", "Induction", "Compliance", "Other"]
+        },
+        {
+          "name": "description",
+          "label": "Description",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "name": "material",
+          "label": "Material",
+          "type": "file",
+          "required": false
+        },
+        {
+          "name": "passMark",
+          "label": "Pass Mark",
+          "type": "number",
+          "required": false
+        }
+      ],
+      "workflow": false,
+      "selfService": false
+    },
+    "training-calendar": {
+      "module": "training",
+      "label": "Training Calendar",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "trainingType",
+          "label": "Training Type",
+          "type": "select",
+          "required": true,
+          "options": ["Product", "Sales", "Induction", "Compliance", "Other"]
+        },
+        {
+          "name": "startDate",
+          "label": "Start Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "endDate",
+          "label": "End Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "trainer",
+          "label": "Trainer",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "venue",
+          "label": "Venue",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": false,
+      "selfService": false
+    },
+    "training-history": {
+      "module": "training",
+      "label": "Assessment & Certification",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "course",
+          "label": "Course",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "completedDate",
+          "label": "Completed Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "score",
+          "label": "Score",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "passMark",
+          "label": "Pass Mark",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "certificate",
+          "label": "Certificate",
+          "type": "file",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "movements": {
+      "module": "movement",
+      "label": "Transfers & Promotions",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "changeType",
+          "label": "Change Type",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Transfer",
+            "Promotion",
+            "Designation Change",
+            "Salary Revision",
+            "Reporting Change"
+          ]
+        },
+        {
+          "name": "effectiveDate",
+          "label": "Effective Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "newDesignation",
+          "label": "New Designation",
+          "type": "select",
+          "required": false,
+          "options": ["MR", "TBM", "ABM", "RBM", "ZBM", "NSM"]
+        },
+        {
+          "name": "newHqId",
+          "label": "New Hq Id",
+          "type": "hq",
+          "required": false
+        },
+        {
+          "name": "newManagerId",
+          "label": "New Manager Id",
+          "type": "employee",
+          "required": false
+        },
+        {
+          "name": "newSalary",
+          "label": "New Salary",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "reason",
+          "label": "Reason",
+          "type": "textarea",
+          "required": true
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "disciplinary-cases": {
+      "module": "discipline",
+      "label": "Disciplinary Cases",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "caseType",
+          "label": "Case Type",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Warning",
+            "Show Cause",
+            "PIP",
+            "Suspension",
+            "Disciplinary Action"
+          ]
+        },
+        {
+          "name": "incidentDate",
+          "label": "Incident Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "details",
+          "label": "Details",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "name": "responseDue",
+          "label": "Response Due",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "employeeResponse",
+          "label": "Employee Response",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "name": "actionTaken",
+          "label": "Action Taken",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "name": "reviewDate",
+          "label": "Review Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "letter",
+          "label": "Letter",
+          "type": "file",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    },
+    "resignations": {
+      "module": "separation",
+      "label": "Resignation & Exit",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "resignationDate",
+          "label": "Resignation Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "proposedLastDay",
+          "label": "Proposed Last Day",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "actualLastDay",
+          "label": "Approved Actual Last Day",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "noticeDays",
+          "label": "Notice Days",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "reason",
+          "label": "Reason",
+          "type": "textarea",
+          "required": true
+        },
+        {
+          "name": "exitInterview",
+          "label": "Exit Interview",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "name": "clearanceComplete",
+          "label": "Clearance Complete",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "assetsReturned",
+          "label": "Assets Returned",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "finalSettlement",
+          "label": "Final Settlement",
+          "type": "money",
+          "required": false
+        },
+        {
+          "name": "experienceLetter",
+          "label": "Experience Letter",
+          "type": "file",
+          "required": false
+        },
+        {
+          "name": "relievingLetter",
+          "label": "Relieving Letter",
+          "type": "file",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "documents": {
+      "module": "documents",
+      "label": "Employee Documents",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "documentType",
+          "label": "Document Type",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Appointment Letter",
+            "Promotion Letter",
+            "Salary Revision Letter",
+            "Warning Letter",
+            "Training Certificate",
+            "ID Card",
+            "Agreement",
+            "Other"
+          ]
+        },
+        {
+          "name": "issueDate",
+          "label": "Issue Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "expiryDate",
+          "label": "Expiry Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "document",
+          "label": "Document",
+          "type": "file",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": true
+    },
+    "asset-register": {
+      "module": "assets",
+      "label": "Asset Register",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "assetType",
+          "label": "Asset Type",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Mobile Phone",
+            "Laptop",
+            "SIM Card",
+            "Tablet",
+            "Vehicle",
+            "Product Samples",
+            "Other"
+          ]
+        },
+        {
+          "name": "assetCode",
+          "label": "Asset Code",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "serialNumber",
+          "label": "Serial Number",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "purchaseDate",
+          "label": "Purchase Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "condition",
+          "label": "Condition",
+          "type": "select",
+          "required": false,
+          "options": ["New", "Good", "Fair", "Repair"]
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": false,
+      "selfService": false
+    },
+    "asset-allocations": {
+      "module": "assets",
+      "label": "Allocation & Returns",
+      "fields": [
+        {
+          "name": "title",
+          "label": "Title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "assetCode",
+          "label": "Asset Code",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "allocatedDate",
+          "label": "Allocated Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "expectedReturn",
+          "label": "Expected Return",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "returnedDate",
+          "label": "Returned Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "name": "condition",
+          "label": "Condition",
+          "type": "select",
+          "required": false,
+          "options": ["Good", "Fair", "Damaged", "Lost"]
+        },
+        {
+          "name": "quantity",
+          "label": "Quantity",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "acknowledged",
+          "label": "Acknowledged",
+          "type": "checkbox",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "label": "Notes",
+          "type": "textarea",
+          "required": false
+        }
+      ],
+      "workflow": true,
+      "selfService": false
+    }
+  }
+}

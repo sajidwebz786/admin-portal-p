@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, lazy, Suspense } from 'react'
 import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
@@ -49,6 +49,7 @@ import AdditionDeletionControl from './components/AdditionDeletionControl'
 import GenericMasterScreen from './components/GenericMasterScreen'
 
 import './App.css'
+const HrmsWorkspace = lazy(() => import('./hrms/HrmsWorkspace'))
 
 // Get user role from localStorage
 const getUserRole = () => {
@@ -99,7 +100,7 @@ function AppContent() {
   const handleLogin = () => {
     setIsAuthenticated(true)
     setUserRole(getUserRole())
-    navigate('/dashboard')
+    navigate(location.pathname.startsWith('/hrms') ? location.pathname : '/dashboard')
   }
 
   const handleLogout = () => {
@@ -124,6 +125,8 @@ function AppContent() {
   if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />
   }
+
+  if (location.pathname.startsWith('/hrms')) return <Suspense fallback={<p className="hr-loading">Opening Pams-HRMS?</p>}><HrmsWorkspace onLogout={handleLogout} /></Suspense>
 
   return (
     <div className={`admin-portal ${sidebarOpen ? 'sidebar-open' : ''}`}>
